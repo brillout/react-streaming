@@ -6,7 +6,7 @@ import { Writable } from 'stream'
 import { SsrDataProvider } from './useSsrData'
 import { StreamProvider } from './useStream'
 import { assert } from './utils'
-import type { Readable as ReadableType, Writable as WritableType } from 'stream'
+import type { Readable as ReadableModule, Writable as WritableModule } from 'stream'
 
 async function renderToStream(element: React.ReactNode) {
   let reject: (err: unknown) => void
@@ -54,14 +54,14 @@ async function renderToStream(element: React.ReactNode) {
     onError
   })
 
-  const { pipeWrapper, injectToStream } = await getPipeWrapper(pipe)
+  const { pipeWrapper, injectToStream } = getPipeWrapper(pipe)
   ;(pipeWrapper as any).injectToStream = injectToStream
 
   return promise
 }
 
-async function getPipeWrapper(pipeOriginal: (writable: Writable) => void) {
-  const { Writable } = await loadStreamNodeModule()
+function getPipeWrapper(pipeOriginal: (writable: Writable) => void) {
+  const { Writable } = loadStreamNodeModule()
 
   let state: 'UNSTARTED' | 'STREAMING' | 'ENDED' = 'UNSTARTED'
   let write: null | ((_chunk: string) => void) = null
@@ -133,16 +133,14 @@ async function getPipeWrapper(pipeOriginal: (writable: Writable) => void) {
   }
 }
 
-async function loadStreamNodeModule(): Promise<{
-  Readable: typeof ReadableType
-  Writable: typeof WritableType
-}> {
-  const streamModule = await dynamicImport('stream')
-  const { Readable, Writable } = streamModule as any
-  return { Readable, Writable }
+type StreamModule = {
+  Readable: typeof ReadableModule
+  Writable: typeof WritableModule
 }
 
-function dynamicImport(modulePath: string): Promise<Record<string, unknown>> {
-  // bypass static analysis of bundlers
-  return new Function('modulePath', 'return import(modulePath)')(modulePath)
+function loadStreamNodeModule(): StreamModule {
+  const req = require // bypass static analysis of bundlers
+  const streamModule = req('stream')
+  const { Readable, Writable } = streamModule as StreamModule
+  return { Readable, Writable }
 }
