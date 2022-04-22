@@ -66,13 +66,13 @@ The solution: `react-streaming`.
 
    // Cross-platform
    const {
-     pipe, // Defined if running in Node.js (Vercel, AWS), otherwise `null`
-     readable // Defined if running in Edge Platforms (Coudflare Workers, Netlify Edge, Deno Deploy), otherwise `null`
+     pipe, // Defined if running in Node.js, otherwise `null`
+     readable // Defined if running in Edge Platforms (.e.g. Coudflare Workers), otherwise `null`
    } = await renderToStream(<Page />, options)
    ```
 
 3. Client-side
-   ```js
+   ```jsx
    import { ReactStreaming } from 'react-streaming/client'
    // Wrap your root component `<Page>` (aka `<App>`) with `<ReactStreaming>`
    const page = (
@@ -94,7 +94,7 @@ The solution: `react-streaming`.
     - Con: Google will likely not wait for the whole HTML, and therefore not see it. (To be tested.)
   - Custom SEO strategy: use `options.disable`. For example:
 
-    ```js
+    ```jsx
     // Always stream, even for bots:
     const disable = false
 
@@ -110,7 +110,7 @@ The solution: `react-streaming`.
 
 ### Bonus: `useAsync()`
 
-```js
+```jsx
 import { useAsync } from 'react-streaming'
 
 function StarWarsMovies() {
@@ -153,7 +153,7 @@ The novelty here is that it's isomorphic:
 - It works on the client-side, as well as on the server-side (while Serve-Side Rendering).
 - For hydration, data is passed from the server to the client. (So that data isn't loaded twice.)
 
-You have the choice between three hooks:
+You have the choice between three methods:
 
 - `useAsync()`: Highest-level & easiest.
 - `useSsrData()`: High-level & easy.
@@ -190,7 +190,7 @@ the server-side.)
 
 This is for example how `useAsync()` is implemented:
 
-```js
+```jsx
 import { useId } from 'react'
 import { useSsrData } from 'react-streaming'
 
@@ -205,38 +205,38 @@ function useAsync(asyncFn) {
 `injectToStream(htmlChunk: string)` allows you to inject strings to the current stream.
 
 There are two ways to access `injectToStream()`:
- 1. `stream.injectToStream()`:
-    ```js
+ 1. With `renderToStream()`:
+    ```jsx
+    import { renderToStream } from 'react-streaming/server'
+    const { injectToStream } = await renderToStream(<Page />)
+    ```
+ 2. With `useStream()`:
+    ```jsx
     import { useStream } from 'react-streaming'
 
     function SomeComponent() {
       const stream = useStream()
-
       if (stream === null) {
         // No stream available. This is the case:
         // - On the client-side.
         // - When `option.disable === true`.
         // - When react-streaming is not installed.
       }
+      const { injectToStream } = stream
     }
-    ```
- 2. `const { injectToStream } = useStream()`:
-    ```js
-    import { useStream } from 'react-streaming'
-    const { injectToStream } = await renderToStream(<Page />)
     ```
 
 Usage examples:
 
-```js
+```jsx
 // Inject JavaScript (e.g. for progressive hydration)
-stream.injectToStream('<script type="module" src="/main.js"></script>')
+injectToStream('<script type="module" src="/main.js"></script>')
 
 // Inject CSS (e.g. for CSS-in-JS)
-stream.injectToStream('<styles>.some-component { color: blue }</styles>')
+injectToStream('<styles>.some-component { color: blue }</styles>')
 
 // Pass data to client
-stream.injectToStream(`<script type="application/json">${JSON.stringify(someData)}</script>`)
+injectToStream(`<script type="application/json">${JSON.stringify(someData)}</script>`)
 ```
 
 For a full example of using `injectToStream()`, have a look at `useSsrData()`'s implementation.
