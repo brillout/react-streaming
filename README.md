@@ -27,18 +27,12 @@ Features (for library authors):
 Easy:
 
 ```jsx
-// Node.js (Vercel, AWS)
-import { renderToNodeStreamPipe } from 'react-streaming/server'
-const { pipe } = await renderToNodeStreamPipe(<Page />)
-
-// Edge Platforms (Coudflare Workers, Netlify Edge, Deno Deploy)
-import { renderToWebReadableStream } from 'react-streaming/server'
-const { readable } = await renderToWebReadableStream(<Page />)
-
-// Cross-platform
 import { renderToStream } from 'react-streaming/server'
-// Either `pipe` or `readable` is defined, depending on the platform
-const { pipe, readable } = await renderToStream(<Page />)
+
+const {
+  pipe, // Node.js (Vercel, AWS)
+  readable // Edge Platforms (Coudflare Workers, Netlify Edge, Deno Deploy)
+} = await renderToStream(<Page />)
 ```
 
 ## Why Streaming
@@ -70,18 +64,10 @@ The solution: `react-streaming`.
    ```jsx
    import { renderToStream } from 'react-streaming/server'
 
-   // Node.js (Vercel, AWS)
-   const pipe = await renderToNodeStreamPipe(<Page />, options)
-   pipe(res) // `res` as in Express.js/connect's `(req, res, next)` middlewares
-
-   // Edge platforms (Coudflare Workers, Netlify Edge, Deno Deploy)
-   const readable = await renderToWebReadableStream(<Page />, options)
-   new Response(Readable)
-
    // Cross-platform
    const {
-     pipe, // `null` on Edge Platforms
-     readable // `null` in Node.js
+     pipe, // Defined if running in Node.js (Vercel, AWS), otherwise `null`
+     readable // Defined if running in Edge Platforms (Coudflare Workers, Netlify Edge, Deno Deploy), otherwise `null`
    } = await renderToStream(<Page />, options)
    ```
 
@@ -237,8 +223,6 @@ There are two ways to access `injectToStream()`:
  2. `const { injectToStream } = useStream()`:
     ```js
     import { useStream } from 'react-streaming'
-    const { injectToStream } = await renderToNodeStreamPipe(<Page />)
-    const { injectToStream } = await renderToWebReadableStream(<Page />)
     const { injectToStream } = await renderToStream(<Page />)
     ```
 
