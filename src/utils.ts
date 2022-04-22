@@ -13,8 +13,8 @@ export function assert(condition: unknown, debugInfo?: unknown): asserts conditi
 
   throw new Error(
     [
-      '[vite-plugin-dist-importer][Bug] You stumbled upon a bug in the source code of vite-plugin-import-build.',
-      'Reach out at https://github.com/brillout/vite-plugin-dist-importer/issues/new and include this error stack',
+      '[react-streaming][Bug] You stumbled upon a bug in the source code of `react-streaming`.',
+      'Reach out at https://github.com/brillout/react-streaming/issues/new and include this error stack',
       '(the error stack is usually enough to fix the problem).',
       debugStr && `(Debug info for the maintainers: ${debugStr})`
     ]

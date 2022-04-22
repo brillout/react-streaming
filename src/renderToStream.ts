@@ -66,21 +66,16 @@ function getPipeWrapper(pipeOriginal: Pipe) {
   let write: null | ((_chunk: string) => void) = null
   const buffer: string[] = []
   const pipeWrapper = createPipeWrapper()
+  let writeLock: boolean = false
 
   return { pipeWrapper, injectToStream }
 
   function injectToStream(chunk: string) {
+    // console.log('injectToStream', chunk)
+    buffer.push(chunk)
     process.nextTick(() => {
-      assert(state !== 'ENDED')
-      // console.log('injectToStream', state)
       if (state === 'STREAMING') {
         flushBuffer()
-        assert(write)
-        write(chunk)
-      } else if (state === 'UNSTARTED') {
-        buffer.push(chunk)
-      } else {
-        assert(false)
       }
     })
   }
@@ -107,7 +102,13 @@ function getPipeWrapper(pipeOriginal: Pipe) {
         write(chunk: unknown, encoding, callback) {
           // console.log('react write')
           state = 'STREAMING'
-          flushBuffer()
+          if (!writeLock) {
+            flushBuffer()
+          }
+          writeLock = true
+          process.nextTick(() => {
+            writeLock = false
+          })
           writable.write(chunk, encoding, callback)
         },
         final(callback) {

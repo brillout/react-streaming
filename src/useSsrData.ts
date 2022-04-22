@@ -52,13 +52,13 @@ function assert(condition: unknown): asserts condition {
   }
 }
 
-function useSsrData(key: string, asyncFn: () => Promise<unknown>) {
+function useSsrData<T>(key: string, asyncFn: () => Promise<T>): T {
   // console.log('useSsrData', key)
   if (isClientSide()) {
     const ssrData = getSsrData(key)
     // console.log('ssrData: ', ssrData)
     if (ssrData.isAvailable) {
-      return ssrData.value
+      return ssrData.value as T
     }
   }
   const data = useContext(Ctx)
@@ -72,6 +72,7 @@ function useSsrData(key: string, asyncFn: () => Promise<unknown>) {
       } catch (error) {
         // React seems buggy around error handling; we handle errors ourselves
         entry = data[key] = { state: 'error', error }
+        return;
       }
       entry = data[key] = { state: 'done', value }
       if (isServerSide()) {
@@ -88,6 +89,7 @@ function useSsrData(key: string, asyncFn: () => Promise<unknown>) {
     throw entry.error
   }
   if (entry.state === 'done') {
-    return entry.value
+    return entry.value as T
   }
+  assert(false)
 }
