@@ -2,21 +2,20 @@ export { renderToStream }
 
 import React from 'react'
 import { renderToPipeableStream } from 'react-dom/server'
-import { Writable } from 'stream'
 import { SsrDataProvider } from './useSsrData'
 import { StreamProvider } from './useStream'
 import { assert } from './utils'
-import type { Readable as ReadableModule, Writable as WritableModule } from 'stream'
+import type { Readable as ReadableType, Writable as WritableType } from 'stream'
 
 async function renderToStream(element: React.ReactNode) {
   let reject: (err: unknown) => void
   let resolve: () => void
   let resolved = false
-  const promise = new Promise<typeof pipeWrapper>((resolve_, reject_) => {
+  const promise = new Promise<{ pipe: Pipe }>((resolve_, reject_) => {
     resolve = () => {
       if (resolved) return
       resolved = true
-      resolve_(pipeWrapper)
+      resolve_({ pipe: pipeWrapper })
     }
     reject = (err: unknown) => {
       if (resolved) return
@@ -60,7 +59,7 @@ async function renderToStream(element: React.ReactNode) {
   return promise
 }
 
-function getPipeWrapper(pipeOriginal: (writable: Writable) => void) {
+function getPipeWrapper(pipeOriginal: Pipe) {
   const { Writable } = loadStreamNodeModule()
 
   let state: 'UNSTARTED' | 'STREAMING' | 'ENDED' = 'UNSTARTED'
@@ -101,8 +100,8 @@ function getPipeWrapper(pipeOriginal: (writable: Writable) => void) {
     buffer.length = 0
   }
 
-  function createPipeWrapper() {
-    const pipeWrapper = (writable: Writable) => {
+  function createPipeWrapper(): Pipe {
+    const pipeWrapper: Pipe = (writable: WritableType) => {
       // console.log('pipe() call')
       const writableProxy = new Writable({
         write(chunk: unknown, encoding, callback) {
@@ -133,9 +132,10 @@ function getPipeWrapper(pipeOriginal: (writable: Writable) => void) {
   }
 }
 
+type Pipe = (writable: WritableType) => void
 type StreamModule = {
-  Readable: typeof ReadableModule
-  Writable: typeof WritableModule
+  Readable: typeof ReadableType
+  Writable: typeof WritableType
 }
 
 function loadStreamNodeModule(): StreamModule {
