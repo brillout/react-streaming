@@ -62,23 +62,27 @@ async function renderToStream(element: React.ReactNode) {
 function getPipeWrapper(pipeOriginal: Pipe) {
   const { Writable } = loadStreamNodeModule()
 
+  /*/
+  const DEBUG_SEQUENCING = true
+  /*/
+  const DEBUG_SEQUENCING = false
+  //*/
   let state: 'UNSTARTED' | 'STREAMING' | 'ENDED' = 'UNSTARTED'
   let write: null | ((_chunk: string) => void) = null
   const buffer: string[] = []
   const pipeWrapper = createPipeWrapper()
-  let writeLock: boolean = true
-  let writeLockTimeout: boolean
+  let writeUnlock: null | boolean = null // Set to `null` because React fails to hydrate if something is injected before the first react write
 
   return { pipeWrapper, injectToStream }
 
   function injectToStream(chunk: string) {
-    // console.log('injectToStream: ', chunk)
+    DEBUG_SEQUENCING && console.log('injectToStream:', chunk)
     buffer.push(chunk)
     flushBuffer()
   }
 
   function flushBuffer() {
-    if (writeLock) {
+    if (!writeUnlock) {
       return
     }
     if (buffer.length === 0) {
@@ -97,28 +101,29 @@ function getPipeWrapper(pipeOriginal: Pipe) {
 
   function createPipeWrapper(): Pipe {
     const pipeWrapper: Pipe = (writable: WritableType) => {
-      // console.log('pipe() call')
+      DEBUG_SEQUENCING && console.log('pipe() call')
       const writableProxy = new Writable({
         write(chunk: unknown, encoding, callback) {
-          // console.log('react write: ', String(chunk))
-          // console.log('writeLock: ', writeLock)
+          DEBUG_SEQUENCING && console.log('react write:', String(chunk))
+          DEBUG_SEQUENCING && console.log('writeUnlock ===', writeUnlock)
           state = 'STREAMING'
-          if (!writeLock) {
+          if (writeUnlock) {
             flushBuffer()
-            writeLock = true
-            if (writeLockTimeout) {
-              writeLockTimeout = true
-              process.nextTick(() => {
-                writeLockTimeout = false
-                writeLock = false
-                flushBuffer()
-              })
-            }
+          }
+          if (writeUnlock == true || writeUnlock === null) {
+            writeUnlock = false
+            DEBUG_SEQUENCING && console.log('writeUnlock =', writeUnlock)
+            process.nextTick(() => {
+              writeUnlock = true
+              DEBUG_SEQUENCING && console.log('writeUnlock =', writeUnlock)
+              flushBuffer()
+            })
           }
           writable.write(chunk, encoding, callback)
         },
         final(callback) {
-          writeLock = false
+          writeUnlock = true
+          DEBUG_SEQUENCING && console.log('writeUnlock =', writeUnlock)
           flushBuffer()
           assert(buffer.length === 0)
           state = 'ENDED'
@@ -130,7 +135,7 @@ function getPipeWrapper(pipeOriginal: Pipe) {
         writable.write(chunk)
       }
       ;(writableProxy as any).flush = () => {
-        // console.log('FLUSH')
+        DEBUG_SEQUENCING && console.log('FLUSH')
         if (typeof (writable as any).flush === 'function') {
           ;(writable as any).flush()
         }
