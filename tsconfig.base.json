@@ -1,8 +1,5 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
-    "target": "ES2017",
-    "module": "CommonJS",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "strict": true,

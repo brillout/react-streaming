@@ -2,13 +2,27 @@
   "name": "react-streaming",
   "description": "React 18 Streaming. Made fully-fledged & easy.",
   "version": "0.0.1",
-  "main": "dist/index.js",
+  "main": "./dist/cjs/index.js",
   "scripts": {
-    "dev": "npm run clean && unbuild --stub && npm run dev:fix-file-extension",
-    "dev:fix-file-extension": "rm dist/*.mjs && for f in dist/*.cjs; do mv \"$f\" \"${f%.cjs}.js\"; done",
-    "build": "npm run clean && tsc",
-    "prepublishOnly": "npm run build",
+    "dev": "pnpm run tsc:watch:cjs & pnpm run tsc:watch:esm",
+    "dev:cjs": "pnpm run tsc:watch:cjs",
+    "tsc:watch:cjs": "tsc --incremental --watch --project ./tsconfig.cjs.json",
+    "tsc:watch:esm": "tsc --incremental --watch --project ./tsconfig.esm.json",
+    "build": "pnpm run clean && tsc --project ./tsconfig.cjs.json && tsc --project ./tsconfig.esm.json",
+    "prepublishOnly": "pnpm run build",
     "clean": "rm -rf dist/"
+  },
+  "exports": {
+    ".": {
+      "node": "./dist/cjs/index.js",
+      "browser": "./dist/esm/index.js"
+    },
+    "./server": {
+      "node": "./dist/cjs/server.js"
+    },
+    "./client": {
+      "browser": "./dist/esm/client.js"
+    }
   },
   "dependencies": {
     "@brillout/json-s": "^0.4.5"
@@ -18,8 +32,7 @@
     "@types/react": "^18.0.5",
     "@types/react-dom": "^18.0.1",
     "react": "^18.0.0",
-    "typescript": "^4.6.3",
-    "unbuild": "^0.7.4"
+    "typescript": "^4.6.3"
   },
   "files": [
     "dist/",
