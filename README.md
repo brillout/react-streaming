@@ -6,7 +6,7 @@
 
 - [Intro](#intro)
 - [Why Streaming](#why-streaming)
-- [Get Started (React Users)](#get-started-react-users)
+- [Get Started](#get-started)
 - [Get Started (Library Authors)](#get-started-library-authors)
 
 ## Intro
@@ -21,19 +21,19 @@ Features (for React users):
 
 Features (for library authors):
 
-- `useStream()`: Inject chunks to the stream.
 - `useSsrData()`: Define isomorphic data.
+- `injectToStream()`: Inject chunks to the stream.
 
 Easy:
 
 ```jsx
 // Node.js (Vercel, AWS)
 import { renderToNodeStreamPipe } from 'react-streaming/server'
-const pipe = await renderToNodeStreamPipe(<Page />)
+const { pipe } = await renderToNodeStreamPipe(<Page />)
 
 // Edge Platforms (Coudflare Workers, Netlify Edge, Deno Deploy)
 import { renderToWebReadableStream } from 'react-streaming/server'
-const readable = await renderToWebReadableStream(<Page />)
+const { readable } = await renderToWebReadableStream(<Page />)
 
 // Cross-platform
 import { renderToStream } from 'react-streaming/server'
@@ -57,7 +57,7 @@ The solution: `react-streaming`.
 
 <br/>
 
-## Get Started (React Users)
+## Get Started
 
 1. Install
 
@@ -171,7 +171,7 @@ You have the choice between three hooks:
 
 - `useAsync()`: Highest-level & easiest.
 - `useSsrData()`: High-level & easy.
-- `useStream()`: Low-level and highly flexible (both `useAsync()` and `useSsrData()` are based on it). Easy & recommended for injecting script and style tags. Complex for data fetching (use the other hooks if possible).
+- `injectToStream()`: Low-level and highly flexible (both `useAsync()` and `useSsrData()` are based on it). Easy & recommended for injecting script and style tags. Complex for data fetching (if possible, use `useSsrData()` or `useAsync()` instead).
 
 ### `useAsync()`
 
@@ -214,32 +214,45 @@ function useAsync(asyncFn) {
 }
 ```
 
-### `useStream()`
+### `injectToStream()`
 
-The hook `useStream()` allows you to inject strings to the current stream:
+`injectToStream(htmlChunk: string)` allows you to inject strings to the current stream.
 
-```jsx
-import { useStream } from 'react-streaming'
+There are two ways to access `injectToStream()`:
+ 1. `stream.injectToStream()`:
+    ```js
+    import { useStream } from 'react-streaming'
 
-function SomeComponent() {
-  const stream = useStream()
+    function SomeComponent() {
+      const stream = useStream()
 
-  if (stream === null) {
-    // No stream available. This is the case:
-    // - On the client-side.
-    // - When `option.disable === true`.
-    // - When react-streaming is not installed.
-  }
+      if (stream === null) {
+        // No stream available. This is the case:
+        // - On the client-side.
+        // - When `option.disable === true`.
+        // - When react-streaming is not installed.
+      }
+    }
+    ```
+ 2. `const { injectToStream } = useStream()`:
+    ```js
+    import { useStream } from 'react-streaming'
+    const { injectToStream } = await renderToNodeStreamPipe(<Page />)
+    const { injectToStream } = await renderToWebReadableStream(<Page />)
+    const { injectToStream } = await renderToStream(<Page />)
+    ```
 
-  // Inject JavaScript (e.g. for progressive hydration)
-  stream.injectToStream('<script type="module" src="/main.js"></script>')
+Usage examples:
 
-  // Inject CSS
-  stream.injectToStream('<styles>.some-component { color: blue }</styles>')
+```js
+// Inject JavaScript (e.g. for progressive hydration)
+stream.injectToStream('<script type="module" src="/main.js"></script>')
 
-  // Pass data to client
-  stream.injectToStream(`<script type="application/json">${JSON.stringify(someData)}</script>`)
-}
+// Inject CSS (e.g. for CSS-in-JS)
+stream.injectToStream('<styles>.some-component { color: blue }</styles>')
+
+// Pass data to client
+stream.injectToStream(`<script type="application/json">${JSON.stringify(someData)}</script>`)
 ```
 
-For an example of using `injectToStream()`, have a look at `useSsrData()`'s implementation.
+For a full example of using `injectToStream()`, have a look at `useSsrData()`'s implementation.
