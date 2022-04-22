@@ -66,18 +66,13 @@ function getPipeWrapper(pipeOriginal: Pipe) {
   let write: null | ((_chunk: string) => void) = null
   const buffer: string[] = []
   const pipeWrapper = createPipeWrapper()
-  let writeLock: boolean = false
+  let writeLock: boolean = true
 
   return { pipeWrapper, injectToStream }
 
   function injectToStream(chunk: string) {
-    // console.log('injectToStream', chunk)
+    // console.log('injectToStream: ', chunk)
     buffer.push(chunk)
-    process.nextTick(() => {
-      if (state === 'STREAMING') {
-        flushBuffer()
-      }
-    })
   }
 
   function flushBuffer() {
@@ -100,15 +95,16 @@ function getPipeWrapper(pipeOriginal: Pipe) {
       // console.log('pipe() call')
       const writableProxy = new Writable({
         write(chunk: unknown, encoding, callback) {
-          // console.log('react write')
+          // console.log('react write: ', String(chunk))
+          // console.log('writeLock: ', writeLock)
           state = 'STREAMING'
           if (!writeLock) {
             flushBuffer()
+            writeLock = true
+            process.nextTick(() => {
+              writeLock = false
+            })
           }
-          writeLock = true
-          process.nextTick(() => {
-            writeLock = false
-          })
           writable.write(chunk, encoding, callback)
         },
         final(callback) {
@@ -122,7 +118,7 @@ function getPipeWrapper(pipeOriginal: Pipe) {
         writable.write(chunk)
       }
       ;(writableProxy as any).flush = () => {
-        flushBuffer()
+        // console.log('FLUSH')
         if (typeof (writable as any).flush === 'function') {
           ;(writable as any).flush()
         }
