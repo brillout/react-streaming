@@ -115,12 +115,12 @@ The solution: `react-streaming`.
     // Disable streaming for bots, except for the Google Bot and some other bot:
     const disable =
       isBot(userAgent) &&
-      !['googlebot', 'someotherbot'].some(n => userAgent.toLowerCase().includes(n))
+      !['googlebot', 'some-other-bot'].some(n => userAgent.toLowerCase().includes(n))
 
     const stream = await renderToStream(<Page />, { disable })
     ```
 
-- `options.userAgent?: string`: The HTTP User-Agent request header. (Needed for the `seoMode`.)
+- `options.userAgent?: string`: The HTTP User-Agent request header. (Needed for `seoMode`.)
 
 ### Bonus: `useAsync()`
 
@@ -139,7 +139,7 @@ function StarWarsMovies() {
 }
 
 // This component is isomorphic: it works on both the client-side and server-side.
-//  - The data fetched while SSR is automatically passed to the client for hydration.
+// The data fetched while SSR is automatically passed and re-used on the client for hydration.
 function MovieList() {
   const movies = useAsync(async () => {
     const response = await fetch('https://star-wars.brillout.com/api/films.json')
@@ -171,7 +171,7 @@ You have the choice between three hooks:
 
 - `useAsync()`: Highest-level & easiest.
 - `useSsrData()`: High-level & easy.
-- `useStream()`: Low-level and highly flexible (both `useAsync()` and `useSsrData()` are based on it). Easy & recommended for injecting scripts/styles, but complex for data fetching (use the other hooks if possible).
+- `useStream()`: Low-level and highly flexible (both `useAsync()` and `useSsrData()` are based on it). Easy & recommended for injecting script and style tags. Complex for data fetching (use the other hooks if possible).
 
 ### `useAsync()`
 
@@ -188,13 +188,13 @@ function SomeComponent() {
     return 'someData'
   }
   // `useSsrData()` suspends rendering until the promise returned by `someAsyncFunc()` resolves.
-  const someValue = useSsrData(key, someAsyncFunc)
-  // `someValue` is the value returned by `someAsyncFunc()`.
-  assert(someValue === 'someData')
+  const value = useSsrData(key, someAsyncFunc)
+  // `value` is the value returned by `someAsyncFunc()`.
+  assert(value === 'someData')
 }
 ```
 
-If `<SomeComponent>` is rendered on the client-side, then `useSsrData()` is essentially a
+If `<SomeComponent>` is rendered only on the client-side, then `useSsrData()` is essentially a
 cache that never invalidates. (If you want to re-run `someAsyncFunc()`, then change the key.)
 
 If `<SomeComponent>` is rendered on the server-side (SSR), it injects the
@@ -228,18 +228,18 @@ function SomeComponent() {
     // No stream available. This is the case:
     // - On the client-side.
     // - When `option.disable === true`.
-    // - When `react-streaming` has not been installed.
+    // - When react-streaming is not installed.
   }
-
-  // Pass data to client
-  stream.injectToStream(`<script type="application/json">${JSON.stringify(someData)}</script>`)
 
   // Inject JavaScript (e.g. for progressive hydration)
   stream.injectToStream('<script type="module" src="/main.js"></script>')
 
   // Inject CSS
   stream.injectToStream('<styles>.some-component { color: blue }</styles>')
+
+  // Pass data to client
+  stream.injectToStream(`<script type="application/json">${JSON.stringify(someData)}</script>`)
 }
 ```
 
-For an example of using `useStream.injectToStream()`, have a look at `useSsrData()`'s implementation.
+For an example of using `injectToStream()`, have a look at `useSsrData()`'s implementation.
