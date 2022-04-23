@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@brillout/json-s": "^0.4.5",
+    "isbot-fast": "^1.2.0",
     "vitest": "^0.9.4"
   },
   "devDependencies": {

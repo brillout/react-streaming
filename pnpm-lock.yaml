@@ -5,6 +5,7 @@ specifiers:
   '@types/node': ^15.12.2
   '@types/react': ^18.0.5
   '@types/react-dom': ^18.0.1
+  isbot-fast: ^1.2.0
   react: ^18.0.0
   react-dom: ^18.0.0
   typescript: ^4.6.3
@@ -12,6 +13,7 @@ specifiers:
 
 dependencies:
   '@brillout/json-s': 0.4.5
+  isbot-fast: 1.2.0
   vitest: 0.9.4
 
 devDependencies:
@@ -310,6 +312,11 @@ packages:
     resolution: {integrity: sha512-+5FPy5PnwmO3lvfMb0AsoPaBG+5KHUI0wYFXOtYPnVVVspTFUuMZNfNaNVRt3FZadstu2c8x23vykRW/NBoU6A==}
     dependencies:
       has: 1.0.3
+    dev: false
+
+  /isbot-fast/1.2.0:
+    resolution: {integrity: sha512-twjuQzy2gKMDVfKGQyQqrx6Uy4opu/fiVUTTpdqtFsd7OQijIp5oXvb27n5EemYXaijh5fomndJt/SPRLsEdSg==}
+    engines: {node: '>=6.0.0'}
     dev: false
 
   /js-tokens/4.0.0:

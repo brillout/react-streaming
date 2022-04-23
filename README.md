@@ -16,7 +16,7 @@ Features (for React users):
 - Unlocks `<Suspsense>` for SSR apps.
 - Unlocks React libraries of tomorrow. (Such as using [Telefunc](https://telefunc.com/) for data fetching.)
 - Supports all platforms (Vercel, Cloudflare Workers, AWS, Netlify Edge, Deno, Deploy, ...).
-- Two SEO strategies: `conservative` or `google-bot-speed`.
+- Two SEO strategies: `conservative` or `google-speed`.
 - **Bonus**: new `useAsync()` hook.
 
 Features (for library authors):
@@ -86,10 +86,10 @@ The solution: `react-streaming`.
 
 - `options.disable?: boolean`: Disable streaming.
   > The component is still rendered to a stream, but the promise `const promise = await renderTo...` resolves only after the stream has finished. (This effectively disables streaming from a user perspective, while unlocking React 18 Streaming capabilities such as SSR `<Supsense>`.)
-- `options.seoStrategy?: 'conservative' | 'google-bot-speed'`
+- `options.seoStrategy?: 'conservative' | 'google-speed'`
 
-  - `conservative`: Disable streaming if the HTTP request originates from a bot. (Ensuring the bot always sees the whole HTML.)
-  - `google-bot-speed`: Don't disable streaming for the Google Bot.
+  - `conservative` (default): Disable streaming if the HTTP request originates from a bot. (Ensuring the bot always sees the whole HTML.)
+  - `google-speed`: Don't disable streaming for the Google Bot.
     - Pro: Google ranks your website higher because the initial HTTP response is faster. (To be researched.)
     - Con: Google will likely not wait for the whole HTML, and therefore not see it. (To be tested.)
   - Custom SEO strategy: use `options.disable`. For example:

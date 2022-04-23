@@ -27,3 +27,8 @@ export function assertUsage(condition: unknown, msg: string): asserts condition 
   if (condition) return
   throw new Error('[react-streaming][Wrong Usage] ' + msg)
 }
+
+export function assertWarning(condition: unknown, msg: string) {
+  if (condition) return
+  console.warn('[react-streaming][Warning] ' + msg)
+}

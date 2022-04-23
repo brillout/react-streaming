@@ -4,11 +4,12 @@ import React from 'react'
 import { renderToPipeableStream, renderToReadableStream } from 'react-dom/server'
 import { SsrDataProvider } from './useSsrData'
 import { StreamProvider } from './useStream'
-import { assert, assertUsage } from './utils'
+import { assert, assertUsage, assertWarning } from './utils'
 import type { Readable as ReadableType, Writable as WritableType } from 'stream'
+import isBot from 'isbot-fast'
 
 type Return = { pipe: null | Pipe; readable: null | ReadableStream; injectToStream: (chunk: string) => void }
-type SeoStrategy = 'conservative' | 'google-bot-speed'
+type SeoStrategy = 'conservative' | 'google-speed'
 
 async function renderToStream(
   element: React.ReactNode,
@@ -17,6 +18,7 @@ async function renderToStream(
     webStream?: boolean
     disabled?: boolean
     seoStrategy?: SeoStrategy
+    userAgent?: string
     renderToReadableStream?: typeof renderToReadableStream
   } = {}
 ): Promise<Return> {
@@ -40,15 +42,21 @@ async function renderToStream(
   const disabled =
     options.disabled ??
     (() => {
+      if (!options.userAgent) {
+        assertWarning(
+          false,
+          'Streaming disabled. Provide `options.userAgent` to enable streaming. (react-streaming needs the User Agent string in order to be able to disable streaming for bots, e.g. for Google Bot.)'
+        )
+        return true
+      }
       // https://github.com/omrilotan/isbot
       // https://github.com/mahovich/isbot-fast
       // https://stackoverflow.com/questions/34647657/how-to-detect-web-crawlers-for-seo-using-express/68869738#68869738
-      const isBot = false
-      const isGoogleBot = false
-      if (!isBot) {
+      if (!isBot(options.userAgent)) {
         return false
       }
-      if (seoStrategy === 'google-bot-speed' && isGoogleBot) {
+      const isGoogleBot = options.userAgent.toLowerCase().includes('googlebot')
+      if (seoStrategy === 'google-speed' && isGoogleBot) {
         return false
       }
       return true
