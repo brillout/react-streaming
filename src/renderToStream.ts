@@ -46,7 +46,7 @@ async function renderToStream(
       if (!options.userAgent) {
         assertWarning(
           false,
-          'Streaming disabled. Provide `options.userAgent` to enable streaming. (react-streaming needs the User Agent string in order to be able to disable streaming for bots, e.g. for Google Bot.)'
+          'Streaming disabled. Provide `options.userAgent` to enable streaming. (react-streaming needs the User Agent string in order to be able to disable streaming for bots, e.g. for Google Bot.) Or set `options.disabled` to `true` to get rid of this warning.'
         )
         return true
       }
