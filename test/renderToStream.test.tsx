@@ -14,7 +14,7 @@ import { assertUsage } from '../src/utils'
 
 assertUsage(
   typeof ReadableStream !== 'undefined',
-  'Web Stream not available. Use a Node.js version that supports Web Streams such as Node.js 18.'
+  'Cannot run test suite. Because Web Streams are not available. Use a Node.js version that supports Web Streams, such as Node.js 18.'
 )
 
 describe('renderToStream()', async () => {

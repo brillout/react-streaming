@@ -106,7 +106,7 @@ The solution: `react-streaming`.
     const stream = await renderToStream(<Page />, { disable })
     ```
 
-- `options.userAgent?: string`: The HTTP User-Agent request header. (Needed for `seoStrategy`.)
+- `options.userAgent?: string`: The HTTP User-Agent request header. (Needed for `options.seoStrategy`.)
 - `options.webStream?: boolean`: Use Web Streams instead of Node.js Streams in Node.js. ([Node.js 18 released Web Streams support](https://nodejs.org/en/blog/announcements/v18-release-announce/#web-streams-api-experimental).)
 
 ### Bonus: `useAsync()`
