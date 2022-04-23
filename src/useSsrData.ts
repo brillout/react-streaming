@@ -3,7 +3,7 @@ export { useSsrData }
 
 import React, { useContext } from 'react'
 import { useStream } from './useStream'
-import { isClientSide, isServerSide } from './utils'
+import { assert, isClientSide, isServerSide } from './utils'
 import { parse, stringify } from '@brillout/json-s'
 
 const Ctx = React.createContext<Data>(undefined as any)
@@ -43,13 +43,6 @@ function getSsrData(key: string): { isAvailable: true; value: unknown } | { isAv
     }
   }
   return { isAvailable: false }
-}
-
-function assert(condition: unknown): asserts condition {
-  if (!condition) {
-    // TODO
-    throw new Error('Something went wrong')
-  }
 }
 
 function useSsrData<T>(key: string, asyncFn: () => Promise<T>): T {

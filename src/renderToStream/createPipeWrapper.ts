@@ -1,4 +1,5 @@
 export { createPipeWrapper }
+export { nodeStreamModuleIsAvailable }
 export type { Pipe }
 
 import type { Readable as ReadableType, Writable as WritableType } from 'stream'
@@ -51,8 +52,24 @@ type StreamModule = {
 }
 
 function loadStreamNodeModule(): StreamModule {
-  const req = require // bypass static analysis of bundlers
-  const streamModule = req('stream')
+  const streamModule = loadStreamModule()
   const { Readable, Writable } = streamModule as StreamModule
   return { Readable, Writable }
+}
+
+function nodeStreamModuleIsAvailable(): boolean {
+  const req = require // bypass static analysis of bundlers
+  try {
+    loadStreamModule()
+    req('stream')
+    return true
+  } catch {
+    return false
+  }
+}
+
+function loadStreamModule() {
+  const req = require // bypass static analysis of bundlers
+  const streamModule = req('stream')
+  return streamModule
 }

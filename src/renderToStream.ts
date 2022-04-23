@@ -7,7 +7,7 @@ import { StreamProvider } from './useStream'
 import { assertWarning } from './utils'
 import './shims.d'
 import isBot from 'isbot-fast'
-import { createPipeWrapper, Pipe } from './renderToStream/createPipeWrapper'
+import { createPipeWrapper, nodeStreamModuleIsAvailable, Pipe } from './renderToStream/createPipeWrapper'
 import { createReadableWrapper } from './renderToStream/createReadableWrapper'
 
 type Return = { pipe: null | Pipe; readable: null | ReadableStream; injectToStream: (chunk: string) => void }
@@ -64,6 +64,7 @@ async function renderToStream(
       return true
     })()
   // options.debug = true
+  const webStream = options.webStream ?? !nodeStreamModuleIsAvailable()
 
   const onError = (err: unknown) => {
     reject(err)
@@ -78,7 +79,7 @@ async function renderToStream(
   let readable: null | ReadableStream = null
   let injectToStream: (chunk: string) => void
 
-  if (!options.webStream) {
+  if (!webStream) {
     const { pipe: pipeOriginal } = renderToPipeableStream(element, {
       onAllReady() {
         resolve()
