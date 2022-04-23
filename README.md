@@ -16,7 +16,7 @@ Features (for React users):
 - Unlocks `<Suspsense>` for SSR apps.
 - Unlocks React libraries of tomorrow. (Such as using [Telefunc](https://telefunc.com/) for data fetching.)
 - Supports all platforms (Vercel, Cloudflare Workers, AWS, Netlify Edge, Deno, Deploy, ...).
-- Two SEO modes: `conservative` or `google-bot-speed`.
+- Two SEO strategies: `conservative` or `google-bot-speed`.
 - **Bonus**: new `useAsync()` hook.
 
 Features (for library authors):
@@ -86,7 +86,7 @@ The solution: `react-streaming`.
 
 - `options.disable?: boolean`: Disable streaming.
   > The component is still rendered to a stream, but the promise `const promise = await renderTo...` resolves only after the stream has finished. (This effectively disables streaming from a user perspective, while unlocking React 18 Streaming capabilities such as SSR `<Supsense>`.)
-- `options.seoMode?: 'conservative' | 'google-bot-speed'`
+- `options.seoStrategy?: 'conservative' | 'google-bot-speed'`
 
   - `conservative`: Disable streaming if the HTTP request originates from a bot. (Ensuring the bot always sees the whole HTML.)
   - `google-bot-speed`: Don't disable streaming for the Google Bot.
@@ -106,7 +106,8 @@ The solution: `react-streaming`.
     const stream = await renderToStream(<Page />, { disable })
     ```
 
-- `options.userAgent?: string`: The HTTP User-Agent request header. (Needed for `seoMode`.)
+- `options.userAgent?: string`: The HTTP User-Agent request header. (Needed for `seoStrategy`.)
+- `options.webStream?: boolean`: Use Web Streams instead of Node.js Streams in Node.js. ([Node.js 18 released Web Streams support](https://nodejs.org/en/blog/announcements/v18-release-announce/#web-streams-api-experimental).)
 
 ### Bonus: `useAsync()`
 
