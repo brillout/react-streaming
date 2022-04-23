@@ -5,7 +5,6 @@ import { renderToPipeableStream, renderToReadableStream } from 'react-dom/server
 import { SsrDataProvider } from './useSsrData'
 import { StreamProvider } from './useStream'
 import { assertWarning } from './utils'
-import './shims.d'
 import isBot from 'isbot-fast'
 import { createPipeWrapper, nodeStreamModuleIsAvailable, Pipe } from './renderToStream/createPipeWrapper'
 import { createReadableWrapper } from './renderToStream/createReadableWrapper'
