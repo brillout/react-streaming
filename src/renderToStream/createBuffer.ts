@@ -1,7 +1,6 @@
 export { createBuffer }
 
-import { assert } from 'vitest'
-import { assertUsage } from '../utils'
+import { assert, assertUsage } from '../utils'
 
 function createBuffer(bufferParams: { debug: boolean; writeChunk: null | ((_chunk: string) => void) }) {
   const buffer: string[] = []
