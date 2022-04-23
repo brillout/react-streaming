@@ -40,7 +40,7 @@ const {
 React 18's new SSR streaming architecture unlocks many capabilities:
 
 - Data Fetching:
-  - Use RPC to fetch data in a seamless way, e.g. with [Telefunc](https://telefunc.com) or [tRPC](https://github.com/trpc/trpc). (Data fetching SSR hooks will be a thing of the past: no more Next.js's `getServerSideProps()` nor [`vite-plugin-ssr`](https://vite-plugin-ssr.com/)'s `onBeforeRender()`.)
+  - Use RPC to fetch data in a seamless way, e.g. with [Telefunc](https://telefunc.com). (Data fetching SSR hooks will be a thing of the past: no more Next.js's `getServerSideProps()` nor [`vite-plugin-ssr`](https://vite-plugin-ssr.com/)'s `onBeforeRender()`.)
   - Expect your GraphQL tools to significantly improve, both performance and DX. (Also expect new tools such as [Vilay](https://github.com/XiNiHa/vilay).)
 - Fundamentally improved mobile performance. (Mobile users can progressively load the page as data is fetched, before even a single line of JavaScript is loaded. Especially important for low-end and/or poorly-connected devices.)
 - Progressive Hydration. (Page is interactive before the page/data finished loading.)
