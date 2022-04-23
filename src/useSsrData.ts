@@ -72,7 +72,7 @@ function useSsrData<T>(key: string, asyncFn: () => Promise<T>): T {
       } catch (error) {
         // React seems buggy around error handling; we handle errors ourselves
         entry = data[key] = { state: 'error', error }
-        return;
+        return
       }
       entry = data[key] = { state: 'done', value }
       if (isServerSide()) {

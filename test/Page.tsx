@@ -9,7 +9,11 @@ function Page() {
       <h1>Welcome</h1>
       This page is:
       <ul>
-        <li><Suspense fallback={<p>Loading...</p>}><LazyComponent /></Suspense></li>
+        <li>
+          <Suspense fallback={<p>Loading...</p>}>
+            <LazyComponent />
+          </Suspense>
+        </li>
         <li>Rendered to HTML.</li>
         <li>
           Interactive. <Counter />
