@@ -22,3 +22,8 @@ export function assert(condition: unknown, debugInfo?: unknown): asserts conditi
       .join(' ')
   )
 }
+
+export function assertUsage(condition: unknown, msg: string): asserts condition {
+  if (condition) return
+  throw new Error('[react-streaming][Wrong Usage] ' + msg)
+}

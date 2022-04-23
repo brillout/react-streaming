@@ -4,18 +4,18 @@ import React from 'react'
 import { renderToPipeableStream } from 'react-dom/server'
 import { SsrDataProvider } from './useSsrData'
 import { StreamProvider } from './useStream'
-import { assert } from './utils'
+import { assert, assertUsage } from './utils'
 import type { Readable as ReadableType, Writable as WritableType } from 'stream'
 
-async function renderToStream(element: React.ReactNode) {
+async function renderToStream(element: React.ReactNode, options: { debug?: boolean } = {}) {
   let reject: (err: unknown) => void
   let resolve: () => void
   let resolved = false
-  const promise = new Promise<{ pipe: Pipe }>((resolve_, reject_) => {
+  const promise = new Promise<{ pipe: Pipe; injectToStream: (chunk: string) => void }>((resolve_, reject_) => {
     resolve = () => {
       if (resolved) return
       resolved = true
-      resolve_({ pipe: pipeWrapper })
+      resolve_({ pipe: wrapper.pipeWrapper, injectToStream: wrapper.injectToStream })
     }
     reject = (err: unknown) => {
       if (resolved) return
@@ -35,7 +35,7 @@ async function renderToStream(element: React.ReactNode) {
     reject(err)
   }
 
-  const streamUtils = { injectToStream: (chunk: string) => injectToStream(chunk) }
+  const streamUtils = { injectToStream: (chunk: string) => wrapper.injectToStream(chunk) }
 
   element = React.createElement(StreamProvider, { value: streamUtils }, element)
   element = React.createElement(SsrDataProvider, null, element)
@@ -53,36 +53,37 @@ async function renderToStream(element: React.ReactNode) {
     onError
   })
 
-  const { pipeWrapper, injectToStream } = getPipeWrapper(pipe)
-  ;(pipeWrapper as any).injectToStream = injectToStream
+  const wrapper = getPipeWrapper(pipe, options)
+  ;(wrapper.pipeWrapper as any).injectToStream = wrapper.injectToStream
 
   return promise
 }
 
-function getPipeWrapper(pipeOriginal: Pipe) {
+function getPipeWrapper(pipeOriginal: Pipe, options: { debug?: boolean } = {}) {
   const { Writable } = loadStreamNodeModule()
 
   /*/
-  const DEBUG_SEQUENCING = true
+  const DEBUG = true
   /*/
-  const DEBUG_SEQUENCING = false
+  const DEBUG = !!options.debug
   //*/
   let state: 'UNSTARTED' | 'STREAMING' | 'ENDED' = 'UNSTARTED'
   let write: null | ((_chunk: string) => void) = null
   const buffer: string[] = []
   const pipeWrapper = createPipeWrapper()
-  let writeUnlock: null | boolean = null // Set to `null` because React fails to hydrate if something is injected before the first react write
+  let writePermission: null | boolean = null // Set to `null` because React fails to hydrate if something is injected before the first react write
 
   return { pipeWrapper, injectToStream }
 
   function injectToStream(chunk: string) {
-    DEBUG_SEQUENCING && console.log('injectToStream:', chunk)
+    assertUsage(state !== 'ENDED', `Cannot inject following chunk after stream has ended: \`${chunk}\``)
+    DEBUG && console.log('injectToStream:', chunk)
     buffer.push(chunk)
     flushBuffer()
   }
 
   function flushBuffer() {
-    if (!writeUnlock) {
+    if (!writePermission) {
       return
     }
     if (buffer.length === 0) {
@@ -101,29 +102,30 @@ function getPipeWrapper(pipeOriginal: Pipe) {
 
   function createPipeWrapper(): Pipe {
     const pipeWrapper: Pipe = (writable: WritableType) => {
-      DEBUG_SEQUENCING && console.log('pipe() call')
+      DEBUG && console.log('>>> pipe() call')
       const writableProxy = new Writable({
         write(chunk: unknown, encoding, callback) {
-          DEBUG_SEQUENCING && console.log('react write:', String(chunk))
-          DEBUG_SEQUENCING && console.log('writeUnlock ===', writeUnlock)
+          DEBUG && console.log(`react write ${!writePermission ? '' : '(writePermission)'}:`, String(chunk))
           state = 'STREAMING'
-          if (writeUnlock) {
+          if (writePermission) {
             flushBuffer()
           }
-          if (writeUnlock == true || writeUnlock === null) {
-            writeUnlock = false
-            DEBUG_SEQUENCING && console.log('writeUnlock =', writeUnlock)
-            process.nextTick(() => {
-              writeUnlock = true
-              DEBUG_SEQUENCING && console.log('writeUnlock =', writeUnlock)
+          if (writePermission == true || writePermission === null) {
+            writePermission = false
+            DEBUG && console.log('writePermission =', writePermission)
+            setTimeout(() => {
+              DEBUG && console.log('>>> setTimeout()')
+              writePermission = true
+              DEBUG && console.log('writePermission =', writePermission)
               flushBuffer()
             })
           }
           writable.write(chunk, encoding, callback)
         },
         final(callback) {
-          writeUnlock = true
-          DEBUG_SEQUENCING && console.log('writeUnlock =', writeUnlock)
+          DEBUG && console.log('>>> final()')
+          writePermission = true
+          DEBUG && console.log('writePermission =', writePermission)
           flushBuffer()
           assert(buffer.length === 0)
           state = 'ENDED'
@@ -135,7 +137,7 @@ function getPipeWrapper(pipeOriginal: Pipe) {
         writable.write(chunk)
       }
       ;(writableProxy as any).flush = () => {
-        DEBUG_SEQUENCING && console.log('FLUSH')
+        DEBUG && console.log('>>> flush()')
         if (typeof (writable as any).flush === 'function') {
           ;(writable as any).flush()
         }
