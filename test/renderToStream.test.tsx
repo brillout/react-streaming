@@ -12,20 +12,12 @@ import { assertUsage } from '../src/utils'
 // >
 // See https://github.com/facebook/react/pull/22797
 
-/*
 assertUsage(
   typeof ReadableStream !== 'undefined',
   'Web Stream not available. Use a Node.js version that supports Web Streams such as Node.js 18.'
 )
-*/
 
 describe('renderToStream()', async () => {
-  it('right Node.js version', async () => {
-    // Node.js version should support Web Streams
-    const nodeVersion = getNodeVersionMajor()
-    expect(nodeVersion).toBeGreaterThanOrEqual(18)
-  })
-
   const testBasic = (streamType: 'node'|'web') => {
     return async () => {
       const { data, endPromise } = await render(<div>hello</div>, { streamType })
@@ -137,10 +129,6 @@ function decodeChunk(thing: any) {
     return decoder.decode(thing)
   }
   return thing
-}
-
-function getNodeVersionMajor() {
-  return parseInt(process.version.split('.')[0].slice(1), 10)
 }
 
 async function render(element: React.ReactNode, { streamType }: { streamType: 'web' | 'node' }) {

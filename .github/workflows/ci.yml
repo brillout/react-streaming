@@ -11,8 +11,6 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         node_version: [18]
-        include:
-          - os: windows-latest
       fail-fast: false
     name: 'Test on node-${{ matrix.node_version }}, ${{ matrix.os }}'
     steps:
