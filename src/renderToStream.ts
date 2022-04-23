@@ -4,9 +4,11 @@ import React from 'react'
 import { renderToPipeableStream, renderToReadableStream } from 'react-dom/server'
 import { SsrDataProvider } from './useSsrData'
 import { StreamProvider } from './useStream'
-import { assert, assertUsage, assertWarning } from './utils'
-import type { Readable as ReadableType, Writable as WritableType } from 'stream'
+import { assertWarning } from './utils'
+import './shims.d'
 import isBot from 'isbot-fast'
+import { createPipeWrapper, Pipe } from './renderToStream/createPipeWrapper'
+import { createReadableWrapper } from './renderToStream/createReadableWrapper'
 
 type Return = { pipe: null | Pipe; readable: null | ReadableStream; injectToStream: (chunk: string) => void }
 type SeoStrategy = 'conservative' | 'google-speed'
@@ -90,7 +92,7 @@ async function renderToStream(
       onError
     })
 
-    const { pipeWrapper, injectToStream: injectToStream_ } = getPipeWrapper(pipeOriginal, options)
+    const { pipeWrapper, injectToStream: injectToStream_ } = createPipeWrapper(pipeOriginal, options)
     pipe = pipeWrapper
     injectToStream = injectToStream_
     // TODO implement cheat on vps side
@@ -102,187 +104,11 @@ async function renderToStream(
     if (disabled) {
       await readableOriginal.allReady
     }
-    const { readableWrapper, injectToStream: injectToStream_ } = getReadableWrapper(readableOriginal, options)
+    const { readableWrapper, injectToStream: injectToStream_ } = createReadableWrapper(readableOriginal, options)
     readable = readableWrapper
     injectToStream = injectToStream_
     resolve()
   }
 
   return promise
-}
-
-function createBuffer(bufferParams: { debug: boolean; writeChunk: null | ((_chunk: string) => void) }) {
-  const DEBUG = !!bufferParams.debug
-  let state: 'UNSTARTED' | 'STREAMING' | 'ENDED' = 'UNSTARTED'
-  const buffer: string[] = []
-  let writePermission: null | boolean = null // Set to `null` because React fails to hydrate if something is injected before the first react write
-
-  return { injectToStream, onBeforeWrite, onBeforeEnd }
-
-  function onBeforeWrite(chunk: unknown) {
-    DEBUG && state === 'UNSTARTED' && console.log('>>> START')
-    DEBUG && console.log(`react write ${!writePermission ? '' : '(writePermission)'}:`, String(chunk))
-    state = 'STREAMING'
-    if (writePermission) {
-      flushBuffer()
-    }
-    if (writePermission == true || writePermission === null) {
-      writePermission = false
-      DEBUG && console.log('writePermission =', writePermission)
-      setTimeout(() => {
-        DEBUG && console.log('>>> setTimeout()')
-        writePermission = true
-        DEBUG && console.log('writePermission =', writePermission)
-        flushBuffer()
-      })
-    }
-  }
-
-  function onBeforeEnd() {
-    writePermission = true
-    DEBUG && console.log('writePermission =', writePermission)
-    flushBuffer()
-    assert(buffer.length === 0)
-    state = 'ENDED'
-    DEBUG && console.log('>>> END')
-  }
-
-  function injectToStream(chunk: string) {
-    assertUsage(state !== 'ENDED', `Cannot inject following chunk after stream has ended: \`${chunk}\``)
-    DEBUG && console.log('injectToStream:', chunk)
-    buffer.push(chunk)
-    flushBuffer()
-  }
-
-  function flushBuffer() {
-    if (!writePermission) {
-      return
-    }
-    if (buffer.length === 0) {
-      return
-    }
-    if (state !== 'STREAMING') {
-      assert(state === 'UNSTARTED')
-      return
-    }
-    buffer.forEach((chunk) => {
-      const { writeChunk } = bufferParams
-      assert(writeChunk)
-      writeChunk(chunk)
-    })
-    buffer.length = 0
-  }
-}
-
-function getPipeWrapper(pipeOriginal: Pipe, options: { debug?: boolean } = {}) {
-  const pipeWrapper = createPipeWrapper()
-  const bufferParams: {
-    debug: boolean
-    writeChunk: null | ((_chunk: string) => void)
-  } = {
-    debug: !!options.debug,
-    writeChunk: null
-  }
-  const { injectToStream, onBeforeWrite, onBeforeEnd } = createBuffer(bufferParams)
-  return { pipeWrapper, injectToStream }
-
-  function createPipeWrapper(): Pipe {
-    const pipeWrapper: Pipe = (writable: WritableType) => {
-      const { Writable } = loadStreamNodeModule()
-      const writableProxy = new Writable({
-        write(chunk: unknown, encoding, callback) {
-          onBeforeWrite(chunk)
-          writable.write(chunk, encoding, callback)
-        },
-        final(callback) {
-          onBeforeEnd()
-          writable.end()
-          callback()
-        }
-      })
-      bufferParams.writeChunk = (chunk: string) => {
-        writable.write(chunk)
-      }
-      ;(writableProxy as any).flush = () => {
-        if (typeof (writable as any).flush === 'function') {
-          ;(writable as any).flush()
-        }
-      }
-      pipeOriginal(writableProxy)
-    }
-    return pipeWrapper
-  }
-}
-
-type Pipe = (writable: WritableType) => void
-type StreamModule = {
-  Readable: typeof ReadableType
-  Writable: typeof WritableType
-}
-
-function loadStreamNodeModule(): StreamModule {
-  const req = require // bypass static analysis of bundlers
-  const streamModule = req('stream')
-  const { Readable, Writable } = streamModule as StreamModule
-  return { Readable, Writable }
-}
-
-function getReadableWrapper(readableOriginal: ReadableStream, options: { debug?: boolean }) {
-  const bufferParams: {
-    debug: boolean
-    writeChunk: null | ((_chunk: string) => void)
-  } = {
-    debug: !!options.debug,
-    writeChunk: null
-  }
-  let controllerWrapper: ReadableStreamController<any>
-  const readableWrapper = new ReadableStream({
-    start(controller) {
-      controllerWrapper = controller
-      onReady()
-    }
-  })
-  const { injectToStream, onBeforeWrite, onBeforeEnd } = createBuffer(bufferParams)
-  return { readableWrapper, injectToStream }
-
-  async function onReady() {
-    const writeChunk = (bufferParams.writeChunk = (chunk: unknown) => {
-      controllerWrapper.enqueue(encodeForWebStream(chunk))
-    })
-
-    const reader = readableOriginal.getReader()
-
-    while (true) {
-      let result: ReadableStreamDefaultReadResult<any>
-      try {
-        result = await reader.read()
-      } catch (err) {
-        controllerWrapper.close()
-        throw err
-      }
-      const { value, done } = result
-      if (done) {
-        break
-      }
-      onBeforeWrite(value)
-      writeChunk(value)
-    }
-
-    // Collect `injectToStream()` calls stuck in an async call
-    setTimeout(() => {
-      onBeforeEnd()
-      controllerWrapper.close()
-    }, 0)
-  }
-}
-
-let encoder: TextEncoder
-function encodeForWebStream(thing: unknown) {
-  if (!encoder) {
-    encoder = new TextEncoder()
-  }
-  if (typeof thing === 'string') {
-    return encoder.encode(thing)
-  }
-  return thing
 }
