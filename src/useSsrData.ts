@@ -29,12 +29,10 @@ function getHtmlChunk(entry: SsrData): string {
 
 function getSsrData(key: string): { isAvailable: true; value: unknown } | { isAvailable: false } {
   const els = Array.from(window.document.querySelectorAll(`.${className}`))
-  // console.log('querySelectorAll: ', els, els.length)
   for (const el of els) {
     assert(el.textContent)
     const data = parse(el.textContent) as SsrData[]
     for (const entry of data) {
-      // console.log('entry: ', entry)
       assert(typeof entry.key === 'string')
       if (entry.key === key) {
         const { value } = entry
@@ -46,10 +44,8 @@ function getSsrData(key: string): { isAvailable: true; value: unknown } | { isAv
 }
 
 function useSsrData<T>(key: string, asyncFn: () => Promise<T>): T {
-  // console.log('useSsrData', key)
   if (isClientSide()) {
     const ssrData = getSsrData(key)
-    // console.log('ssrData: ', ssrData)
     if (ssrData.isAvailable) {
       return ssrData.value as T
     }

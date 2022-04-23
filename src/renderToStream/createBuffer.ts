@@ -4,12 +4,38 @@ import { assert } from 'vitest'
 import { assertUsage } from '../utils'
 
 function createBuffer(bufferParams: { debug: boolean; writeChunk: null | ((_chunk: string) => void) }) {
-  const DEBUG = !!bufferParams.debug
-  let state: 'UNSTARTED' | 'STREAMING' | 'ENDED' = 'UNSTARTED'
   const buffer: string[] = []
+  let state: 'UNSTARTED' | 'STREAMING' | 'ENDED' = 'UNSTARTED'
   let writePermission: null | boolean = null // Set to `null` because React fails to hydrate if something is injected before the first react write
+  const DEBUG = !!bufferParams.debug
 
   return { injectToStream, onBeforeWrite, onBeforeEnd }
+
+  function injectToStream(chunk: string) {
+    assertUsage(state !== 'ENDED', `Cannot inject following chunk after stream has ended: \`${chunk}\``)
+    DEBUG && console.log('injectToStream:', chunk)
+    buffer.push(chunk)
+    flushBuffer()
+  }
+
+  function flushBuffer() {
+    if (!writePermission) {
+      return
+    }
+    if (buffer.length === 0) {
+      return
+    }
+    if (state !== 'STREAMING') {
+      assert(state === 'UNSTARTED')
+      return
+    }
+    buffer.forEach((chunk) => {
+      const { writeChunk } = bufferParams
+      assert(writeChunk)
+      writeChunk(chunk)
+    })
+    buffer.length = 0
+  }
 
   function onBeforeWrite(chunk: unknown) {
     DEBUG && state === 'UNSTARTED' && console.log('>>> START')
@@ -37,31 +63,5 @@ function createBuffer(bufferParams: { debug: boolean; writeChunk: null | ((_chun
     assert(buffer.length === 0)
     state = 'ENDED'
     DEBUG && console.log('>>> END')
-  }
-
-  function injectToStream(chunk: string) {
-    assertUsage(state !== 'ENDED', `Cannot inject following chunk after stream has ended: \`${chunk}\``)
-    DEBUG && console.log('injectToStream:', chunk)
-    buffer.push(chunk)
-    flushBuffer()
-  }
-
-  function flushBuffer() {
-    if (!writePermission) {
-      return
-    }
-    if (buffer.length === 0) {
-      return
-    }
-    if (state !== 'STREAMING') {
-      assert(state === 'UNSTARTED')
-      return
-    }
-    buffer.forEach((chunk) => {
-      const { writeChunk } = bufferParams
-      assert(writeChunk)
-      writeChunk(chunk)
-    })
-    buffer.length = 0
   }
 }
