@@ -5,7 +5,7 @@
   "main": "./dist/cjs/index.js",
   "dependencies": {
     "@brillout/json-s": "^0.4.5",
-    "isbot-fast": "^1.2.0"
+    "isbot-fast": "1.2.0"
   },
   "scripts": {
     "// === Test ===": "",
