@@ -4,108 +4,86 @@ import React from 'react'
 import { renderToPipeableStream, renderToReadableStream } from 'react-dom/server'
 import { SsrDataProvider } from './useSsrData'
 import { StreamProvider } from './useStream'
-import { assertWarning } from './utils'
-import isBot from 'isbot-fast'
 import { createPipeWrapper, nodeStreamModuleIsAvailable, Pipe } from './renderToStream/createPipeWrapper'
 import { createReadableWrapper } from './renderToStream/createReadableWrapper'
+import { resolveSeoStrategy, SeoStrategy } from './renderToStream/resolveSeoStrategy'
 
-type Return = { pipe: null | Pipe; readable: null | ReadableStream; injectToStream: (chunk: string) => void }
-type SeoStrategy = 'conservative' | 'google-speed'
+type Options = {
+  debug?: boolean
+  webStream?: boolean
+  disabled?: boolean
+  seoStrategy?: SeoStrategy
+  userAgent?: string
+  renderToReadableStream?: typeof renderToReadableStream
+}
+type Result = {
+  pipe: null | Pipe
+  readable: null | ReadableStream
+  injectToStream: (chunk: string) => void
+}
 
-async function renderToStream(
+async function renderToStream(element: React.ReactNode, options: Options = {}): Promise<Result> {
+  element = React.createElement(SsrDataProvider, null, element)
+  let injectToStream: (chunk: string) => void
+  element = React.createElement(
+    StreamProvider,
+    { value: { injectToStream: (chunk: string) => injectToStream(chunk) } },
+    element
+  )
+
+  const disabled = options.disabled ?? resolveSeoStrategy(options).disableStream
+  const webStream = options.webStream ?? !nodeStreamModuleIsAvailable()
+  if (!webStream) {
+    const result = await renderToNodeStream(element, disabled, options)
+    injectToStream = result.injectToStream
+    return result
+  } else {
+    const result = await renderToWebStream(element, disabled, options)
+    injectToStream = result.injectToStream
+    return result
+  }
+}
+
+async function renderToNodeStream(
   element: React.ReactNode,
-  options: {
-    debug?: boolean
-    webStream?: boolean
-    disabled?: boolean
-    seoStrategy?: SeoStrategy
-    userAgent?: string
-    renderToReadableStream?: typeof renderToReadableStream
-  } = {}
-): Promise<Return> {
-  let reject!: (err: unknown) => void
+  disabled: boolean,
+  options: { renderToReadableStream?: typeof renderToReadableStream; debug?: boolean }
+) {
   let resolve!: () => void
-  let resolved = false
-  const promise = new Promise<Return>((resolve_, reject_) => {
-    resolve = () => {
-      if (resolved) return
-      resolved = true
-      resolve_({ pipe, readable, injectToStream })
-    }
-    reject = (err: unknown) => {
-      if (resolved) return
-      resolved = true
-      reject_(err)
+  const promise = new Promise<void>((r) => {
+    resolve = () => r()
+  })
+  const { pipe: pipeOriginal } = renderToPipeableStream(element, {
+    onAllReady() {
+      resolve()
+    },
+    onShellReady() {
+      if (!disabled) {
+        resolve()
+      }
     }
   })
-
-  const seoStrategy: SeoStrategy = options.seoStrategy || 'conservative'
-  const disabled =
-    options.disabled ??
-    (() => {
-      if (!options.userAgent) {
-        assertWarning(
-          false,
-          'Streaming disabled. Provide `options.userAgent` to enable streaming. (react-streaming needs the User Agent string in order to be able to disable streaming for bots, e.g. for Google Bot.) Or set `options.disabled` to `true` to get rid of this warning.'
-        )
-        return true
-      }
-      // https://github.com/omrilotan/isbot
-      // https://github.com/mahovich/isbot-fast
-      // https://stackoverflow.com/questions/34647657/how-to-detect-web-crawlers-for-seo-using-express/68869738#68869738
-      if (!isBot(options.userAgent)) {
-        return false
-      }
-      const isGoogleBot = options.userAgent.toLowerCase().includes('googlebot')
-      if (seoStrategy === 'google-speed' && isGoogleBot) {
-        return false
-      }
-      return true
-    })()
-  // options.debug = true
-  const webStream = options.webStream ?? !nodeStreamModuleIsAvailable()
-
-  const onError = (err: unknown) => {
-    reject(err)
+  const { pipeWrapper, injectToStream } = createPipeWrapper(pipeOriginal, options)
+  await promise
+  return {
+    pipe: pipeWrapper,
+    readable: null,
+    injectToStream
   }
-
-  const streamUtils = { injectToStream: (chunk: string) => injectToStream(chunk) }
-
-  element = React.createElement(StreamProvider, { value: streamUtils }, element)
-  element = React.createElement(SsrDataProvider, null, element)
-
-  let pipe: null | Pipe = null
-  let readable: null | ReadableStream = null
-  let injectToStream: (chunk: string) => void
-
-  if (!webStream) {
-    const { pipe: pipeOriginal } = renderToPipeableStream(element, {
-      onAllReady() {
-        resolve()
-      },
-      onShellReady() {
-        if (!disabled) {
-          resolve()
-        }
-      },
-      onShellError: onError,
-      onError
-    })
-    const { pipeWrapper, injectToStream: injectToStream_ } = createPipeWrapper(pipeOriginal, options)
-    pipe = pipeWrapper
-    injectToStream = injectToStream_
-  } else {
-    const readableOriginal = await (options.renderToReadableStream ?? renderToReadableStream)(element, {
-      onError
-    })
-    if (disabled) {
-      await readableOriginal.allReady
-    }
-    const { readableWrapper, injectToStream: injectToStream_ } = createReadableWrapper(readableOriginal, options)
-    readable = readableWrapper
-    injectToStream = injectToStream_
-    resolve()
+}
+async function renderToWebStream(
+  element: React.ReactNode,
+  disabled: boolean,
+  options: { renderToReadableStream?: typeof renderToReadableStream; debug?: boolean }
+) {
+  const readableOriginal = await (options.renderToReadableStream ?? renderToReadableStream)(element)
+  if (disabled) {
+    await readableOriginal.allReady
   }
-
-  return promise
+  const { readableWrapper, injectToStream } = createReadableWrapper(readableOriginal, options)
+  return {
+    readable: readableWrapper,
+    pipe: null,
+    injectToStream
+  }
 }
