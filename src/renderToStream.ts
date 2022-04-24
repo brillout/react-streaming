@@ -91,12 +91,9 @@ async function renderToStream(
       onShellError: onError,
       onError
     })
-
     const { pipeWrapper, injectToStream: injectToStream_ } = createPipeWrapper(pipeOriginal, options)
     pipe = pipeWrapper
     injectToStream = injectToStream_
-    // TODO implement cheat on vps side
-    ;(pipe as any).injectToStream = injectToStream
   } else {
     const readableOriginal = await (options.renderToReadableStream ?? renderToReadableStream)(element, {
       onError
