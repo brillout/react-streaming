@@ -54,10 +54,10 @@ async function renderToNodeStream(
     resolve = () => r()
   })
   let didError = false
-  let fistError: unknown = null
+  let firstErr: unknown = null
   const onError = (err: unknown) => {
     didError = true
-    fistError = fistError || err
+    firstErr = firstErr || err
     resolve()
   }
   const { pipe: pipeOriginal } = renderToPipeableStream(element, {
@@ -78,7 +78,7 @@ async function renderToNodeStream(
   })
   await promise
   if (didError) {
-    throw fistError
+    throw firstErr
   }
   return {
     pipe: pipeWrapper,
@@ -91,9 +91,21 @@ async function renderToWebStream(
   disabled: boolean,
   options: { renderToReadableStream?: typeof renderToReadableStream; debug?: boolean }
 ) {
-  const readableOriginal = await (options.renderToReadableStream ?? renderToReadableStream)(element)
+  let didError = false
+  let firstErr: unknown = null
+  const onError = (err: unknown) => {
+    didError = true
+    firstErr = firstErr || err
+  }
+  const readableOriginal = await (options.renderToReadableStream ?? renderToReadableStream)(element, { onError })
+  if (didError) {
+    throw firstErr
+  }
   if (disabled) {
     await readableOriginal.allReady
+  }
+  if (didError) {
+    throw firstErr
   }
   const { readableWrapper, injectToStream } = createReadableWrapper(readableOriginal, options)
   return {

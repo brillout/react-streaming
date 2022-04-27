@@ -34,16 +34,19 @@ describe('error handling', async () => {
       expect(data.content).toBe('')
     })
   })
-  ;(['node' /*'web'*/] as const).forEach((streamType: 'node' | 'web') => {
+  ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`throw Error() in compoment - ${streamType} stream`, async () => {
       const App = (() => {
         throw new Error('some-error')
       }) as any
+      let didError = false
       try {
         await render(<App />, { streamType })
       } catch (err) {
+        didError = true
         expect(err.message).toBe('some-error')
       }
+      expect(didError).toBe(true)
     })
   })
 })
