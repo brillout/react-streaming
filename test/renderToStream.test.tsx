@@ -3,12 +3,13 @@ import React from 'react'
 import { Page } from './Page'
 import { assertUsage } from '../src/utils'
 import { render } from './render'
+import { onConsoleError } from './onConsoleError'
 
-// These warnings are expected:
-// >
-// > Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.
-// >
-// See https://github.com/facebook/react/pull/22797
+onConsoleError((errMsg) => {
+  // https://github.com/facebook/react/pull/22797
+  if( errMsg.includes('Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.') )
+  return { suppress: true }
+})
 
 assertUsage(
   typeof ReadableStream !== 'undefined',
