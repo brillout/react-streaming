@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { render } from './render'
 import { onConsoleError } from './onConsoleError'
-import React from 'react'
+import React, { Suspense } from 'react'
+import { useAsync } from '../src/index'
 
 describe('error handling', async () => {
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
@@ -47,6 +48,39 @@ describe('error handling', async () => {
         expect(err.message).toBe('some-error')
       }
       expect(didError).toBe(true)
+    })
+  })
+  ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
+    it(`throw Error() after suspense boundary - ${streamType} stream`, async () => {
+      const LazyComponent = () => {
+        useAsync(
+          () =>
+            new Promise<string>((resolve) => {
+              setTimeout(() => resolve('Hello, I was lazy.'), 100)
+            })
+        )
+        throw new Error('some-error')
+      }
+      const Page = (() => {
+        return (
+          <Suspense fallback={<p>Loading...</p>}>
+            <LazyComponent />
+          </Suspense>
+        )
+      }) as any
+      // React swallows the error, and retries to resolve the suspense on the cient-side
+      const { data, streamEnded } = await render(<Page />, { streamType })
+      await streamEnded
+      expect(data.content).toBe(
+        [
+          // Page Shell
+          '<!--$?--><template id="B:0"></template><p>Loading...</p><!--/$-->',
+          // `useAsync()` script injection
+          '<script class="react-streaming_ssr-data" type="application/json">[{"key":":R0:","value":"Hello, I was lazy."}]</script>',
+          // React telling the client-side to re-try
+          '<script>function $RX(a){if(a=document.getElementById(a))a=a.previousSibling,a.data="$!",a._reactRetry&&a._reactRetry()};$RX("B:0")</script>'
+        ].join('')
+      )
     })
   })
 })
