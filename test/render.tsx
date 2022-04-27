@@ -3,6 +3,18 @@ export { render }
 import { renderToStream } from '../src/renderToStream'
 import { renderToReadableStream } from 'react-dom/server.browser'
 import { Writable } from 'stream'
+import { onConsoleError } from './onConsoleError'
+
+onConsoleError((errMsg) => {
+  // https://github.com/facebook/react/pull/22797
+  if (
+    errMsg.includes(
+      'Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.'
+    )
+  ) {
+    return { suppress: true }
+  }
+})
 
 const userAgent =
   'Mozilla/5.0 (X11; CrOS x86_64 14469.58.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.86 Safari/537.36'

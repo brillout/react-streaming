@@ -3,13 +3,6 @@ import React from 'react'
 import { Page } from './Page'
 import { assertUsage } from '../src/utils'
 import { render } from './render'
-import { onConsoleError } from './onConsoleError'
-
-onConsoleError((errMsg) => {
-  // https://github.com/facebook/react/pull/22797
-  if( errMsg.includes('Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.') )
-  return { suppress: true }
-})
 
 assertUsage(
   typeof ReadableStream !== 'undefined',
@@ -17,29 +10,23 @@ assertUsage(
 )
 
 describe('renderToStream()', async () => {
-  const testBasic = (streamType: 'node' | 'web') => {
-    return async () => {
+  ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
+    it(`basic - ${streamType} Stream`, async () => {
       const { data, endPromise } = await render(<div>hello</div>, { streamType })
       await endPromise
       expect(data.content).toBe('<div>hello</div>')
-    }
-  }
-  it('basic - Node.js Stream', testBasic('node'))
-  it('basic - Web Stream', testBasic('web'))
-
-  const testInjectToStream = (streamType: 'node' | 'web') => {
-    return async () => {
+    })
+  })
+  ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
+    it(`injectToStream - basic - ${streamType} stream`, async () => {
       const { data, endPromise, injectToStream } = await render(<>hi</>, { streamType })
       injectToStream('<script type="module" src="/main.js"></script>')
       await endPromise
       expect(data.content).toBe('hi<!-- --><script type="module" src="/main.js"></script>')
-    }
-  }
-  it('injectToStream - basic - Node.js Stream', testInjectToStream('node'))
-  it('injectToStream - basic - Web Stream', testInjectToStream('web'))
-
-  const testUseAsync = (streamType: 'node' | 'web') => {
-    return async () => {
+    })
+  })
+  ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
+    it(`injectToStream - useAsync() - ${streamType} stream`, async () => {
       const { data, endPromise, injectToStream } = await render(<Page />, { streamType })
       injectToStream('<script type="module" src="/main.js"></script>')
 
@@ -76,8 +63,6 @@ describe('renderToStream()', async () => {
           '<div hidden id="S:0"><p>Hello, I was lazy.</p></div><script>function $RC(a,b){a=document.getElementById(a);b=document.getElementById(b);b.parentNode.removeChild(b);if(a){a=a.previousSibling;var f=a.parentNode,c=a.nextSibling,e=0;do{if(c&&8===c.nodeType){var d=c.data;if("/$"===d)if(0===e)break;else e--;else"$"!==d&&"$?"!==d&&"$!"!==d||e++}d=c.nextSibling;f.removeChild(c);c=d}while(c);for(;b.firstChild;)f.insertBefore(b.firstChild,c);a.data="$";a._reactRetry&&a._reactRetry()}};$RC("B:0","S:0")</script>'
         ].join('')
       )
-    }
-  }
-  it('injectToStream - useAsync() - Node.js Stream', testUseAsync('node'))
-  it('injectToStream - useAsync() - Web Stream', testUseAsync('web'))
+    })
+  })
 })
