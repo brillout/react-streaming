@@ -1,6 +1,6 @@
 <p align="center">
   <a href="/../../#readme">
-    <img src="/images/logo.svg" height="145" alt="React Streaming"/>
+    <img src="https://raw.githubusercontent.com/brillout/react-streaming/master/images/logo.svg" height="145" alt="React Streaming"/>
   </a>
 </p>
 
