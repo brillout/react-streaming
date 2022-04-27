@@ -1,6 +1,12 @@
+<p align="center">
+  <a href="/../../#readme">
+    <img src="/images/logo.svg" height="145" alt="React Streaming"/>
+  </a>
+</p>
+
 # `react-streaming`
 
-> React 18 Streaming. Made fully-fledged & easy.
+> React 18 Streaming. Full-fledged & Easy.
 
 <b>Contents</b>
 
@@ -15,8 +21,9 @@ Features (for React users):
 
 - Unlocks `<Suspsense>` for SSR apps.
 - Unlocks React libraries of tomorrow. (Such as using [Telefunc](https://telefunc.com/) for data fetching.)
-- Supports all platforms (Vercel, Cloudflare Workers, AWS, Netlify Edge, Deno, Deploy, ...).
+- Supports all platforms (Vercel, Cloudflare Workers, AWS, Netlify Edge, Deno Deploy, ...).
 - Two SEO strategies: `conservative` or `google-speed`.
+- Easy error handling.
 - **Bonus**: new `useAsync()` hook.
 
 Features (for library authors):
@@ -28,7 +35,6 @@ Easy:
 
 ```jsx
 import { renderToStream } from 'react-streaming/server'
-
 const {
   pipe, // Node.js (Vercel, AWS)
   readable // Edge Platforms (Coudflare Workers, Netlify Edge, Deno Deploy)
@@ -63,8 +69,6 @@ The solution: `react-streaming`.
 
    ```jsx
    import { renderToStream } from 'react-streaming/server'
-
-   // Cross-platform
    const {
      pipe, // Defined if running in Node.js, otherwise `null`
      readable // Defined if running in Edge Platforms (.e.g. Coudflare Workers), otherwise `null`
@@ -85,10 +89,10 @@ The solution: `react-streaming`.
 ### Options
 
 - `options.disable?: boolean`: Disable streaming.
-  > The component is still rendered to a stream, but the promise `const promise = await renderTo...` resolves only after the stream has finished. (This effectively disables streaming from a user perspective, while unlocking React 18 Streaming capabilities such as SSR `<Supsense>`.)
+  > `<Page>` is still rendered to a stream, but the promise `const promise = renderToStream()` resolves only after the stream has finished. (This effectively disables streaming from a user perspective, while unlocking React 18 Streaming capabilities such as SSR `<Supsense>`.)
 - `options.seoStrategy?: 'conservative' | 'google-speed'`
 
-  - `conservative` (default): Disable streaming if the HTTP request originates from a bot. (Ensuring the bot always sees the whole HTML.)
+  - `conservative` (default): Disable streaming if the HTTP request originates from a bot. (Ensuring bots to always see the whole HTML.)
   - `google-speed`: Don't disable streaming for the Google Bot.
     - Pro: Google ranks your website higher because the initial HTTP response is faster. (To be researched.)
     - Con: Google will likely not wait for the whole HTML, and therefore not see it. (To be tested.)
@@ -103,11 +107,28 @@ The solution: `react-streaming`.
       isBot(userAgent) &&
       !['googlebot', 'some-other-bot'].some(n => userAgent.toLowerCase().includes(n))
 
-    const stream = await renderToStream(<Page />, { disable })
+    await renderToStream(<Page />, { disable })
     ```
 
 - `options.userAgent?: string`: The HTTP User-Agent request header. (Needed for `options.seoStrategy`.)
 - `options.webStream?: boolean`: Use Web Streams instead of Node.js Streams in Node.js. ([Node.js 18 released Web Streams support](https://nodejs.org/en/blog/announcements/v18-release-announce/#web-streams-api-experimental).)
+
+### Error Handling
+
+If an error occurs at the beginning of the stream then `await renderToStream()` rejects with the error.
+
+```js
+try {
+  await renderToStream(<Page />)
+  // ✅ page shell succesfully rendered and is ready in the stream buffer.
+} catch(err) {
+  // ❌ something went wrong while rendering the page shell.
+}
+```
+
+Technically speaking, the page shell is composed of all components that are outside a `<Suspsense>` boundary.
+
+If an error occurs later in the stream (i.e. a suspense boundary fails), then React swallows the error on the server-side and retries to resolve the suspense boundary on the client-side. If the `<Suspsense>` fails again on the client-side, then the client-side throws the error.
 
 ### Bonus: `useAsync()`
 
@@ -172,11 +193,11 @@ import { useSsrData } from 'react-streaming'
 function SomeComponent() {
   const key = 'some-unique-key'
   const someAsyncFunc = async function () {
-    return 'someData'
+    const value = 'someData'
+    return value
   }
   // `useSsrData()` suspends rendering until the promise returned by `someAsyncFunc()` resolves.
   const value = useSsrData(key, someAsyncFunc)
-  // `value` is the value returned by `someAsyncFunc()`.
   assert(value === 'someData')
 }
 ```
