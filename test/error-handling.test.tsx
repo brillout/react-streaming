@@ -5,7 +5,7 @@ import React from 'react'
 
 describe('error handling', async () => {
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
-    it(`renderToStream(App) instead of renderToStream(<App/>) - ${streamType} stream`, async () => {
+    it(`renderToStream(Page) instead of renderToStream(<Page/>) - ${streamType} stream`, async () => {
       let warning = false
       onConsoleError((arg) => {
         if (
@@ -18,8 +18,8 @@ describe('error handling', async () => {
           return { suppress: true, removeListener: true }
         }
       })
-      const App = (() => {}) as any
-      const { data, endPromise } = await render(App, { streamType })
+      const Page = (() => {}) as any
+      const { data, endPromise } = await render(Page, { streamType })
       await endPromise
       // Seems like a React bug. Seems like React closes the stream without invoking one of its error hooks.
       expect(data.content).toBe('')
@@ -27,21 +27,21 @@ describe('error handling', async () => {
     })
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
-    it(`Empty App - ${streamType} stream`, async () => {
-      const App = (() => {}) as any
-      const { data, endPromise } = await render(<App />, { streamType })
+    it(`Empty Page - ${streamType} stream`, async () => {
+      const Page = (() => {}) as any
+      const { data, endPromise } = await render(<Page />, { streamType })
       await endPromise
       expect(data.content).toBe('')
     })
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`throw Error() in compoment - ${streamType} stream`, async () => {
-      const App = (() => {
+      const Page = (() => {
         throw new Error('some-error')
       }) as any
       let didError = false
       try {
-        await render(<App />, { streamType })
+        await render(<Page />, { streamType })
       } catch (err) {
         didError = true
         expect(err.message).toBe('some-error')
