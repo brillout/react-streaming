@@ -1,13 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import React from 'react'
 import { Page } from './Page'
-import { assertUsage } from '../src/utils'
 import { render } from './render'
-
-assertUsage(
-  typeof ReadableStream !== 'undefined',
-  'Cannot run test suite. Because Web Streams are not available. Use a Node.js version that supports Web Streams, such as Node.js 18.'
-)
 
 describe('renderToStream()', async () => {
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {

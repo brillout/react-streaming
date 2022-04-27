@@ -4,6 +4,12 @@ import { renderToStream } from '../src/renderToStream'
 import { renderToReadableStream } from 'react-dom/server.browser'
 import { Writable } from 'stream'
 import { onConsoleError } from './onConsoleError'
+import { assertUsage } from '../src/utils'
+
+assertUsage(
+  typeof ReadableStream !== 'undefined',
+  'Cannot run test suite. Because Web Streams are not available. Use a Node.js version that supports Web Streams, such as Node.js 18.'
+)
 
 onConsoleError((errMsg) => {
   // https://github.com/facebook/react/pull/22797
