@@ -29,9 +29,9 @@ const userAgent =
 async function render(element: React.ReactNode, { streamType }: { streamType: 'web' | 'node' }) {
   if (streamType === 'node') {
     const { pipe, injectToStream } = await renderToStream(element, { userAgent })
-    const { writable, endPromise, data } = createWritable()
+    const { writable, streamEnded, data } = createWritable()
     pipe(writable)
-    return { data, endPromise, injectToStream }
+    return { data, streamEnded, injectToStream }
   }
   if (streamType === 'web') {
     const { readable, injectToStream } = await renderToStream(element, {
@@ -39,9 +39,9 @@ async function render(element: React.ReactNode, { streamType }: { streamType: 'w
       renderToReadableStream,
       userAgent
     })
-    const { writable, endPromise, data } = createWebWritable()
+    const { writable, streamEnded, data } = createWebWritable()
     readable.pipeTo(writable)
-    return { data, endPromise, injectToStream }
+    return { data, streamEnded, injectToStream }
   }
 }
 
@@ -50,7 +50,7 @@ function createWritable() {
     content: ''
   }
   let onEnded: () => void
-  const endPromise = new Promise((r) => (onEnded = () => r(undefined)))
+  const streamEnded = new Promise((r) => (onEnded = () => r(undefined)))
   const writable = new Writable({
     write(chunk, _encoding, callback) {
       data.content += chunk
@@ -61,7 +61,7 @@ function createWritable() {
       callback()
     }
   })
-  return { writable, data, endPromise }
+  return { writable, data, streamEnded }
 }
 
 function createWebWritable() {
@@ -69,7 +69,7 @@ function createWebWritable() {
     content: ''
   }
   let onEnded: () => void
-  const endPromise = new Promise((r) => (onEnded = () => r(undefined)))
+  const streamEnded = new Promise((r) => (onEnded = () => r(undefined)))
   const writable = new WritableStream({
     write(chunk) {
       chunk = decodeChunk(chunk)
@@ -79,7 +79,7 @@ function createWebWritable() {
       onEnded()
     }
   })
-  return { writable, data, endPromise }
+  return { writable, data, streamEnded }
 }
 
 let decoder: TextDecoder

@@ -6,22 +6,22 @@ import { render } from './render'
 describe('renderToStream()', async () => {
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`basic - ${streamType} Stream`, async () => {
-      const { data, endPromise } = await render(<div>hello</div>, { streamType })
-      await endPromise
+      const { data, streamEnded } = await render(<div>hello</div>, { streamType })
+      await streamEnded
       expect(data.content).toBe('<div>hello</div>')
     })
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`injectToStream - basic - ${streamType} stream`, async () => {
-      const { data, endPromise, injectToStream } = await render(<>hi</>, { streamType })
+      const { data, streamEnded, injectToStream } = await render(<>hi</>, { streamType })
       injectToStream('<script type="module" src="/main.js"></script>')
-      await endPromise
+      await streamEnded
       expect(data.content).toBe('hi<!-- --><script type="module" src="/main.js"></script>')
     })
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`injectToStream - useAsync() - ${streamType} stream`, async () => {
-      const { data, endPromise, injectToStream } = await render(<Page />, { streamType })
+      const { data, streamEnded, injectToStream } = await render(<Page />, { streamType })
       injectToStream('<script type="module" src="/main.js"></script>')
 
       let timeoutResolved = false
@@ -31,7 +31,7 @@ describe('renderToStream()', async () => {
       }, 5)
 
       expect(timeoutResolved).toBe(false)
-      await endPromise
+      await streamEnded
       expect(timeoutResolved).toBe(true)
 
       try {

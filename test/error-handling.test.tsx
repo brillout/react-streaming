@@ -19,8 +19,8 @@ describe('error handling', async () => {
         }
       })
       const Page = (() => {}) as any
-      const { data, endPromise } = await render(Page, { streamType })
-      await endPromise
+      const { data, streamEnded } = await render(Page, { streamType })
+      await streamEnded
       // Seems like a React bug. Seems like React closes the stream without invoking one of its error hooks.
       expect(data.content).toBe('')
       expect(warning).toBe(true)
@@ -29,8 +29,8 @@ describe('error handling', async () => {
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`Empty Page - ${streamType} stream`, async () => {
       const Page = (() => {}) as any
-      const { data, endPromise } = await render(<Page />, { streamType })
-      await endPromise
+      const { data, streamEnded } = await render(<Page />, { streamType })
+      await streamEnded
       expect(data.content).toBe('')
     })
   })
