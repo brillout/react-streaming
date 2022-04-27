@@ -7,10 +7,11 @@ describe('error handling', async () => {
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`renderToStream(App) instead of renderToStream(<App/>) - ${streamType} stream`, async () => {
       let warning = false
-      onConsoleError((errMsg) => {
+      onConsoleError((arg) => {
         if (
-          errMsg.includes(
-            'Warning: Functions are not valid as a React child. This may happen if you return a Component instead of <Component /> from render. Or maybe you meant to call this function rather than return it'
+          typeof arg === 'string' &&
+          arg.startsWith(
+            'Warning: Functions are not valid as a React child. This may happen if you return a Component instead of <Component /> from render. Or maybe you meant to call this function rather than return it.'
           )
         ) {
           warning = true
@@ -33,12 +34,14 @@ describe('error handling', async () => {
       expect(data.content).toBe('')
     })
   })
-  ;(['node'/*, 'web'*/] as const).forEach((streamType: 'node' | 'web') => {
+  ;(['node' /*'web'*/] as const).forEach((streamType: 'node' | 'web') => {
     it(`throw Error() in compoment - ${streamType} stream`, async () => {
-      const App = (() => {throw new Error('some-error')}) as any
+      const App = (() => {
+        throw new Error('some-error')
+      }) as any
       try {
         await render(<App />, { streamType })
-      } catch(err) {
+      } catch (err) {
         expect(err.message).toBe('some-error')
       }
     })

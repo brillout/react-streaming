@@ -3,22 +3,25 @@ export { onConsoleError }
 import { afterEach, expect, vi } from 'vitest'
 
 afterEach(() => {
-  expect(loggedErrMsgs).toEqual([])
+  try {
+    expect(loggedErrMsgs).toEqual([])
+  } finally {
+    loggedErrMsgs.length = 0
+  }
 })
 
-type Listener = (errMsg: string) => undefined | { suppress?: true; removeListener?: true }
+type Listener = (...args: unknown[]) => undefined | { suppress?: true; removeListener?: true }
 let listeners: Listener[] = []
 function onConsoleError(listener: Listener) {
   listeners.push(listener)
 }
 
-const loggedErrMsgs: string[] = []
+const loggedErrMsgs: unknown[] = []
 const consoleErrorOriginal = console.error
-vi.spyOn(console, 'error').mockImplementation((...args: string[]) => {
-  const [errMsg] = args
+vi.spyOn(console, 'error').mockImplementation((...args: unknown[]) => {
   let supress = false
   listeners.forEach((listener) => {
-    const ret = listener(errMsg)
+    const ret = listener(...args)
     if (ret?.removeListener) {
       listeners = listeners.filter((l) => l !== listener)
     }
@@ -27,7 +30,7 @@ vi.spyOn(console, 'error').mockImplementation((...args: string[]) => {
     }
   })
   if (!supress) {
-    loggedErrMsgs.push(errMsg)
+    loggedErrMsgs.push(...args)
     consoleErrorOriginal.apply(console, args)
   }
 })

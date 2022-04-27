@@ -11,10 +11,11 @@ assertUsage(
   'Cannot run test suite. Because Web Streams are not available. Use a Node.js version that supports Web Streams, such as Node.js 18.'
 )
 
-onConsoleError((errMsg) => {
+onConsoleError((arg) => {
   // https://github.com/facebook/react/pull/22797
   if (
-    errMsg.includes(
+    typeof arg === 'string' &&
+    arg.startsWith(
       'Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.'
     )
   ) {
