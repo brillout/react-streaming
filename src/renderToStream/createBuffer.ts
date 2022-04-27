@@ -2,7 +2,7 @@ export { createBuffer }
 
 import { assert, assertUsage } from '../utils'
 
-function createBuffer(bufferParams: { debug: boolean; writeChunk: null | ((_chunk: string) => void) }) {
+function createBuffer(bufferParams: { debug?: boolean; writeChunk: null | ((_chunk: string) => void) }) {
   const buffer: string[] = []
   let state: 'UNSTARTED' | 'STREAMING' | 'ENDED' = 'UNSTARTED'
   let writePermission: null | boolean = null // Set to `null` because React fails to hydrate if something is injected before the first react write

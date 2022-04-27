@@ -5,10 +5,10 @@ export type { Pipe }
 import type { Readable as ReadableType, Writable as WritableType } from 'stream'
 import { createBuffer } from './createBuffer'
 
-function createPipeWrapper(pipeOriginal: Pipe, { debug, onError }: { debug?: boolean; onError: (err: Error) => void }) {
+function createPipeWrapper(pipeOriginal: Pipe, { debug, onError }: { debug?: boolean; onError: (err: unknown) => void }) {
   const pipeWrapper = createPipeWrapper()
   const bufferParams: {
-    debug: boolean
+    debug?: boolean
     writeChunk: null | ((_chunk: string) => void)
   } = {
     debug,
