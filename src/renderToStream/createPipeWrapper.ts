@@ -5,13 +5,13 @@ export type { Pipe }
 import type { Readable as ReadableType, Writable as WritableType } from 'stream'
 import { createBuffer } from './createBuffer'
 
-function createPipeWrapper(pipeOriginal: Pipe, options: { debug?: boolean } = {}) {
+function createPipeWrapper(pipeOriginal: Pipe, { debug, onError }: { debug?: boolean; onError: (err: Error) => void }) {
   const pipeWrapper = createPipeWrapper()
   const bufferParams: {
     debug: boolean
     writeChunk: null | ((_chunk: string) => void)
   } = {
-    debug: !!options.debug,
+    debug,
     writeChunk: null
   }
   const { injectToStream, onBeforeWrite, onBeforeEnd } = createBuffer(bufferParams)
@@ -29,6 +29,10 @@ function createPipeWrapper(pipeOriginal: Pipe, options: { debug?: boolean } = {}
           onBeforeEnd()
           writable.end()
           callback()
+        },
+        // If we don't define `destroy()`, then Node.js will `process.exit()`
+        destroy(err) {
+          onError(err)
         }
       })
       bufferParams.writeChunk = (chunk: string) => {

@@ -53,6 +53,13 @@ async function renderToNodeStream(
   const promise = new Promise<void>((r) => {
     resolve = () => r()
   })
+  let didError = false
+  let fistError: unknown = null
+  const onError = (err: unknown) => {
+    didError = true
+    fistError = fistError || err
+    resolve()
+  }
   const { pipe: pipeOriginal } = renderToPipeableStream(element, {
     onAllReady() {
       resolve()
@@ -61,10 +68,18 @@ async function renderToNodeStream(
       if (!disabled) {
         resolve()
       }
-    }
+    },
+    onError,
+    onShellError: onError
   })
-  const { pipeWrapper, injectToStream } = createPipeWrapper(pipeOriginal, options)
+  const { pipeWrapper, injectToStream } = createPipeWrapper(pipeOriginal, {
+    debug: options.debug,
+    onError
+  })
   await promise
+  if (didError) {
+    throw fistError
+  }
   return {
     pipe: pipeWrapper,
     readable: null,
