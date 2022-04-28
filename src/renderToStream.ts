@@ -19,6 +19,7 @@ type Options = {
   seoStrategy?: SeoStrategy
   userAgent?: string
   renderToReadableStream?: typeof renderToReadableStream
+  renderToPipeableStream?: typeof renderToPipeableStream
 }
 type Result = {
   pipe: null | Pipe
@@ -51,7 +52,11 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
 async function renderToNodeStream(
   element: React.ReactNode,
   disabled: boolean,
-  options: { renderToReadableStream?: typeof renderToReadableStream; debug?: boolean }
+  options: {
+    debug?: boolean
+    renderToReadableStream?: typeof renderToReadableStream
+    renderToPipeableStream?: typeof renderToPipeableStream
+  }
 ) {
   let resolve!: () => void
   const promise = new Promise<void>((r) => {
@@ -64,7 +69,9 @@ async function renderToNodeStream(
     firstErr = firstErr || err
     resolve()
   }
-  const { pipe: pipeOriginal } = renderToPipeableStream(element, {
+  const renderToPipeableStream_ = options.renderToPipeableStream ?? renderToPipeableStream
+  assertReactImport(renderToPipeableStream_, 'renderToPipeableStream')
+  const { pipe: pipeOriginal } = renderToPipeableStream_(element, {
     onAllReady() {
       resolve()
     },
@@ -101,7 +108,9 @@ async function renderToWebStream(
     didError = true
     firstErr = firstErr || err
   }
-  const readableOriginal = await (options.renderToReadableStream ?? renderToReadableStream)(element, { onError })
+  const renderToReadableStream_ = options.renderToReadableStream ?? renderToReadableStream
+  assertReactImport(renderToReadableStream_, 'renderToReadableStream')
+  const readableOriginal = await renderToReadableStream_(element, { onError })
   if (didError) {
     throw firstErr
   }
@@ -126,4 +135,15 @@ function assertReact() {
     `React version ${reactVersion} was loaded, but react-streaming only works with React version 18 or greater.`
   )
   assert(typeof renderToPipeableStream === 'function' || typeof renderToReadableStream === 'function')
+}
+function assertReactImport(fn: unknown, fnName: string) {
+  assertUsage(
+    fn,
+    [
+      'Your environment seems broken.',
+      `(Could not import \`${fnName}\` from \`react-dom/server\`).`,
+      'Create a new GitHub issue at https://github.com/brillout/react-streaming to discuss a solution.'
+    ].join(' ')
+  )
+  assert(typeof fn === 'function')
 }
