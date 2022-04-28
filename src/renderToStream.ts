@@ -1,7 +1,7 @@
 export { renderToStream }
 
 import React from 'react'
-import { renderToPipeableStream, renderToReadableStream, version as reactVersion } from 'react-dom/server'
+import { renderToPipeableStream, renderToReadableStream, version as reactDomVersion } from 'react-dom/server'
 import { SsrDataProvider } from './useSsrData'
 import { StreamProvider } from './useStream'
 import { createPipeWrapper, Pipe } from './renderToStream/createPipeWrapper'
@@ -129,10 +129,10 @@ async function renderToWebStream(
 }
 
 function assertReact() {
-  const reactVersionMajor = parseInt(reactVersion.split('.')[0], 10)
+  const versionMajor = parseInt(reactDomVersion.split('.')[0], 10)
   assertUsage(
-    reactVersionMajor >= 18,
-    `React version ${reactVersion} was loaded, but react-streaming only works with React version 18 or greater.`
+    versionMajor >= 18,
+    `\`react-dom@${reactDomVersion}\` was loaded, but react-streaming only works with React version 18 or greater.`
   )
   assert(typeof renderToPipeableStream === 'function' || typeof renderToReadableStream === 'function')
 }
