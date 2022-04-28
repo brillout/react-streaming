@@ -18,7 +18,6 @@ async function nodeStreamModuleIsAvailable(): Promise<boolean> {
     await loadStreamModule()
     return true
   } catch (err) {
-    console.log(err)
     return false
   }
 }
