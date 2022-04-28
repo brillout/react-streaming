@@ -21,9 +21,16 @@ type Options = {
   renderToReadableStream?: typeof renderToReadableStream
   renderToPipeableStream?: typeof renderToPipeableStream
 }
-type Result = {
-  pipe: null | Pipe
-  readable: null | ReadableStream
+type Result = (
+  | {
+      pipe: Pipe
+      readable: null
+    }
+  | {
+      pipe: null
+      readable: ReadableStream
+    }
+) & {
   injectToStream: (chunk: string) => void
 }
 
