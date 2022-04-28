@@ -1,11 +1,17 @@
 export { createPipeWrapper }
-export { nodeStreamModuleIsAvailable }
 export type { Pipe }
 
-import type { Readable as ReadableType, Writable as WritableType } from 'stream'
+import type { Writable as StreamNodeWritable } from 'stream'
 import { createBuffer } from './createBuffer'
+import { loadNodeStreamModule } from './loadNodeStreamModule'
 
-function createPipeWrapper(pipeOriginal: Pipe, { debug, onError }: { debug?: boolean; onError: (err: unknown) => void }) {
+type Pipe = (writable: StreamNodeWritable) => void
+
+async function createPipeWrapper(
+  pipeOriginal: Pipe,
+  { debug, onError }: { debug?: boolean; onError: (err: unknown) => void }
+) {
+  const { Writable } = await loadNodeStreamModule()
   const pipeWrapper = createPipeWrapper()
   const bufferParams: {
     debug?: boolean
@@ -18,8 +24,7 @@ function createPipeWrapper(pipeOriginal: Pipe, { debug, onError }: { debug?: boo
   return { pipeWrapper, injectToStream }
 
   function createPipeWrapper(): Pipe {
-    const pipeWrapper: Pipe = (writable: WritableType) => {
-      const { Writable } = loadStreamNodeModule()
+    const pipeWrapper: Pipe = (writable: StreamNodeWritable) => {
       const writableProxy = new Writable({
         write(chunk: unknown, encoding, callback) {
           onBeforeWrite(chunk)
@@ -47,33 +52,4 @@ function createPipeWrapper(pipeOriginal: Pipe, { debug, onError }: { debug?: boo
     }
     return pipeWrapper
   }
-}
-
-type Pipe = (writable: WritableType) => void
-type StreamModule = {
-  Readable: typeof ReadableType
-  Writable: typeof WritableType
-}
-
-function loadStreamNodeModule(): StreamModule {
-  const streamModule = loadStreamModule()
-  const { Readable, Writable } = streamModule as StreamModule
-  return { Readable, Writable }
-}
-
-function nodeStreamModuleIsAvailable(): boolean {
-  const req = require // bypass static analysis of bundlers
-  try {
-    loadStreamModule()
-    req('stream')
-    return true
-  } catch {
-    return false
-  }
-}
-
-function loadStreamModule() {
-  const req = require // bypass static analysis of bundlers
-  const streamModule = req('stream')
-  return streamModule
 }

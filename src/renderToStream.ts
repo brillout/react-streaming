@@ -1,12 +1,16 @@
 export { renderToStream }
 
 import React from 'react'
-import { renderToPipeableStream, renderToReadableStream } from 'react-dom/server'
+import { renderToPipeableStream, renderToReadableStream, version as reactVersion } from 'react-dom/server'
 import { SsrDataProvider } from './useSsrData'
 import { StreamProvider } from './useStream'
-import { createPipeWrapper, nodeStreamModuleIsAvailable, Pipe } from './renderToStream/createPipeWrapper'
+import { createPipeWrapper, Pipe } from './renderToStream/createPipeWrapper'
 import { createReadableWrapper } from './renderToStream/createReadableWrapper'
 import { resolveSeoStrategy, SeoStrategy } from './renderToStream/resolveSeoStrategy'
+import { assert, assertUsage } from './utils'
+import { nodeStreamModuleIsAvailable } from './renderToStream/loadNodeStreamModule'
+
+assertReact()
 
 type Options = {
   debug?: boolean
@@ -32,7 +36,7 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   )
 
   const disabled = options.disabled ?? resolveSeoStrategy(options).disableStream
-  const webStream = options.webStream ?? !nodeStreamModuleIsAvailable()
+  const webStream = options.webStream ?? !(await nodeStreamModuleIsAvailable())
   if (!webStream) {
     const result = await renderToNodeStream(element, disabled, options)
     injectToStream = result.injectToStream
@@ -72,7 +76,7 @@ async function renderToNodeStream(
     onError,
     onShellError: onError
   })
-  const { pipeWrapper, injectToStream } = createPipeWrapper(pipeOriginal, {
+  const { pipeWrapper, injectToStream } = await createPipeWrapper(pipeOriginal, {
     debug: options.debug,
     onError
   })
@@ -113,4 +117,13 @@ async function renderToWebStream(
     pipe: null,
     injectToStream
   }
+}
+
+function assertReact() {
+  const reactVersionMajor = parseInt(reactVersion.split('.')[0], 10)
+  assertUsage(
+    reactVersionMajor >= 18,
+    `React version ${reactVersion} was loaded, but react-streaming only works with React version 18 or greater.`
+  )
+  assert(typeof renderToPipeableStream === 'function' || typeof renderToReadableStream === 'function')
 }
