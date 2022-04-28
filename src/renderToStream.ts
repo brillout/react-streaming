@@ -128,6 +128,9 @@ async function renderToWebStream(
   }
 }
 
+// To debug wrong peer dependency loading:
+//  - https://stackoverflow.com/questions/21056748/seriously-debugging-node-js-cannot-find-module-xyz-abcd
+//  - https://stackoverflow.com/questions/59865584/how-to-invalidate-cached-require-resolve-results
 function assertReact() {
   const versionMajor = parseInt(reactDomVersion.split('.')[0], 10)
   assertUsage(
