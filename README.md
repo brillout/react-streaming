@@ -13,7 +13,13 @@
 - [Intro](#intro)
 - [Why Streaming](#why-streaming)
 - [Get Started](#get-started)
+  - [Options](#options)
+  - [Error Handling](#error-handling)
+  - [Bonus: `useAsync()`](#bonus-useasync)
 - [Get Started (Library Authors)](#get-started-library-authors)
+  - [`useAsync()`](#useasync)
+  - [`useSsrData()`](#usessrdata)
+  - [`injectToStream()`](#injecttostream)
 
 ## Intro
 
@@ -46,10 +52,10 @@ const {
 React 18's new SSR streaming architecture unlocks many capabilities:
 
 - Data Fetching:
-  - Use RPC to fetch data in a seamless way, e.g. with [Telefunc](https://telefunc.com). (Data fetching SSR hooks will be a thing of the past: no more Next.js's `getServerSideProps()` nor [`vite-plugin-ssr`](https://vite-plugin-ssr.com/)'s `onBeforeRender()`.)
-  - Expect your GraphQL tools to significantly improve, both performance and DX. (Also expect new tools such as [Vilay](https://github.com/XiNiHa/vilay).)
-- Fundamentally improved mobile performance. (Mobile users can progressively load the page as data is fetched, before even a single line of JavaScript is loaded. Especially important for low-end and/or poorly-connected devices.)
-- Progressive Hydration. (Page is interactive before the page/data finished loading.)
+  - Use RPC to fetch data in a seamless way, e.g. with [Telefunc](https://telefunc.com). (Data fetching SSR hooks will be a thing of the past: no more Next.js `getServerSideProps()` nor [`vite-plugin-ssr`](https://vite-plugin-ssr.com/)'s `onBeforeRender()`.)
+  - Expect your GraphQL tools to significantly improve, both on performance and DX. (Also expect new tools such as [Vilay](https://github.com/XiNiHa/vilay).)
+- Fundamentally improved mobile performance. (Mobile users can progressively load the page as data is fetched, before even a single line of JavaScript is loaded. Especially important for low-end or poorly-connected devices.)
+- Progressive Hydration. (Page is interactive before even the page has finished loading.)
 
 The problem: The current React 18 Streaming architecture is low-level and its ergonomics are cumbersome. (E.g. there is no standard way for library authors to take advantage of the new streaming architecture.)
 
@@ -115,20 +121,26 @@ The solution: `react-streaming`.
 
 ### Error Handling
 
-If an error occurs at the beginning of the stream then `await renderToStream()` rejects with the error.
+The promise `await renderToStream()` resolves after the page shell is rendered. This means that if an error occurs while rendering the page shell, then the promise rejects with that error.
+
+> :book: The page shell is the set of all components outside of `<Suspsense>` boundaries.
 
 ```js
 try {
   await renderToStream(<Page />)
-  // ✅ page shell succesfully rendered and is ready in the stream buffer.
+  // ✅ Page shell succesfully rendered and is ready in the stream buffer.
 } catch(err) {
-  // ❌ something went wrong while rendering the page shell.
+  // ❌ Something went wrong while rendering the page shell.
 }
 ```
 
-Technically speaking, the page shell is composed of all components that are outside a `<Suspsense>` boundary.
+The stream returned by `await renderToStream()` nevers emits an error.
 
-If an error occurs later in the stream (i.e. a suspense boundary fails), then React swallows the error on the server-side and retries to resolve the suspense boundary on the client-side. If the `<Suspsense>` fails again on the client-side, then the client-side throws the error.
+> :book: If an error occurs during the stream, then that means that a `<Suspsense>` boundary failed.
+> Instead of emiting a stream error, React swallows the error on the server-side and retries to resolve the `<Suspsense>` boundary on the client-side.
+> If the `<Suspsense>` fails again on the client-side, then the client-side throws the error.
+>
+> This means that stream errros are handled by React and there is nothing for you to do on the server-side. That said, you may want to gracefully handle the error on the client-side e.g. with [`react-error-boundary`](https://www.npmjs.com/package/react-error-boundary).
 
 ### Bonus: `useAsync()`
 
