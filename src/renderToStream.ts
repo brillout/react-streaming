@@ -35,9 +35,10 @@ type Result = (
   injectToStream: (chunk: string) => void
 }
 
-const globalConfig: { disable: boolean } = {
+const globalConfig: { disable: boolean } = ((globalThis as any).__react_streaming = (globalThis as any)
+  .__react_streaming || {
   disable: false
-}
+})
 function disable() {
   globalConfig.disable = true
 }
