@@ -15,7 +15,7 @@ assertReact()
 type Options = {
   debug?: boolean
   webStream?: boolean
-  disabled?: boolean
+  disable?: boolean
   seoStrategy?: SeoStrategy
   userAgent?: string
   renderToReadableStream?: typeof renderToReadableStream
@@ -43,14 +43,14 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
     element
   )
 
-  const disabled = options.disabled ?? resolveSeoStrategy(options).disableStream
+  const disable = options.disable ?? resolveSeoStrategy(options).disableStream
   const webStream = options.webStream ?? !(await nodeStreamModuleIsAvailable())
   if (!webStream) {
-    const result = await renderToNodeStream(element, disabled, options)
+    const result = await renderToNodeStream(element, disable, options)
     injectToStream = result.injectToStream
     return result
   } else {
-    const result = await renderToWebStream(element, disabled, options)
+    const result = await renderToWebStream(element, disable, options)
     injectToStream = result.injectToStream
     return result
   }
@@ -58,7 +58,7 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
 
 async function renderToNodeStream(
   element: React.ReactNode,
-  disabled: boolean,
+  disable: boolean,
   options: {
     debug?: boolean
     renderToReadableStream?: typeof renderToReadableStream
@@ -83,7 +83,7 @@ async function renderToNodeStream(
       resolve()
     },
     onShellReady() {
-      if (!disabled) {
+      if (!disable) {
         resolve()
       }
     },
@@ -106,7 +106,7 @@ async function renderToNodeStream(
 }
 async function renderToWebStream(
   element: React.ReactNode,
-  disabled: boolean,
+  disable: boolean,
   options: { renderToReadableStream?: typeof renderToReadableStream; debug?: boolean }
 ) {
   let didError = false
@@ -121,7 +121,7 @@ async function renderToWebStream(
   if (didError) {
     throw firstErr
   }
-  if (disabled) {
+  if (disable) {
     await readableOriginal.allReady
   }
   if (didError) {
