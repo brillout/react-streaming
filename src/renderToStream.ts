@@ -1,4 +1,5 @@
 export { renderToStream }
+export { disable }
 
 import React from 'react'
 import { renderToPipeableStream, renderToReadableStream, version as reactDomVersion } from 'react-dom/server'
@@ -34,6 +35,13 @@ type Result = (
   injectToStream: (chunk: string) => void
 }
 
+const globalConfig: { disable: boolean } = {
+  disable: false
+}
+function disable() {
+  globalConfig.disable = true
+}
+
 async function renderToStream(element: React.ReactNode, options: Options = {}): Promise<Result> {
   element = React.createElement(SsrDataProvider, null, element)
   let injectToStream: (chunk: string) => void
@@ -43,7 +51,7 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
     element
   )
 
-  const disable = options.disable ?? resolveSeoStrategy(options).disableStream
+  const disable = globalConfig.disable || (options.disable ?? resolveSeoStrategy(options).disableStream)
   const webStream = options.webStream ?? !(await nodeStreamModuleIsAvailable())
   if (!webStream) {
     const result = await renderToNodeStream(element, disable, options)
