@@ -26,8 +26,8 @@
 Features (for React users):
 
 - Unlocks `<Suspsense>` for SSR apps.
-- Unlocks React libraries of tomorrow. (Such as using [Telefunc](https://telefunc.com/) for data fetching.)
-- Supports all platforms (Vercel, Cloudflare Workers, AWS, Netlify Edge, Deno Deploy, ...).
+- Unlocks React libraries of tomorrow. (Such as using [Telefunc](https://telefunc.com/) for SSR data fetching.)
+- Seamless support for Node.js platforms (Vercel, AWS, ...) and Edge platforms (Cloudflare Workers, Netlify Edge, Deno Deploy, ...).
 - Two SEO strategies: `conservative` or `google-speed`.
 - Easy error handling.
 - **Bonus**: new `useAsync()` hook.
@@ -42,8 +42,8 @@ Easy:
 ```jsx
 import { renderToStream } from 'react-streaming/server'
 const {
-  pipe, // Node.js (Vercel, AWS)
-  readable // Edge Platforms (Coudflare Workers, Netlify Edge, Deno Deploy)
+  pipe, // Node.js (Vercel, AWS, ...)
+  readable // Edge Platforms (Coudflare Workers, Netlify Edge, Deno Deploy, ...)
 } = await renderToStream(<Page />)
 ```
 
