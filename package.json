@@ -1,7 +1,7 @@
 {
   "name": "react-streaming",
   "description": "React 18 Streaming. Full-fledged & Easy.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "main": "./dist/cjs/index.js",
   "peerDependencies": {
     "react": ">=18",
@@ -28,10 +28,12 @@
   },
   "exports": {
     ".": {
+      "worker": "./dist/cjs/index.js",
       "node": "./dist/cjs/index.js",
       "browser": "./dist/esm/index.js"
     },
     "./server": {
+      "worker": "./dist/cjs/server.js",
       "node": "./dist/cjs/server.js"
     },
     "./client": {
