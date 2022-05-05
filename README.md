@@ -8,6 +8,10 @@
 
 > React 18 Streaming. Full-fledged & Easy.
 
+Follow: [Twitter > @brillout](https://twitter.com/brillout)
+<br/>
+Chat: <a href="https://discord.com/invite/H23tjRxFvx">Discord > Vike<img src="/images/hash.svg" height="17" width="23" valign="text-bottom" alt="hash"/>react-streaming</a>
+
 <b>Contents</b>
 
 - [Intro](#intro)
