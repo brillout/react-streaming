@@ -42,8 +42,8 @@ Easy:
 ```jsx
 import { renderToStream } from 'react-streaming/server'
 const {
-  pipe, // Node.js (Vercel, AWS, ...)
-  readable // Edge Platforms (Coudflare Workers, Netlify Edge, Deno Deploy, ...)
+  pipe, // Node.js (Vercel, AWS EC2, AWS Lambda, ...)
+  readable // Edge (Coudflare Workers, Netlify Edge, Deno Deploy, ...)
 } = await renderToStream(<Page />)
 ```
 
@@ -77,7 +77,7 @@ The solution: `react-streaming`.
    import { renderToStream } from 'react-streaming/server'
    const {
      pipe, // Defined if running in Node.js, otherwise `null`
-     readable // Defined if running in Edge Platforms (.e.g. Coudflare Workers), otherwise `null`
+     readable // Defined if running on the Edge (.e.g. Coudflare Workers), otherwise `null`
    } = await renderToStream(<Page />, options)
    ```
 
