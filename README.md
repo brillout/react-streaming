@@ -27,7 +27,7 @@ Features (for React users):
 
 - Unlocks `<Suspsense>` for SSR apps.
 - Unlocks React libraries of tomorrow. (Such as using [Telefunc](https://telefunc.com/) for SSR data fetching.)
-- Seamless support for Node.js platforms (Vercel, AWS, ...) and Edge platforms (Cloudflare Workers, Netlify Edge, Deno Deploy, ...).
+- Seamless support for Node.js (serverless) platforms (Vercel, AWS EC2, AWS Lambda, ...) and Edge platforms (Cloudflare Workers, Netlify Edge, Deno Deploy, ...).
 - Two SEO strategies: `conservative` or `google-speed`.
 - Easy error handling.
 - **Bonus**: new `useAsync()` hook.
