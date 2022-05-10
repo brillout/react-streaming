@@ -19,6 +19,7 @@ type Options = {
   disable?: boolean
   seoStrategy?: SeoStrategy
   userAgent?: string
+  onError?: (err: unknown) => void
   renderToReadableStream?: typeof renderToReadableStream
   renderToPipeableStream?: typeof renderToPipeableStream
 }
@@ -32,6 +33,7 @@ type Result = (
       readable: ReadableStream
     }
 ) & {
+  allReady: Promise<void>
   injectToStream: (chunk: string) => void
 }
 
@@ -70,68 +72,94 @@ async function renderToNodeStream(
   disable: boolean,
   options: {
     debug?: boolean
+    onError?: (err: unknown) => void
     renderToReadableStream?: typeof renderToReadableStream
     renderToPipeableStream?: typeof renderToPipeableStream
   }
 ) {
-  let resolve!: () => void
-  const promise = new Promise<void>((r) => {
-    resolve = () => r()
+  let resolveShell!: () => void
+  let resolveAll!: () => void
+  let rejectAll!: (e: unknown) => void
+  const shellReady = new Promise<void>((r) => {
+    resolveShell = () => r()
   })
+  const allReady = new Promise<void>((res, rej) => {
+    resolveAll = () => res()
+    rejectAll = (e) => rej(e)
+  })
+  let allReadyAvailable = false
   let didError = false
   let firstErr: unknown = null
   const onError = (err: unknown) => {
     didError = true
-    firstErr = firstErr || err
-    resolve()
+    firstErr ??= err
+    resolveShell()
+    options.onError?.(err)
   }
   const renderToPipeableStream_ = options.renderToPipeableStream ?? renderToPipeableStream
   assertReactImport(renderToPipeableStream_, 'renderToPipeableStream')
   const { pipe: pipeOriginal } = renderToPipeableStream_(element, {
-    onAllReady() {
-      resolve()
-    },
     onShellReady() {
       if (!disable) {
-        resolve()
+        resolveShell()
       }
     },
+    onAllReady() {
+      resolveShell()
+      resolveAll()
+    },
+    onShellError: (err) => {
+      // We should catch this to prevent Node.js shutting down, since users can't catch this as it's not returned
+      if (!allReadyAvailable) allReady.catch(() => {})
+      onError(err)
+    },
     onError,
-    onShellError: onError
   })
   const { pipeWrapper, injectToStream } = await createPipeWrapper(pipeOriginal, {
     debug: options.debug,
-    onError
+    // This only receives fatal errors
+    onError: (fatalErr) => {
+      options.onError?.(fatalErr)
+      rejectAll(fatalErr)
+    }
   })
-  await promise
+  await shellReady
   if (didError) {
     throw firstErr
   }
+  allReadyAvailable = true
   return {
     pipe: pipeWrapper,
     readable: null,
+    allReady,
     injectToStream
   }
 }
 async function renderToWebStream(
   element: React.ReactNode,
   disable: boolean,
-  options: { renderToReadableStream?: typeof renderToReadableStream; debug?: boolean }
+  options: {
+    debug?: boolean
+    onError?: (err: unknown) => void
+    renderToReadableStream?: typeof renderToReadableStream
+  }
 ) {
   let didError = false
   let firstErr: unknown = null
   const onError = (err: unknown) => {
     didError = true
     firstErr = firstErr || err
+    options.onError?.(err)
   }
   const renderToReadableStream_ = options.renderToReadableStream ?? renderToReadableStream
   assertReactImport(renderToReadableStream_, 'renderToReadableStream')
-  const readableOriginal = await renderToReadableStream_(element, { onError })
+  const readableOriginal = await renderToReadableStream_(element, { onError,  })
+  const { allReady } = readableOriginal
   if (didError) {
     throw firstErr
   }
   if (disable) {
-    await readableOriginal.allReady
+    await allReady
   }
   if (didError) {
     throw firstErr
@@ -140,6 +168,7 @@ async function renderToWebStream(
   return {
     readable: readableWrapper,
     pipe: null,
+    allReady,
     injectToStream
   }
 }
