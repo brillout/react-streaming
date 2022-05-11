@@ -33,7 +33,7 @@ type Result = (
       readable: ReadableStream
     }
 ) & {
-  streamEnd: Promise<void>
+  streamEnd: Promise<boolean>
   injectToStream: (chunk: string) => void
 }
 
@@ -56,15 +56,17 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
 
   const disable = globalConfig.disable || (options.disable ?? resolveSeoStrategy(options).disableStream)
   const webStream = options.webStream ?? !(await nodeStreamModuleIsAvailable())
+
+  let result: Result
   if (!webStream) {
-    const result = await renderToNodeStream(element, disable, options)
-    injectToStream = result.injectToStream
-    return result
+    result = await renderToNodeStream(element, disable, options)
   } else {
-    const result = await renderToWebStream(element, disable, options)
-    injectToStream = result.injectToStream
-    return result
+    result = await renderToWebStream(element, disable, options)
   }
+
+  injectToStream = result.injectToStream
+
+  return result
 }
 
 async function renderToNodeStream(
@@ -83,52 +85,50 @@ async function renderToNodeStream(
   })
   let didError = false
   let firstErr: unknown = null
-  let fatalErr: unknown = null
+  let reactBug: unknown = null
   const onError = (err: unknown) => {
     didError = true
     firstErr ??= err
     onShellReady()
-    // hacky solution to workaround https://github.com/facebook/react/issues/24536
-    // onError() gets called first, so we need to wait until next tick
-    setTimeout(() => {
-      // filter out fatal errors
-      if (fatalErr !== err) {
+    afterReactBugCatch(() => {
+      if (err !== reactBug) { // Is not a React internal error (i.e. a React bug)
         options.onBoundaryError?.(err)
       }
-    }, 0)
+    })
   }
   const renderToPipeableStream_ = options.renderToPipeableStream ?? renderToPipeableStream
   assertReactImport(renderToPipeableStream_, 'renderToPipeableStream')
   const { pipe: pipeOriginal } = renderToPipeableStream_(element, {
     onShellReady() {
-      if (!disable) {
-        onShellReady()
-      }
+      onShellReady()
     },
     onAllReady() {
       onShellReady()
     },
     onShellError: onError,
-    onError,
+    onError
   })
+  let promiseResolved = false
   const { pipeWrapper, injectToStream, streamEnd } = await createPipeWrapper(pipeOriginal, {
     debug: options.debug,
-    onFatalError(err) {
+    onReactBug(err) {
       didError = true
       firstErr ??= err
-      fatalErr = err
+      reactBug = err
+      if (reactBug !== firstErr || promiseResolved) { // Only log if it wasn't used as rejection for `await renderToStream()`
+        console.error(reactBug)
+      }
     }
   })
   await shellReady
+  if (didError) throw firstErr
   if (disable) await streamEnd
-  if (didError) {
-    throw firstErr
-  }
+  if (didError) throw firstErr
+  promiseResolved = true
   return {
     pipe: pipeWrapper,
     readable: null,
-    // Needed because of the hack above, otherwise `onBoundaryError` triggers after `streamEnd` resolved
-    streamEnd: streamEnd.then(() => new Promise<void>(r => setTimeout(r, 0))),
+    streamEnd: wrapStreamEnd(streamEnd, didError),
     injectToStream
   }
 }
@@ -143,43 +143,57 @@ async function renderToWebStream(
 ) {
   let didError = false
   let firstErr: unknown = null
-  let fatalErr: unknown = null
+  let reactBug: unknown = null
   const onError = (err: unknown) => {
     didError = true
     firstErr = firstErr || err
-    // Hacky solution to workaround https://github.com/facebook/react/issues/24536
-    setTimeout(() => {
-      if (fatalErr !== err) {
+    afterReactBugCatch(() => {
+      if (err !== reactBug) { // Is not a React internal error (i.e. a React bug)
         options.onBoundaryError?.(err)
       }
-    }, 0)
+    })
   }
   const renderToReadableStream_ = options.renderToReadableStream ?? renderToReadableStream
   assertReactImport(renderToReadableStream_, 'renderToReadableStream')
   const readableOriginal = await renderToReadableStream_(element, { onError })
   const { allReady } = readableOriginal
+  let promiseResolved = false
+  // Upon React internal errors (i.e. React bugs), React rejects `allReady`.
+  // React doesn't reject `allReady` upon boundary errors.
   allReady.catch((err) => {
     didError = true
     firstErr = firstErr || err
-    fatalErr = err
+    reactBug = err
+    if (reactBug !== firstErr || promiseResolved) { // Only log if it wasn't used as rejection for `await renderToStream()`
+      console.error(reactBug)
+    }
   })
-  if (didError) {
-    throw firstErr
-  }
-  if (disable) {
-    await allReady
-  }
-  if (didError) {
-    throw firstErr
-  }
+  if (didError) throw firstErr
+  if (disable) await allReady
+  if (didError) throw firstErr
   const { readableWrapper, streamEnd, injectToStream } = createReadableWrapper(readableOriginal, options)
+  promiseResolved = true
   return {
     readable: readableWrapper,
     pipe: null,
-    // Needed because of the hack above, otherwise `onBoundaryError` triggers after `streamEnd` resolved
-    streamEnd: streamEnd.then(() => new Promise<void>(r => setTimeout(r, 0))),
+    streamEnd: wrapStreamEnd(streamEnd, didError),
     injectToStream
   }
+}
+
+// Needed for the hacky solution to workaround https://github.com/facebook/react/issues/24536
+function afterReactBugCatch(fn: Function) {
+  setTimeout(() => {
+    fn()
+  }, 0)
+}
+function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Promise<boolean> {
+  return (
+    streamEnd
+      // Needed because of the `afterReactBugCatch()` hack above, otherwise `onBoundaryError` triggers after `streamEnd` resolved
+      .then(() => new Promise<void>((r) => setTimeout(r, 0)))
+      .then(() => !didError)
+  )
 }
 
 // To debug wrong peer dependency loading:
