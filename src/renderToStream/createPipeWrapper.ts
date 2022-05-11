@@ -9,7 +9,7 @@ type Pipe = (writable: StreamNodeWritable) => void
 
 async function createPipeWrapper(
   pipeOriginal: Pipe,
-  { debug, onError }: { debug?: boolean; onError: (err: unknown) => void }
+  { debug, onFatalError }: { debug?: boolean; onFatalError: (err: unknown) => void }
 ) {
   const { Writable } = await loadNodeStreamModule()
   const pipeWrapper = createPipeWrapper()
@@ -35,9 +35,9 @@ async function createPipeWrapper(
           writable.end()
           callback()
         },
-        // If we don't define `destroy()`, then Node.js will `process.exit()`
         destroy(err) {
-          onError(err)
+          onFatalError(err)
+          writable.destroy(err ?? undefined)
         }
       })
       bufferParams.writeChunk = (chunk: string) => {
