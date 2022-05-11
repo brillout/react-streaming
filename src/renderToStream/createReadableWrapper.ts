@@ -11,16 +11,18 @@ function createReadableWrapper(readableOriginal: ReadableStream, options: { debu
     writeChunk: null
   }
   let controllerWrapper: ReadableStreamController<any>
+  let onEnded!: () => void
+  const streamEnd = new Promise<void>(r => { onEnded = () => r() })
   const readableWrapper = new ReadableStream({
     start(controller) {
       controllerWrapper = controller
-      onReady()
+      onReady(onEnded)
     }
   })
   const { injectToStream, onBeforeWrite, onBeforeEnd } = createBuffer(bufferParams)
-  return { readableWrapper, injectToStream }
+  return { readableWrapper, streamEnd, injectToStream }
 
-  async function onReady() {
+  async function onReady(onEnded: () => void) {
     const writeChunk = (bufferParams.writeChunk = (chunk: unknown) => {
       controllerWrapper.enqueue(encodeForWebStream(chunk))
     })
@@ -47,6 +49,7 @@ function createReadableWrapper(readableOriginal: ReadableStream, options: { debu
     setTimeout(() => {
       onBeforeEnd()
       controllerWrapper.close()
+      onEnded()
     }, 0)
   }
 }

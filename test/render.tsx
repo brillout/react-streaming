@@ -26,22 +26,32 @@ onConsoleError((arg) => {
 const userAgent =
   'Mozilla/5.0 (X11; CrOS x86_64 14469.58.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.86 Safari/537.36'
 
-async function render(element: React.ReactNode, { streamType }: { streamType: 'web' | 'node' }) {
+async function render(
+  element: React.ReactNode,
+  {
+    streamType,
+    onBoundaryError
+  }: {
+    streamType: 'web' | 'node'
+    onBoundaryError?: (err: unknown) => void
+  }
+) {
   if (streamType === 'node') {
-    const { pipe, injectToStream } = await renderToStream(element, { userAgent })
-    const { writable, streamEnded, data } = createWritable()
+    const { pipe, injectToStream, streamEnd } = await renderToStream(element, { userAgent, onBoundaryError })
+    const { writable, data } = createWritable()
     pipe(writable)
-    return { data, streamEnded, injectToStream }
+    return { data, injectToStream, streamEnd }
   }
   if (streamType === 'web') {
-    const { readable, injectToStream } = await renderToStream(element, {
+    const { readable, injectToStream, streamEnd } = await renderToStream(element, {
       webStream: true,
       renderToReadableStream,
-      userAgent
+      userAgent,
+      onBoundaryError
     })
-    const { writable, streamEnded, data } = createWebWritable()
+    const { writable, data } = createWebWritable()
     readable.pipeTo(writable)
-    return { data, streamEnded, injectToStream }
+    return { data, injectToStream, streamEnd }
   }
 }
 
@@ -49,37 +59,26 @@ function createWritable() {
   const data = {
     content: ''
   }
-  let onEnded: () => void
-  const streamEnded = new Promise((r) => (onEnded = () => r(undefined)))
   const writable = new Writable({
     write(chunk, _encoding, callback) {
       data.content += chunk
       callback()
-    },
-    final(callback) {
-      onEnded()
-      callback()
     }
   })
-  return { writable, data, streamEnded }
+  return { writable, data }
 }
 
 function createWebWritable() {
   const data = {
     content: ''
   }
-  let onEnded: () => void
-  const streamEnded = new Promise((r) => (onEnded = () => r(undefined)))
   const writable = new WritableStream({
     write(chunk) {
       chunk = decodeChunk(chunk)
       data.content += chunk
-    },
-    close() {
-      onEnded()
     }
   })
-  return { writable, data, streamEnded }
+  return { writable, data }
 }
 
 let decoder: TextDecoder

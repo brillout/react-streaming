@@ -12,7 +12,7 @@ async function createPipeWrapper(
   { debug, onFatalError }: { debug?: boolean; onFatalError: (err: unknown) => void }
 ) {
   const { Writable } = await loadNodeStreamModule()
-  const pipeWrapper = createPipeWrapper()
+  const { pipeWrapper, streamEnd } = createPipeWrapper()
   const bufferParams: {
     debug?: boolean
     writeChunk: null | ((_chunk: string) => void)
@@ -21,9 +21,11 @@ async function createPipeWrapper(
     writeChunk: null
   }
   const { injectToStream, onBeforeWrite, onBeforeEnd } = createBuffer(bufferParams)
-  return { pipeWrapper, injectToStream }
+  return { pipeWrapper, streamEnd, injectToStream }
 
-  function createPipeWrapper(): Pipe {
+  function createPipeWrapper(): { pipeWrapper: Pipe, streamEnd: Promise<void> } {
+    let onEnded!: () => void
+    const streamEnd = new Promise<void>(r => { onEnded = () => r() })
     const pipeWrapper: Pipe = (writable: StreamNodeWritable) => {
       const writableProxy = new Writable({
         write(chunk: unknown, encoding, callback) {
@@ -33,11 +35,13 @@ async function createPipeWrapper(
         final(callback) {
           onBeforeEnd()
           writable.end()
+          onEnded()
           callback()
         },
         destroy(err) {
           onFatalError(err)
           writable.destroy(err ?? undefined)
+          onEnded()
         }
       })
       bufferParams.writeChunk = (chunk: string) => {
@@ -50,6 +54,6 @@ async function createPipeWrapper(
       }
       pipeOriginal(writableProxy)
     }
-    return pipeWrapper
+    return { pipeWrapper, streamEnd }
   }
 }
