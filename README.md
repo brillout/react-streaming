@@ -29,7 +29,7 @@ Chat: <a href="https://discord.com/invite/H23tjRxFvx">Discord > Vike<img src="/i
 
 Features (for React users):
 
-- Unlocks `<Suspsense>` for SSR apps.
+- Unlocks `<Suspense>` for SSR apps.
 - Unlocks React libraries of tomorrow. (Such as using [Telefunc](https://telefunc.com/) for SSR data fetching.)
 - Seamless support for Node.js (serverless) platforms (Vercel, AWS EC2, ...) and Edge platforms (Cloudflare Workers, Netlify Edge, Deno Deploy, ...).
 - Two SEO strategies: `conservative` or `google-speed`.
@@ -82,7 +82,7 @@ The solution: `react-streaming`.
    const {
      pipe, // Defined if running in Node.js, otherwise `null`
      readable // Defined if running on the Edge (.e.g. Coudflare Workers), otherwise `null`
-   } = await renderToStream(<Page />, options)
+   } = await renderToStream(<Page />)
    ```
 
 3. Client-side
@@ -97,6 +97,13 @@ The solution: `react-streaming`.
    ```
 
 ### Options
+
+```js
+const options = {
+  // ...
+}
+await renderToStream(<Page />, options)
+```
 
 - `options.disable?: boolean`: Disable streaming.
   > `<Page>` is still rendered to a stream, but the promise `const promise = renderToStream()` resolves only after the stream has finished. (This effectively disables streaming from a user perspective, while unlocking React 18 Streaming capabilities such as SSR `<Supsense>`.)
@@ -122,12 +129,33 @@ The solution: `react-streaming`.
 
 - `options.userAgent?: string`: The HTTP User-Agent request header. (Needed for `options.seoStrategy`.)
 - `options.webStream?: boolean`: Use Web Streams instead of Node.js Streams in Node.js. ([Node.js 18 released Web Streams support](https://nodejs.org/en/blog/announcements/v18-release-announce/#web-streams-api-experimental).)
+- `options.onBeforeEnd?: (success: boolean) => void`: Called before the stream ends.
+  The `success` value is usually used for sending different headers depending on the success of `<Suspense>` boundaries.
+  ⚠️
+  This is not implemented yet.
+  Pull Request welcome, or open a new GitHub issue.
+- `options.onBoundaryError?: (err: unknown) => void`: Called when a `<Suspense>` boundary fails. See [Error Handling](#error-handling).
+-  ```ts
+   const { streamEnd } = await renderToStream(<Page />)
+   // ✅ Page Shell succesfully rendered.
+   const success: boolean = await streamEnd
+   // Stream ended.
+   if (success) {
+     // ✅ <Page> succesfully rendered
+   } else {
+     // ❌ A <Suspense> boundary failed.
+   }
+   ```
+   Note that `streamEnd` never rejects.
+   > ⚠️
+   > Read [Error Handling](#error-handling) before using `streamEnd`. In particular, do not use `success` to change the behavior of your app/stream (because React automatically takes care of gracefully handling `<Suspense>` failures).
+
 
 ### Error Handling
 
 The promise `await renderToStream()` resolves after the page shell is rendered. This means that if an error occurs while rendering the page shell, then the promise rejects with that error.
 
-> :book: The page shell is the set of all components outside of `<Suspsense>` boundaries.
+> :book: The page shell is the set of all components before `<Suspense>` boundaries.
 
 ```js
 try {
@@ -138,13 +166,15 @@ try {
 }
 ```
 
-The stream returned by `await renderToStream()` nevers emits an error.
+The stream returned by `await renderToStream()` doesn't emit errors.
 
-> :book: If an error occurs during the stream, then that means that a `<Suspsense>` boundary failed.
-> Instead of emiting a stream error, React swallows the error on the server-side and retries to resolve the `<Suspsense>` boundary on the client-side.
-> If the `<Suspsense>` fails again on the client-side, then the client-side throws the error.
+> :book: If an error occurs during the stream, then that means that a `<Suspense>` boundary failed.
+> Instead of emiting a stream error, React swallows the error on the server-side and retries to resolve the `<Suspense>` boundary on the client-side.
+> If the `<Suspense>` fails again on the client-side, then the client-side throws the error.
 >
-> This means that stream errros are handled by React and there is nothing for you to do on the server-side. That said, you may want to gracefully handle the error on the client-side e.g. with [`react-error-boundary`](https://www.npmjs.com/package/react-error-boundary).
+> This means that errros occuring during the stream are handled by React and there is nothing for you to do on the server-side. That said, you may want to gracefully handle the error on the client-side e.g. with [`react-error-boundary`](https://www.npmjs.com/package/react-error-boundary).
+>
+> You can use `options.onBoundaryError()` for error tracking purposes, and `const success = await streamEnd` for sending different headers upon boundary failure.
 
 ### Bonus: `useAsync()`
 

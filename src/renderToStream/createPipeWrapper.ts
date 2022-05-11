@@ -9,7 +9,7 @@ type Pipe = (writable: StreamNodeWritable) => void
 
 async function createPipeWrapper(
   pipeOriginal: Pipe,
-  { debug, onFatalError }: { debug?: boolean; onFatalError: (err: unknown) => void }
+  { debug, onReactBug }: { debug?: boolean; onReactBug: (err: unknown) => void }
 ) {
   const { Writable } = await loadNodeStreamModule()
   const { pipeWrapper, streamEnd } = createPipeWrapper()
@@ -39,7 +39,8 @@ async function createPipeWrapper(
           callback()
         },
         destroy(err) {
-          onFatalError(err)
+          // Upon React internal errors (i.e. React bugs), React destroys the stream.
+          if (err) onReactBug(err)
           writable.destroy(err ?? undefined)
           onEnded()
         }
