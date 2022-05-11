@@ -129,11 +129,6 @@ await renderToStream(<Page />, options)
 
 - `options.userAgent?: string`: The HTTP User-Agent request header. (Needed for `options.seoStrategy`.)
 - `options.webStream?: boolean`: Use Web Streams instead of Node.js Streams in Node.js. ([Node.js 18 released Web Streams support](https://nodejs.org/en/blog/announcements/v18-release-announce/#web-streams-api-experimental).)
-- `options.onBeforeEnd?: (success: boolean) => void`: Called before the stream ends.
-  The `success` value is usually used for sending different headers depending on the success of `<Suspense>` boundaries.
-  ⚠️
-  This is not implemented yet.
-  Pull Request welcome, or open a new GitHub issue.
 - `options.onBoundaryError?: (err: unknown) => void`: Called when a `<Suspense>` boundary fails. See [Error Handling](#error-handling).
 -  ```ts
    const { streamEnd } = await renderToStream(<Page />)
@@ -174,7 +169,7 @@ The stream returned by `await renderToStream()` doesn't emit errors.
 >
 > This means that errros occuring during the stream are handled by React and there is nothing for you to do on the server-side. That said, you may want to gracefully handle the error on the client-side e.g. with [`react-error-boundary`](https://www.npmjs.com/package/react-error-boundary).
 >
-> You can use `options.onBoundaryError()` for error tracking purposes, and `const success = await streamEnd` for sending different headers upon boundary failure.
+> You can use `options.onBoundaryError()` for error tracking purposes.
 
 ### Bonus: `useAsync()`
 
