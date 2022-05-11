@@ -148,7 +148,8 @@ async function renderToWebStream(
   const onError = (err: unknown) => {
     didError = true
     firstErr = firstErr || err
-    setTimeout(() => {
+// Hacky solution to workaround https://github.com/facebook/react/issues/24536
+setTimeout(() => {
       if (fatalErr !== err) {
         options.onBoundaryError?.(err)
       }
