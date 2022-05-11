@@ -77,13 +77,13 @@ async function renderToNodeStream(
     renderToPipeableStream?: typeof renderToPipeableStream
   }
 ) {
-  let resolveShell!: () => void
-  let resolveEnd!: () => void
+  let onShellReady!: () => void
+  let onAllReady!: () => void
   const shellReady = new Promise<void>((r) => {
-    resolveShell = () => r()
+    onShellReady = () => r()
   })
   const streamEnd = new Promise<void>((r) => {
-    resolveEnd = () => r()
+    onAllReady = () => r()
   })
   let didError = false
   let firstErr: unknown = null
@@ -91,7 +91,7 @@ async function renderToNodeStream(
   const onError = (err: unknown) => {
     didError = true
     firstErr ??= err
-    resolveShell()
+    onShellReady()
     // hacky solution to workaround https://github.com/facebook/react/issues/24536
     // onError() gets called first, so we need to wait until next tick
     setTimeout(() => {
@@ -106,12 +106,12 @@ async function renderToNodeStream(
   const { pipe: pipeOriginal } = renderToPipeableStream_(element, {
     onShellReady() {
       if (!disable) {
-        resolveShell()
+        onShellReady()
       }
     },
     onAllReady() {
-      resolveShell()
-      resolveEnd()
+      onShellReady()
+      onAllReady()
     },
     onShellError: onError,
     onError,
@@ -123,6 +123,7 @@ async function renderToNodeStream(
     }
   })
   await shellReady
+  if (disable) await streamEnd
   if (didError) {
     throw firstErr
   }
@@ -148,8 +149,8 @@ async function renderToWebStream(
   const onError = (err: unknown) => {
     didError = true
     firstErr = firstErr || err
-// Hacky solution to workaround https://github.com/facebook/react/issues/24536
-setTimeout(() => {
+    // Hacky solution to workaround https://github.com/facebook/react/issues/24536
+    setTimeout(() => {
       if (fatalErr !== err) {
         options.onBoundaryError?.(err)
       }
