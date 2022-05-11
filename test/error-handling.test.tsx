@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vitest } from 'vitest'
 import { render } from './render'
 import { onConsoleError } from './onConsoleError'
 import React, { Suspense } from 'react'
@@ -20,8 +20,8 @@ describe('error handling', async () => {
         }
       })
       const Page = (() => {}) as any
-      const { data, streamEnded } = await render(Page, { streamType })
-      await streamEnded
+      const { data, streamEnd } = await render(Page, { streamType })
+      await streamEnd
       // Seems like a React bug. Seems like React closes the stream without invoking one of its error hooks.
       expect(data.content).toBe('')
       expect(warning).toBe(true)
@@ -30,8 +30,8 @@ describe('error handling', async () => {
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`Empty Page - ${streamType} stream`, async () => {
       const Page = (() => {}) as any
-      const { data, streamEnded } = await render(<Page />, { streamType })
-      await streamEnded
+      const { data, streamEnd } = await render(<Page />, { streamType })
+      await streamEnd
       expect(data.content).toBe('')
     })
   })
@@ -41,13 +41,15 @@ describe('error handling', async () => {
         throw new Error('some-error')
       }) as any
       let didError = false
+      const onBoundaryError = vitest.fn()
       try {
-        await render(<Page />, { streamType })
+        await render(<Page />, { streamType, onBoundaryError })
       } catch (err) {
         didError = true
         expect(err.message).toBe('some-error')
       }
       expect(didError).toBe(true)
+      expect(onBoundaryError).not.toBeCalled()
     })
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
@@ -68,9 +70,10 @@ describe('error handling', async () => {
           </Suspense>
         )
       }) as any
+      const onBoundaryError = vitest.fn()
       // React swallows the error, and retries to resolve the suspense on the cient-side
-      const { data, streamEnded } = await render(<Page />, { streamType })
-      await streamEnded
+      const { data, streamEnd } = await render(<Page />, { streamType, onBoundaryError })
+      await streamEnd
       expect(data.content).toBe(
         [
           // Page Shell
@@ -81,6 +84,7 @@ describe('error handling', async () => {
           '<script>function $RX(a){if(a=document.getElementById(a))a=a.previousSibling,a.data="$!",a._reactRetry&&a._reactRetry()};$RX("B:0")</script>'
         ].join('')
       )
+      expect(onBoundaryError).toBeCalled()
     })
   })
 })

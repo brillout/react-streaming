@@ -78,12 +78,8 @@ async function renderToNodeStream(
   }
 ) {
   let onShellReady!: () => void
-  let onAllReady!: () => void
   const shellReady = new Promise<void>((r) => {
     onShellReady = () => r()
-  })
-  const streamEnd = new Promise<void>((r) => {
-    onAllReady = () => r()
   })
   let didError = false
   let firstErr: unknown = null
@@ -111,14 +107,15 @@ async function renderToNodeStream(
     },
     onAllReady() {
       onShellReady()
-      onAllReady()
     },
     onShellError: onError,
     onError,
   })
-  const { pipeWrapper, injectToStream } = await createPipeWrapper(pipeOriginal, {
+  const { pipeWrapper, injectToStream, streamEnd } = await createPipeWrapper(pipeOriginal, {
     debug: options.debug,
     onFatalError(err) {
+      didError = true
+      firstErr ??= err
       fatalErr = err
     }
   })
@@ -130,7 +127,8 @@ async function renderToNodeStream(
   return {
     pipe: pipeWrapper,
     readable: null,
-    streamEnd,
+    // Needed because of the hack above, otherwise `onBoundaryError` triggers after `streamEnd` resolved
+    streamEnd: streamEnd.then(() => new Promise<void>(r => setTimeout(r, 0))),
     injectToStream
   }
 }
@@ -158,8 +156,13 @@ async function renderToWebStream(
   }
   const renderToReadableStream_ = options.renderToReadableStream ?? renderToReadableStream
   assertReactImport(renderToReadableStream_, 'renderToReadableStream')
-  const readableOriginal = await renderToReadableStream_(element, { onError,  })
+  const readableOriginal = await renderToReadableStream_(element, { onError })
   const { allReady } = readableOriginal
+  allReady.catch((err) => {
+    didError = true
+    firstErr = firstErr || err
+    fatalErr = err
+  })
   if (didError) {
     throw firstErr
   }
@@ -169,11 +172,12 @@ async function renderToWebStream(
   if (didError) {
     throw firstErr
   }
-  const { readableWrapper, injectToStream } = createReadableWrapper(readableOriginal, options)
+  const { readableWrapper, streamEnd, injectToStream } = createReadableWrapper(readableOriginal, options)
   return {
     readable: readableWrapper,
     pipe: null,
-    streamEnd: allReady.catch((err) => { fatalErr = err }),
+    // Needed because of the hack above, otherwise `onBoundaryError` triggers after `streamEnd` resolved
+    streamEnd: streamEnd.then(() => new Promise<void>(r => setTimeout(r, 0))),
     injectToStream
   }
 }
