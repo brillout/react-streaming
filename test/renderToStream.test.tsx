@@ -5,15 +5,17 @@ import { render } from './render'
 
 describe('renderToStream()', async () => {
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
-    it(`basic - ${streamType} Stream`, async () => {
-      const { data, streamEnd } = await render(<div>hello</div>, { streamType })
-      await streamEnd
-      expect(data.content).toBe('<div>hello</div>')
+    ;[true, false].forEach((disable) => {
+      it(`basic - ${streamType} Stream${disable ? ' - disabled' : ''}`, async () => {
+        const { data, streamEnd } = await render(<div>hello</div>, { streamType, disable })
+        await streamEnd
+        expect(data.content).toBe('<div>hello</div>')
+      })
     })
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`injectToStream - basic - ${streamType} stream`, async () => {
-      const { data, streamEnd, injectToStream } = await render(<>hi</>, { streamType })
+      const { data, streamEnd, injectToStream } = await render(<>hi</>, { streamType, disable: false })
       injectToStream('<script type="module" src="/main.js"></script>')
       await streamEnd
       expect(data.content).toBe('hi<!-- --><script type="module" src="/main.js"></script>')
@@ -21,7 +23,7 @@ describe('renderToStream()', async () => {
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`injectToStream - useAsync() - ${streamType} stream`, async () => {
-      const { data, streamEnd, injectToStream } = await render(<Page />, { streamType })
+      const { data, streamEnd, injectToStream } = await render(<Page />, { streamType, disable: false })
       injectToStream('<script type="module" src="/main.js"></script>')
 
       let timeoutResolved = false

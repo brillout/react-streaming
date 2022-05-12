@@ -30,14 +30,17 @@ async function render(
   element: React.ReactNode,
   {
     streamType,
-    onBoundaryError
+    onBoundaryError,
+    disable
   }: {
     streamType: 'web' | 'node'
     onBoundaryError?: (err: unknown) => void
+    disable: boolean
   }
 ) {
+  const options = { userAgent, onBoundaryError, disable }
   if (streamType === 'node') {
-    const { pipe, injectToStream, streamEnd } = await renderToStream(element, { userAgent, onBoundaryError })
+    const { pipe, injectToStream, streamEnd } = await renderToStream(element, options)
     const { writable, data } = createWritable()
     pipe(writable)
     return { data, injectToStream, streamEnd }
@@ -46,8 +49,7 @@ async function render(
     const { readable, injectToStream, streamEnd } = await renderToStream(element, {
       webStream: true,
       renderToReadableStream,
-      userAgent,
-      onBoundaryError
+      ...options
     })
     const { writable, data } = createWebWritable()
     readable.pipeTo(writable)

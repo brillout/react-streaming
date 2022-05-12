@@ -83,10 +83,15 @@ async function renderToNodeStream(
 ) {
   debug('creating Node.js Stream Pipe')
 
+  let onAllReady!: () => void
+  const allReady = new Promise<void>((r) => {
+    onAllReady = () => r()
+  })
   let onShellReady!: () => void
   const shellReady = new Promise<void>((r) => {
     onShellReady = () => r()
   })
+
   let didError = false
   let firstErr: unknown = null
   let reactBug: unknown = null
@@ -112,6 +117,7 @@ async function renderToNodeStream(
     onAllReady() {
       debug('[react] onAllReady()')
       onShellReady()
+      onAllReady()
     },
     onShellError: onError,
     onError
@@ -131,7 +137,7 @@ async function renderToNodeStream(
   })
   await shellReady
   if (didError) throw firstErr
-  if (disable) await streamEnd
+  if (disable) await allReady
   if (didError) throw firstErr
   promiseResolved = true
   return {
