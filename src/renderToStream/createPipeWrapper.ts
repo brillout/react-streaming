@@ -23,9 +23,11 @@ async function createPipeWrapper(
   const { injectToStream, onBeforeWrite, onBeforeEnd } = createBuffer(bufferParams)
   return { pipeWrapper, streamEnd, injectToStream }
 
-  function createPipeWrapper(): { pipeWrapper: Pipe, streamEnd: Promise<void> } {
+  function createPipeWrapper(): { pipeWrapper: Pipe; streamEnd: Promise<void> } {
     let onEnded!: () => void
-    const streamEnd = new Promise<void>(r => { onEnded = () => r() })
+    const streamEnd = new Promise<void>((r) => {
+      onEnded = () => r()
+    })
     const pipeWrapper: Pipe = (writable: StreamNodeWritable) => {
       const writableProxy = new Writable({
         write(chunk: unknown, encoding, callback) {

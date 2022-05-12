@@ -12,7 +12,9 @@ function createReadableWrapper(readableOriginal: ReadableStream, options: { debu
   }
   let controllerWrapper: ReadableStreamController<any>
   let onEnded!: () => void
-  const streamEnd = new Promise<void>(r => { onEnded = () => r() })
+  const streamEnd = new Promise<void>((r) => {
+    onEnded = () => r()
+  })
   const readableWrapper = new ReadableStream({
     start(controller) {
       controllerWrapper = controller

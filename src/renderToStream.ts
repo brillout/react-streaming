@@ -91,7 +91,8 @@ async function renderToNodeStream(
     firstErr ??= err
     onShellReady()
     afterReactBugCatch(() => {
-      if (err !== reactBug) { // Is not a React internal error (i.e. a React bug)
+      // Is not a React internal error (i.e. a React bug)
+      if (err !== reactBug) {
         options.onBoundaryError?.(err)
       }
     })
@@ -115,7 +116,8 @@ async function renderToNodeStream(
       didError = true
       firstErr ??= err
       reactBug = err
-      if (reactBug !== firstErr || promiseResolved) { // Only log if it wasn't used as rejection for `await renderToStream()`
+      // Only log if it wasn't used as rejection for `await renderToStream()`
+      if (reactBug !== firstErr || promiseResolved) {
         console.error(reactBug)
       }
     }
@@ -148,7 +150,8 @@ async function renderToWebStream(
     didError = true
     firstErr = firstErr || err
     afterReactBugCatch(() => {
-      if (err !== reactBug) { // Is not a React internal error (i.e. a React bug)
+      // Is not a React internal error (i.e. a React bug)
+      if (err !== reactBug) {
         options.onBoundaryError?.(err)
       }
     })
@@ -164,7 +167,8 @@ async function renderToWebStream(
     didError = true
     firstErr = firstErr || err
     reactBug = err
-    if (reactBug !== firstErr || promiseResolved) { // Only log if it wasn't used as rejection for `await renderToStream()`
+    // Only log if it wasn't used as rejection for `await renderToStream()`
+    if (reactBug !== firstErr || promiseResolved) {
       console.error(reactBug)
     }
   })

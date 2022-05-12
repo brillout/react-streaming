@@ -8,7 +8,9 @@ import isBot from 'isbot-fast'
 import { assertWarning } from '../utils'
 
 type SeoStrategy = 'conservative' | 'google-speed'
-function resolveSeoStrategy(options: { seoStrategy?: SeoStrategy; userAgent?: string } = {}): { disableStream: boolean } {
+function resolveSeoStrategy(options: { seoStrategy?: SeoStrategy; userAgent?: string } = {}): {
+  disableStream: boolean
+} {
   const seoStrategy: SeoStrategy = options.seoStrategy || 'conservative'
 
   if (!options.userAgent) {
