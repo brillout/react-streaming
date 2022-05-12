@@ -98,7 +98,7 @@ The solution: `react-streaming`.
 
 ### Options
 
-```js
+```jsx
 const options = {
   // ...
 }
@@ -130,7 +130,7 @@ await renderToStream(<Page />, options)
 - `options.userAgent?: string`: The HTTP User-Agent request header. (Needed for `options.seoStrategy`.)
 - `options.webStream?: boolean`: Use Web Streams instead of Node.js Streams in Node.js. ([Node.js 18 released Web Streams support](https://nodejs.org/en/blog/announcements/v18-release-announce/#web-streams-api-experimental).)
 - `options.onBoundaryError?: (err: unknown) => void`: Called when a `<Suspense>` boundary fails. See [Error Handling](#error-handling).
--  ```ts
+-  ```tsx
    const { streamEnd } = await renderToStream(<Page />)
    // ✅ Page Shell succesfully rendered.
    const success: boolean = await streamEnd
@@ -152,7 +152,7 @@ The promise `await renderToStream()` resolves after the page shell is rendered. 
 
 > :book: The page shell is the set of all components before `<Suspense>` boundaries.
 
-```js
+```jsx
 try {
   await renderToStream(<Page />)
   // ✅ Page shell succesfully rendered and is ready in the stream buffer.
