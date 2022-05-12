@@ -15,6 +15,7 @@ specifiers:
 
 dependencies:
   '@brillout/json-s': 0.4.5
+  debug: 4.3.4
   isbot-fast: 1.2.0
 
 devDependencies:
@@ -22,7 +23,6 @@ devDependencies:
   '@types/node': 15.14.9
   '@types/react': 18.0.5
   '@types/react-dom': 18.0.1
-  debug: 4.3.4
   react: 18.1.0
   react-dom: 18.1.0_react@18.1.0
   typescript: 4.6.3
@@ -115,7 +115,7 @@ packages:
         optional: true
     dependencies:
       ms: 2.1.2
-    dev: true
+    dev: false
 
   /deep-eql/3.0.1:
     resolution: {integrity: sha512-+QeIQyN5ZuO+3Uk5DYh6/1eKO0m0YmJFGNmFHGACpf1ClL1nmlV/p4gNgbl2pJGxgXb4faqo6UE+M5ACEMyVcw==}
@@ -390,7 +390,7 @@ packages:
 
   /ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
-    dev: true
+    dev: false
 
   /nanoid/3.3.3:
     resolution: {integrity: sha512-p1sjXuopFs0xg+fPASzQ28agW1oHD7xDsd9Xkf3T15H3c/cifrFHVwrh74PdoklAPi+i7MdRsE47vm2r6JoB+w==}
