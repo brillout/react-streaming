@@ -2,11 +2,11 @@ lockfileVersion: 5.4
 
 specifiers:
   '@brillout/json-s': ^0.4.5
-  '@types/debug': ^4.1.7
+  '@types/debug': 4.1.7
   '@types/node': ^15.12.2
   '@types/react': ^18.0.5
   '@types/react-dom': ^18.0.1
-  debug: ^4.3.4
+  debug: 4.3.4
   isbot-fast: 1.2.0
   react: 18.1.0
   react-dom: 18.1.0

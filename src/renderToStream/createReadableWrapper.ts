@@ -2,12 +2,10 @@ export { createReadableWrapper }
 
 import { createBuffer } from './createBuffer'
 
-function createReadableWrapper(readableOriginal: ReadableStream, options: { debug?: boolean }) {
+function createReadableWrapper(readableOriginal: ReadableStream) {
   const bufferParams: {
-    debug: boolean
     writeChunk: null | ((_chunk: string) => void)
   } = {
-    debug: !!options.debug,
     writeChunk: null
   }
   let controllerWrapper: ReadableStreamController<any>

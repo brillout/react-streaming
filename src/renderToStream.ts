@@ -8,13 +8,13 @@ import { StreamProvider } from './useStream'
 import { createPipeWrapper, Pipe } from './renderToStream/createPipeWrapper'
 import { createReadableWrapper } from './renderToStream/createReadableWrapper'
 import { resolveSeoStrategy, SeoStrategy } from './renderToStream/resolveSeoStrategy'
-import { assert, assertUsage } from './utils'
+import { assert, assertUsage, createDebugger } from './utils'
 import { nodeStreamModuleIsAvailable } from './renderToStream/loadNodeStreamModule'
+const debug = createDebugger('react-streaming:flow')
 
 assertReact()
 
 type Options = {
-  debug?: boolean
   webStream?: boolean
   disable?: boolean
   seoStrategy?: SeoStrategy
@@ -56,6 +56,7 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
 
   const disable = globalConfig.disable || (options.disable ?? resolveSeoStrategy(options).disableStream)
   const webStream = options.webStream ?? !(await nodeStreamModuleIsAvailable())
+  debug(`disable === ${disable} && webStream === ${webStream}`)
 
   let result: Result
   if (!webStream) {
@@ -66,6 +67,7 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
 
   injectToStream = result.injectToStream
 
+  debug('promise `await renderToStream()` resolved')
   return result
 }
 
@@ -79,6 +81,8 @@ async function renderToNodeStream(
     renderToPipeableStream?: typeof renderToPipeableStream
   }
 ) {
+  debug('creating Node.js Stream Pipe')
+
   let onShellReady!: () => void
   const shellReady = new Promise<void>((r) => {
     onShellReady = () => r()
@@ -87,6 +91,7 @@ async function renderToNodeStream(
   let firstErr: unknown = null
   let reactBug: unknown = null
   const onError = (err: unknown) => {
+    debug('[react] onError() / onShellError()')
     didError = true
     firstErr ??= err
     onShellReady()
@@ -101,9 +106,11 @@ async function renderToNodeStream(
   assertReactImport(renderToPipeableStream_, 'renderToPipeableStream')
   const { pipe: pipeOriginal } = renderToPipeableStream_(element, {
     onShellReady() {
+      debug('[react] onShellReady()')
       onShellReady()
     },
     onAllReady() {
+      debug('[react] onAllReady()')
       onShellReady()
     },
     onShellError: onError,
@@ -111,8 +118,8 @@ async function renderToNodeStream(
   })
   let promiseResolved = false
   const { pipeWrapper, injectToStream, streamEnd } = await createPipeWrapper(pipeOriginal, {
-    debug: options.debug,
     onReactBug(err) {
+      debug('react bug')
       didError = true
       firstErr ??= err
       reactBug = err
@@ -143,6 +150,8 @@ async function renderToWebStream(
     renderToReadableStream?: typeof renderToReadableStream
   }
 ) {
+  debug('creating Web Stream Pipe')
+
   let didError = false
   let firstErr: unknown = null
   let reactBug: unknown = null
@@ -164,6 +173,7 @@ async function renderToWebStream(
   // Upon React internal errors (i.e. React bugs), React rejects `allReady`.
   // React doesn't reject `allReady` upon boundary errors.
   allReady.catch((err) => {
+    debug('react bug')
     didError = true
     firstErr = firstErr || err
     reactBug = err
@@ -175,7 +185,7 @@ async function renderToWebStream(
   if (didError) throw firstErr
   if (disable) await allReady
   if (didError) throw firstErr
-  const { readableWrapper, streamEnd, injectToStream } = createReadableWrapper(readableOriginal, options)
+  const { readableWrapper, streamEnd, injectToStream } = createReadableWrapper(readableOriginal)
   promiseResolved = true
   return {
     readable: readableWrapper,

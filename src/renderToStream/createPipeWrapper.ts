@@ -2,57 +2,58 @@ export { createPipeWrapper }
 export type { Pipe }
 
 import type { Writable as StreamNodeWritable } from 'stream'
+import { createDebugger } from '../utils'
 import { createBuffer } from './createBuffer'
 import { loadNodeStreamModule } from './loadNodeStreamModule'
+const debug = createDebugger('react-streaming:createPipeWrapper')
 
 type Pipe = (writable: StreamNodeWritable) => void
 
-async function createPipeWrapper(
-  pipeOriginal: Pipe,
-  { debug, onReactBug }: { debug?: boolean; onReactBug: (err: unknown) => void }
-) {
+async function createPipeWrapper(pipeOriginal: Pipe, { onReactBug }: { onReactBug: (err: unknown) => void }) {
   const { Writable } = await loadNodeStreamModule()
   const { pipeWrapper, streamEnd } = createPipeWrapper()
   const bufferParams: {
-    debug?: boolean
     writeChunk: null | ((_chunk: string) => void)
   } = {
-    debug,
     writeChunk: null
   }
   const { injectToStream, onBeforeWrite, onBeforeEnd } = createBuffer(bufferParams)
   return { pipeWrapper, streamEnd, injectToStream }
 
   function createPipeWrapper(): { pipeWrapper: Pipe; streamEnd: Promise<void> } {
+    debug('createPipeWrapper()')
     let onEnded!: () => void
     const streamEnd = new Promise<void>((r) => {
       onEnded = () => r()
     })
-    const pipeWrapper: Pipe = (writable: StreamNodeWritable) => {
+    const pipeWrapper: Pipe = (writableOriginal: StreamNodeWritable) => {
       const writableProxy = new Writable({
         write(chunk: unknown, encoding, callback) {
+          debug('write')
           onBeforeWrite(chunk)
-          writable.write(chunk, encoding, callback)
+          writableOriginal.write(chunk, encoding, callback)
         },
         final(callback) {
+          debug('final')
           onBeforeEnd()
-          writable.end()
+          writableOriginal.end()
           onEnded()
           callback()
         },
         destroy(err) {
+          debug(`destroy (\`!!err === ${!!err}\`)`)
           // Upon React internal errors (i.e. React bugs), React destroys the stream.
           if (err) onReactBug(err)
-          writable.destroy(err ?? undefined)
+          writableOriginal.destroy(err ?? undefined)
           onEnded()
         }
       })
       bufferParams.writeChunk = (chunk: string) => {
-        writable.write(chunk)
+        writableOriginal.write(chunk)
       }
       ;(writableProxy as any).flush = () => {
-        if (typeof (writable as any).flush === 'function') {
-          ;(writable as any).flush()
+        if (typeof (writableOriginal as any).flush === 'function') {
+          ;(writableOriginal as any).flush()
         }
       }
       pipeOriginal(writableProxy)

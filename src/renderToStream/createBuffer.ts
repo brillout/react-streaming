@@ -1,18 +1,19 @@
 export { createBuffer }
 
-import { assert, assertUsage } from '../utils'
+import { assert, assertUsage, createDebugger } from '../utils'
 
-function createBuffer(bufferParams: { debug?: boolean; writeChunk: null | ((_chunk: string) => void) }) {
+const debug = createDebugger('react-streaming:buffer')
+
+function createBuffer(bufferParams: { writeChunk: null | ((_chunk: string) => void) }) {
   const buffer: string[] = []
   let state: 'UNSTARTED' | 'STREAMING' | 'ENDED' = 'UNSTARTED'
   let writePermission: null | boolean = null // Set to `null` because React fails to hydrate if something is injected before the first react write
-  const DEBUG = !!bufferParams.debug
 
   return { injectToStream, onBeforeWrite, onBeforeEnd }
 
   function injectToStream(chunk: string) {
     assertUsage(state !== 'ENDED', `Cannot inject following chunk after stream has ended: \`${chunk}\``)
-    DEBUG && console.log('injectToStream:', chunk)
+    debug('injectToStream:', chunk)
     buffer.push(chunk)
     flushBuffer()
   }
@@ -37,19 +38,19 @@ function createBuffer(bufferParams: { debug?: boolean; writeChunk: null | ((_chu
   }
 
   function onBeforeWrite(chunk: unknown) {
-    DEBUG && state === 'UNSTARTED' && console.log('>>> START')
-    DEBUG && console.log(`react write ${!writePermission ? '' : '(writePermission)'}:`, String(chunk))
+    state === 'UNSTARTED' && debug('>>> START')
+    debug(`react write${!writePermission ? '' : ' (allowed)'}:`, String(chunk))
     state = 'STREAMING'
     if (writePermission) {
       flushBuffer()
     }
     if (writePermission == true || writePermission === null) {
       writePermission = false
-      DEBUG && console.log('writePermission =', writePermission)
+      debug('writePermission =', writePermission)
       setTimeout(() => {
-        DEBUG && console.log('>>> setTimeout()')
+        debug('>>> setTimeout()')
         writePermission = true
-        DEBUG && console.log('writePermission =', writePermission)
+        debug('writePermission =', writePermission)
         flushBuffer()
       })
     }
@@ -57,10 +58,10 @@ function createBuffer(bufferParams: { debug?: boolean; writeChunk: null | ((_chu
 
   function onBeforeEnd() {
     writePermission = true
-    DEBUG && console.log('writePermission =', writePermission)
+    debug('writePermission =', writePermission)
     flushBuffer()
     assert(buffer.length === 0)
     state = 'ENDED'
-    DEBUG && console.log('>>> END')
+    debug('>>> END')
   }
 }
