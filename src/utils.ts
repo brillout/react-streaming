@@ -32,3 +32,27 @@ export function assertWarning(condition: unknown, msg: string) {
   if (condition) return
   console.warn('[react-streaming][Warning] ' + msg)
 }
+
+import debug from 'debug'
+export function createDebugger(
+  namespace: `react-streaming:${string}`,
+  options: { onlyWhenFocused?: true | string } = {}
+): debug.Debugger['log'] {
+  const DEBUG = process.env.DEBUG
+  const DEBUG_FILTER = process.env.REACT_STREAMING_DEBUG_FILTER || process.env.DEBUG_FILTER
+
+  const log = debug(namespace)
+
+  const { onlyWhenFocused } = options
+  const focus = typeof onlyWhenFocused === 'string' ? onlyWhenFocused : namespace
+
+  return (msg: string, ...args: any[]) => {
+    if (DEBUG_FILTER && !msg.includes(DEBUG_FILTER)) {
+      return
+    }
+    if (onlyWhenFocused && !DEBUG?.includes(focus)) {
+      return
+    }
+    log(msg, ...args)
+  }
+}
