@@ -38,8 +38,19 @@ export function createDebugger(
   namespace: `react-streaming:${string}`,
   options: { onlyWhenFocused?: true | string } = {}
 ): debug.Debugger['log'] {
-  const DEBUG = process.env.DEBUG
-  const DEBUG_FILTER = process.env.REACT_STREAMING_DEBUG_FILTER || process.env.DEBUG_FILTER
+  let DEBUG: undefined | string
+  let DEBUG_FILTER: undefined | string
+  // - `process` can be undefined in edge workers
+  // - We want bundlers to be able to statically replace `process.env.*`
+  try {
+    DEBUG = process.env.DEBUG
+  } catch {}
+  try {
+    DEBUG_FILTER = process.env.DEBUG_FILTER_REACT_STREAMING
+  } catch {}
+  try {
+    DEBUG_FILTER ||= process.env.DEBUG_FILTER
+  } catch {}
 
   const log = debug(namespace)
 
