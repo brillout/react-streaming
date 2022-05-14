@@ -3,6 +3,7 @@ export { disable }
 
 import React from 'react'
 import ReactDOMServer, { version as reactDomVersion } from 'react-dom/server'
+import type { renderToPipeableStream as RenderToPipeableStream, renderToReadableStream as RenderToReadableStream } from 'react-dom/server'
 import { SsrDataProvider } from './useSsrData'
 import { StreamProvider } from './useStream'
 import { createPipeWrapper, Pipe } from './renderToStream/createPipeWrapper'
@@ -14,17 +15,14 @@ const debug = createDebugger('react-streaming:flow')
 
 assertReact()
 
-type RenderToReadableStream = typeof import('react-dom/server').renderToReadableStream
-type RenderToPipeableStream = typeof import('react-dom/server').renderToPipeableStream
-
 type Options = {
   webStream?: boolean
   disable?: boolean
   seoStrategy?: SeoStrategy
   userAgent?: string
   onBoundaryError?: (err: unknown) => void
-  renderToReadableStream?: RenderToReadableStream
-  renderToPipeableStream?: RenderToPipeableStream
+  renderToReadableStream?: typeof RenderToReadableStream
+  renderToPipeableStream?: typeof RenderToPipeableStream
 }
 type Result = (
   | {
@@ -80,7 +78,7 @@ async function renderToNodeStream(
   options: {
     debug?: boolean
     onBoundaryError?: (err: unknown) => void
-    renderToPipeableStream?: RenderToPipeableStream
+    renderToPipeableStream?: typeof RenderToPipeableStream
   }
 ) {
   debug('creating Node.js Stream Pipe')
@@ -109,9 +107,9 @@ async function renderToNodeStream(
       }
     })
   }
-  const renderToPipeableStream_ = options.renderToPipeableStream ?? await (await import('react-dom/server')).renderToPipeableStream
-  assertReactImport(renderToPipeableStream_, 'renderToPipeableStream')
-  const { pipe: pipeOriginal } = renderToPipeableStream_(element, {
+  const renderToPipeableStream = options.renderToPipeableStream ?? (await import('react-dom/server')).renderToPipeableStream
+  assertReactImport(renderToPipeableStream, 'renderToPipeableStream')
+  const { pipe: pipeOriginal } = renderToPipeableStream(element, {
     onShellReady() {
       debug('[react] onShellReady()')
       onShellReady()
@@ -155,7 +153,7 @@ async function renderToWebStream(
   options: {
     debug?: boolean
     onBoundaryError?: (err: unknown) => void
-    renderToReadableStream?: RenderToReadableStream
+    renderToReadableStream?: typeof RenderToReadableStream
   }
 ) {
   debug('creating Web Stream Pipe')
@@ -173,9 +171,9 @@ async function renderToWebStream(
       }
     })
   }
-  const renderToReadableStream_ = options.renderToReadableStream ?? await (await import('react-dom/server')).renderToReadableStream
-  assertReactImport(renderToReadableStream_, 'renderToReadableStream')
-  const readableOriginal = await renderToReadableStream_(element, { onError })
+  const renderToReadableStream = options.renderToReadableStream ?? (await import('react-dom/server')).renderToReadableStream
+  assertReactImport(renderToReadableStream, 'renderToReadableStream')
+  const readableOriginal = await renderToReadableStream(element, { onError })
   const { allReady } = readableOriginal
   let promiseResolved = false
   // Upon React internal errors (i.e. React bugs), React rejects `allReady`.
