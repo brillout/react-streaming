@@ -2,7 +2,7 @@ export { renderToStream }
 export { disable }
 
 import React from 'react'
-import { renderToPipeableStream, renderToReadableStream, version as reactDomVersion } from 'react-dom/server'
+import ReactDOMServer, { version as reactDomVersion } from 'react-dom/server'
 import { SsrDataProvider } from './useSsrData'
 import { StreamProvider } from './useStream'
 import { createPipeWrapper, Pipe } from './renderToStream/createPipeWrapper'
@@ -14,14 +14,17 @@ const debug = createDebugger('react-streaming:flow')
 
 assertReact()
 
+type RenderToReadableStream = typeof import('react-dom/server').renderToReadableStream
+type RenderToPipeableStream = typeof import('react-dom/server').renderToPipeableStream
+
 type Options = {
   webStream?: boolean
   disable?: boolean
   seoStrategy?: SeoStrategy
   userAgent?: string
   onBoundaryError?: (err: unknown) => void
-  renderToReadableStream?: typeof renderToReadableStream
-  renderToPipeableStream?: typeof renderToPipeableStream
+  renderToReadableStream?: RenderToReadableStream
+  renderToPipeableStream?: RenderToPipeableStream
 }
 type Result = (
   | {
@@ -77,8 +80,7 @@ async function renderToNodeStream(
   options: {
     debug?: boolean
     onBoundaryError?: (err: unknown) => void
-    renderToReadableStream?: typeof renderToReadableStream
-    renderToPipeableStream?: typeof renderToPipeableStream
+    renderToPipeableStream?: RenderToPipeableStream
   }
 ) {
   debug('creating Node.js Stream Pipe')
@@ -107,7 +109,7 @@ async function renderToNodeStream(
       }
     })
   }
-  const renderToPipeableStream_ = options.renderToPipeableStream ?? renderToPipeableStream
+  const renderToPipeableStream_ = options.renderToPipeableStream ?? await (await import('react-dom/server')).renderToPipeableStream
   assertReactImport(renderToPipeableStream_, 'renderToPipeableStream')
   const { pipe: pipeOriginal } = renderToPipeableStream_(element, {
     onShellReady() {
@@ -153,7 +155,7 @@ async function renderToWebStream(
   options: {
     debug?: boolean
     onBoundaryError?: (err: unknown) => void
-    renderToReadableStream?: typeof renderToReadableStream
+    renderToReadableStream?: RenderToReadableStream
   }
 ) {
   debug('creating Web Stream Pipe')
@@ -171,7 +173,7 @@ async function renderToWebStream(
       }
     })
   }
-  const renderToReadableStream_ = options.renderToReadableStream ?? renderToReadableStream
+  const renderToReadableStream_ = options.renderToReadableStream ?? await (await import('react-dom/server')).renderToReadableStream
   assertReactImport(renderToReadableStream_, 'renderToReadableStream')
   const readableOriginal = await renderToReadableStream_(element, { onError })
   const { allReady } = readableOriginal
@@ -225,7 +227,7 @@ function assertReact() {
     versionMajor >= 18,
     `\`react-dom@${reactDomVersion}\` was loaded, but react-streaming only works with React version 18 or greater.`
   )
-  assert(typeof renderToPipeableStream === 'function' || typeof renderToReadableStream === 'function')
+  assert(typeof ReactDOMServer.renderToPipeableStream === 'function' || typeof ReactDOMServer.renderToReadableStream === 'function')
 }
 function assertReactImport(fn: unknown, fnName: string) {
   assertUsage(
