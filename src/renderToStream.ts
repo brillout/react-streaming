@@ -5,8 +5,7 @@ import React from 'react'
 import ReactDOMServer, { version as reactDomVersion } from 'react-dom/server'
 import { SsrDataProvider } from './useSsrData'
 import { StreamProvider } from './useStream'
-import { createPipeWrapper, Pipe } from './renderToStream/createPipeWrapper'
-import { createReadableWrapper } from './renderToStream/createReadableWrapper'
+import type { Pipe } from './renderToStream/createPipeWrapper'
 import { resolveSeoStrategy, SeoStrategy } from './renderToStream/resolveSeoStrategy'
 import { assert, assertUsage, createDebugger } from './utils'
 import { nodeStreamModuleIsAvailable } from './renderToStream/loadNodeStreamModule'
@@ -125,6 +124,7 @@ async function renderToNodeStream(
     onError
   })
   let promiseResolved = false
+  const { createPipeWrapper } = await import('./renderToStream/createPipeWrapper')
   const { pipeWrapper, injectToStream, streamEnd } = await createPipeWrapper(pipeOriginal, {
     onReactBug(err) {
       debug('react bug')
@@ -193,6 +193,7 @@ async function renderToWebStream(
   if (didError) throw firstErr
   if (disable) await allReady
   if (didError) throw firstErr
+  const { createReadableWrapper } = await import('./renderToStream/createReadableWrapper')
   const { readableWrapper, streamEnd, injectToStream } = createReadableWrapper(readableOriginal)
   promiseResolved = true
   return {
