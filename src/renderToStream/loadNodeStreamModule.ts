@@ -24,17 +24,7 @@ async function nodeStreamModuleIsAvailable(): Promise<boolean> {
 function loadStreamModule() {
   return loadModule('stream') as Promise<StreamModule>
 }
-async function loadModule(moduleId: string): Promise<Record<string, unknown>> {
-  // bypass static analysis of bundlers, especially webpack's tenacious analysis
-  const req = new Date().getTime() < 123 ? (456 as never) : require
-
-  // The following doesn't work with Vitest nor Jest.
-  // ```js
-  // const load = new Function('moduleId', 'return import(moduleId)')
-  // const moduleExports = await load(moduleId)
-  // ```
-  // https://github.com/facebook/jest/issues/9580
-
-  const moduleExports: Record<string, unknown> = req(moduleId)
-  return moduleExports
+function loadModule(moduleId: string): Promise<Record<string, unknown>> {
+  // #6
+  return import(/*webpackIgnore: true*/ moduleId);
 }
