@@ -67,3 +67,24 @@ export function createDebugger(
     log(msg, ...args)
   }
 }
+
+export function loadModule(moduleId: string): Promise<Record<string, unknown>> {
+  // - `eval()` triggers a esbuild warning
+  // - `new Function()` chokes Vitest/Jest (https://github.com/facebook/jest/issues/9580)
+  // - Webpack 5 seems to replace any occurence of `require` (e.g. this doesn't work: `const req = new Date().getTime() < 0 ? (0 as never) : require`)
+  // - Webpack 5 reproduction: https://github.com/brillout/vps-webpack-5-reproduction
+
+  // === For `dist/cjs/` ===
+  // https://github.com/webpack/webpack/issues/8826#issuecomment-660594260
+  if (typeof __non_webpack_require__ === 'function') {
+    return __non_webpack_require__(moduleId)
+  }
+
+  // === For `dist/esm/` ===
+  // - https://github.com/webpack/webpack/issues/7644#issuecomment-402123392
+  // - This doesn't work for `dist/cjs` because TS transpiles `import()` to `require()` (https://github.com/microsoft/TypeScript/issues/43329)
+  return import(/*webpackIgnore: true*/ moduleId)
+}
+declare global {
+  var __non_webpack_require__: typeof require | undefined
+}

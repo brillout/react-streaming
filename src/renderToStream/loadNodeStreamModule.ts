@@ -2,6 +2,7 @@ export { loadNodeStreamModule }
 export { nodeStreamModuleIsAvailable }
 
 import type { Readable as StreamNodeReadable, Writable as StreamNodeWritable } from 'stream'
+import { loadModule } from '../utils'
 
 type StreamModule = {
   Readable: typeof StreamNodeReadable
@@ -23,8 +24,4 @@ async function nodeStreamModuleIsAvailable(): Promise<boolean> {
 }
 function loadStreamModule() {
   return loadModule('stream') as Promise<StreamModule>
-}
-function loadModule(moduleId: string): Promise<Record<string, unknown>> {
-  // #6
-  return import(/*webpackIgnore: true*/ moduleId);
 }
