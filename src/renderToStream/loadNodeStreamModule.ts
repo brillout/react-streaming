@@ -2,7 +2,7 @@ export { loadNodeStreamModule }
 export { nodeStreamModuleIsAvailable }
 
 import type { Readable as StreamNodeReadable, Writable as StreamNodeWritable } from 'stream'
-import { loadModule } from '../utils'
+import loadModule from '@brillout/load-module'
 
 type StreamModule = {
   Readable: typeof StreamNodeReadable
