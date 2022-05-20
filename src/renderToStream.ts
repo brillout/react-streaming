@@ -3,7 +3,10 @@ export { disable }
 
 import React from 'react'
 import ReactDOMServer, { version as reactDomVersion } from 'react-dom/server'
-import type { renderToPipeableStream as RenderToPipeableStream, renderToReadableStream as RenderToReadableStream } from 'react-dom/server'
+import type {
+  renderToPipeableStream as RenderToPipeableStream,
+  renderToReadableStream as RenderToReadableStream
+} from 'react-dom/server'
 import { SsrDataProvider } from './useSsrData'
 import { StreamProvider } from './useStream'
 import { createPipeWrapper, Pipe } from './renderToStream/createPipeWrapper'
@@ -107,7 +110,8 @@ async function renderToNodeStream(
       }
     })
   }
-  const renderToPipeableStream = options.renderToPipeableStream ?? (await import('react-dom/server')).renderToPipeableStream
+  const renderToPipeableStream =
+    options.renderToPipeableStream ?? (await import('react-dom/server')).renderToPipeableStream
   assertReactImport(renderToPipeableStream, 'renderToPipeableStream')
   const { pipe: pipeOriginal } = renderToPipeableStream(element, {
     onShellReady() {
@@ -171,7 +175,8 @@ async function renderToWebStream(
       }
     })
   }
-  const renderToReadableStream = options.renderToReadableStream ?? (await import('react-dom/server')).renderToReadableStream
+  const renderToReadableStream =
+    options.renderToReadableStream ?? (await import('react-dom/server')).renderToReadableStream
   assertReactImport(renderToReadableStream, 'renderToReadableStream')
   const readableOriginal = await renderToReadableStream(element, { onError })
   const { allReady } = readableOriginal
@@ -225,7 +230,10 @@ function assertReact() {
     versionMajor >= 18,
     `\`react-dom@${reactDomVersion}\` was loaded, but react-streaming only works with React version 18 or greater.`
   )
-  assert(typeof ReactDOMServer.renderToPipeableStream === 'function' || typeof ReactDOMServer.renderToReadableStream === 'function')
+  assert(
+    typeof ReactDOMServer.renderToPipeableStream === 'function' ||
+      typeof ReactDOMServer.renderToReadableStream === 'function'
+  )
 }
 function assertReactImport(fn: unknown, fnName: string) {
   assertUsage(
