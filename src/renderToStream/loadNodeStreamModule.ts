@@ -2,7 +2,6 @@ export { loadNodeStreamModule }
 export { nodeStreamModuleIsAvailable }
 
 import type { Readable as StreamNodeReadable, Writable as StreamNodeWritable } from 'stream'
-import loadModule from '@brillout/load-module'
 
 type StreamModule = {
   Readable: typeof StreamNodeReadable
@@ -24,4 +23,7 @@ async function nodeStreamModuleIsAvailable(): Promise<boolean> {
 }
 function loadStreamModule() {
   return loadModule('stream') as Promise<StreamModule>
+}
+function loadModule(id: string) {
+  return import(/*webpackIgnore: true*/ id)
 }

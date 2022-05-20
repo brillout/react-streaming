@@ -1,7 +1,7 @@
 {
   "name": "react-streaming",
   "description": "React 18 Streaming. Full-fledged & Easy.",
-  "version": "0.2.12",
+  "version": "0.2.13",
   "main": "./dist/cjs/index.js",
   "peerDependencies": {
     "react": ">=18",
@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@brillout/json-s": "^0.4.5",
-    "@brillout/load-module": "^0.1.1",
     "debug": "4.3.4",
     "isbot-fast": "1.2.0"
   },
@@ -47,11 +46,11 @@
   "devDependencies": {
     "@types/debug": "4.1.7",
     "@types/node": "^15.12.2",
-    "@types/react": "^18.0.5",
-    "@types/react-dom": "^18.0.1",
+    "@types/react": "^18.0.9",
+    "@types/react-dom": "^18.0.4",
     "react": "18.1.0",
     "react-dom": "18.1.0",
-    "typescript": "^4.6.3",
+    "typescript": "4.7.0-beta",
     "vitest": "^0.9.4"
   },
   "files": [

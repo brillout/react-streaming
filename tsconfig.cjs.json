@@ -3,6 +3,7 @@
   "compilerOptions": {
     "outDir": "./dist/cjs/",
     "target": "ES2017",
-    "module": "CommonJS"
+    "module": "CommonJS",
+    "moduleResolution": "nodenext"
   }
 }
