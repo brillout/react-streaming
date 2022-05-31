@@ -51,6 +51,11 @@ const {
 } = await renderToStream(<Page />)
 ```
 
+> ⚠️
+> While `react-streaming` is stable in itself (it's used in production and has good CI test coverage), note that React's SSR streaming support is still early and that the React team is working on high-level APIs that may make parts of `react-streaming` obsolete, see [React RFC injectToStream - @sebmarkbage comment](https://github.com/reactjs/rfcs/pull/219#issuecomment-1115398084).
+
+<br/>
+
 ## Why Streaming
 
 React 18's new SSR streaming architecture unlocks many capabilities:
