@@ -67,8 +67,9 @@ function useSsrData<T>(key: string, asyncFn: () => Promise<T>, deps?: Dependency
     const ssrData = getSsrData(key)
     if (ssrData.isAvailable) {
       if (deps) {
-        hasChanged = deps.some(
-          (d, index) => !Object.is(d, ssrData?.deps[index])
+        assert(ssrData?.deps)
+        hasChanged = ssrData?.deps.some(
+          (d, index) => !Object.is(d, deps[index])
         );
       }
       if (!hasChanged) return ssrData.value as T;
