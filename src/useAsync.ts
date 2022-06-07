@@ -1,10 +1,8 @@
-
-
 export { useAsync }
 
 import { useId } from 'react'
 import { useSsrData } from './useSsrData'
-import { DependencyList } from "./types";
+import type { DependencyList } from './types'
 
 function useAsync<T>(asyncFn: () => Promise<T>, deps?: DependencyList): T {
   const id: string = useId()
