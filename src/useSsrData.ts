@@ -70,9 +70,10 @@ function useSsrData<T>(key: string, asyncFn: () => Promise<T>, deps?: Dependency
         hasChanged = true;
         if (deps && ssrData.deps) {
           hasChanged = ssrData?.deps.some(
-            (d, index) => !Object.is(d, deps[index])
+              (d, index) => !Object.is(d, deps[index])
           );
-       }
+        }
+      }
       if (!hasChanged) return ssrData.value as T;
     }
   }
