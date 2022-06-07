@@ -7,16 +7,16 @@ import { assert, isClientSide, isServerSide } from './utils'
 import { parse, stringify } from '@brillout/json-s'
 import type { DependencyList } from './types'
 
-const Ctx = React.createContext<Entries>(undefined as any)
-type Entries = Record<string, Entry>
-type Entry =
+const ctxSuspenses = React.createContext<Suspenses>(undefined as any)
+type Suspenses = Record<string, Suspense>
+type Suspense =
   | { state: 'pending'; promise: Promise<unknown>; deps?: DependencyList }
   | { state: 'error'; error: unknown }
   | { state: 'done'; value: unknown; deps?: DependencyList }
 
 function SsrDataProvider({ children }: { children: React.ReactNode }) {
-  const entries = {}
-  return React.createElement(Ctx.Provider, { value: entries }, children)
+  const suspenses = {}
+  return React.createElement(ctxSuspenses.Provider, { value: suspenses }, children)
 }
 
 type SsrData = { key: string; value: unknown; deps?: DependencyList }
@@ -39,7 +39,7 @@ function findSsrData(key: string): { elem: Element; data: SsrData } | null {
 }
 
 function useSsrData<T>(key: string, asyncFn: () => Promise<T>, deps?: DependencyList): T {
-  const entries = useContext(Ctx)
+  const suspenses = useContext(ctxSuspenses)
 
   let hasChanged = false
   if (isClientSide()) {
@@ -56,8 +56,8 @@ function useSsrData<T>(key: string, asyncFn: () => Promise<T>, deps?: Dependency
     }
   }
 
-  let entry = entries[key]
-  if (!entry || hasChanged) {
+  let suspense = suspenses[key]
+  if (!suspense || hasChanged) {
     const streamUtils = useStream()
     const promise = (async () => {
       let value: unknown
@@ -65,30 +65,30 @@ function useSsrData<T>(key: string, asyncFn: () => Promise<T>, deps?: Dependency
         value = await asyncFn()
       } catch (error) {
         // React seems buggy around error handling; we handle errors ourselves
-        entry = entries[key] = { state: 'error', error }
+        suspense = suspenses[key] = { state: 'error', error }
         return
       }
-      entry = entries[key] = { state: 'done', value }
+      suspense = suspenses[key] = { state: 'done', value }
       if (isServerSide()) {
         assert(streamUtils)
         streamUtils.injectToStream(getHtmlChunk({ key, value, deps }))
       } else {
         const { elem } = findSsrData(key) || {}
         if (elem) {
-          elem.textContent = stringify([{ key, value: entry.value, deps }])
+          elem.textContent = stringify([{ key, value: suspense.value, deps }])
         }
       }
     })()
-    entry = entries[key] = { state: 'pending', promise }
+    suspense = suspenses[key] = { state: 'pending', promise }
   }
-  if (entry.state === 'pending') {
-    throw entry.promise
+  if (suspense.state === 'pending') {
+    throw suspense.promise
   }
-  if (entry.state === 'error') {
-    throw entry.error
+  if (suspense.state === 'error') {
+    throw suspense.error
   }
-  if (entry.state === 'done') {
-    return entry.value as T
+  if (suspense.state === 'done') {
+    return suspense.value as T
   }
   assert(false)
 }
