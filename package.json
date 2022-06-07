@@ -51,7 +51,7 @@
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "typescript": "4.7.0-beta",
-    "vitest": "^0.9.4"
+    "vitest": "^0.14.1"
   },
   "files": [
     "dist/",
