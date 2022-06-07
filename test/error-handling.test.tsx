@@ -79,7 +79,7 @@ describe('error handling', async () => {
           // Page Shell
           '<!--$?--><template id="B:0"></template><p>Loading...</p><!--/$-->',
           // `useAsync()` script injection
-          '<script class="react-streaming_ssr-data" type="application/json">{"key":":R0:","value":"Hello, I was lazy."}</script>',
+          '<script class="react-streaming_ssr-data" type="application/json">{"key":":R0:","value":"Hello, I was lazy.","deps":"!undefined"}</script>',
           // React telling the client-side to re-try
           '<script>function $RX(a){if(a=document.getElementById(a))a=a.previousSibling,a.data="$!",a._reactRetry&&a._reactRetry()};$RX("B:0")</script>'
         ].join('')

@@ -71,7 +71,7 @@ function useSsrData<T>(key: string, asyncFn: () => Promise<T>, deps?: Dependency
       entry = entries[key] = { state: 'done', value }
       if (isServerSide()) {
         assert(streamUtils)
-        streamUtils.injectToStream(getHtmlChunk({ key, value }))
+        streamUtils.injectToStream(getHtmlChunk({ key, value, deps }))
       } else {
         const { elem } = findSsrData(key) || {}
         if (elem) {
