@@ -19,7 +19,7 @@ function SsrDataProvider({ children }: { children: React.ReactNode }) {
   return React.createElement(ctxSuspenses.Provider, { value: suspenses }, children)
 }
 
-type SsrData = { key: string; value: unknown; deps?: DependencyList }
+type SsrData = { key: string; value: unknown; deps: DependencyList }
 const className = 'react-streaming_ssr-data'
 function getHtmlChunk(data: SsrData): string {
   return `<script class="${className}" type="application/json">${stringify(data)}</script>`
@@ -38,20 +38,14 @@ function findSsrData(key: string): { elem: Element; data: SsrData } | null {
   return null
 }
 
-function useSsrData<T>(key: string, asyncFn: () => Promise<T>, deps?: DependencyList): T {
+function useSsrData<T>(key: string, asyncFn: () => Promise<T>, deps: DependencyList = []): T {
   const suspenses = useContext(ctxSuspenses)
 
   let hasChanged = false
   if (isClientSide()) {
     const { data } = findSsrData(key) || {}
     if (data) {
-      if (deps || data.deps) {
-        if (deps && data.deps) {
-          hasChanged = data.deps.some((d, index) => !Object.is(d, deps[index]))
-        } else {
-          hasChanged = true
-        }
-      }
+      hasChanged = data.deps.some((d, index) => !Object.is(d, deps[index]))
       if (!hasChanged) return data.value as T
     }
   }
