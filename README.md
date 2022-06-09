@@ -213,6 +213,9 @@ function MovieList() {
 }
 ```
 
+> ⚠️
+> `useAsync()` currently doesn't work because of a React bug: [#24669 - Bug: `useId()` not working inside `<Suspense>`](https://github.com/facebook/react/issues/24669).
+
 <br/>
 
 ## Get Started (Library Authors)
