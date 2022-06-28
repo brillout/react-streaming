@@ -127,7 +127,7 @@ async function renderToNodeStream(
     onError
   })
   let promiseResolved = false
-  const { pipeWrapper, injectToStream, streamEnd } = await createPipeWrapper(pipeOriginal, {
+  const { pipeForUser, injectToStream, streamEnd } = await createPipeWrapper(pipeOriginal, {
     onReactBug(err) {
       debug('react bug')
       didError = true
@@ -145,7 +145,7 @@ async function renderToNodeStream(
   if (didError) throw firstErr
   promiseResolved = true
   return {
-    pipe: pipeWrapper,
+    pipe: pipeForUser,
     readable: null,
     streamEnd: wrapStreamEnd(streamEnd, didError),
     injectToStream
@@ -196,10 +196,10 @@ async function renderToWebStream(
   if (didError) throw firstErr
   if (disable) await allReady
   if (didError) throw firstErr
-  const { readableWrapper, streamEnd, injectToStream } = createReadableWrapper(readableOriginal)
+  const { readableForUser, streamEnd, injectToStream } = createReadableWrapper(readableOriginal)
   promiseResolved = true
   return {
-    readable: readableWrapper,
+    readable: readableForUser,
     pipe: null,
     streamEnd: wrapStreamEnd(streamEnd, didError),
     injectToStream

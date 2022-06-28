@@ -7,36 +7,42 @@ import { createBuffer } from './createBuffer'
 import { loadNodeStreamModule } from './loadNodeStreamModule'
 const debug = createDebugger('react-streaming:createPipeWrapper')
 
+// `pipeFromReact` is the pipe provided by React
+// `pipeForUser` is the pipe we give to the user will (the wrapper)
+// `writableFromUser` is the writable provided by the user (i.e. `pipeForUser(writableFromUser)`), for example a Express.js's `res` writable stream.
+// `writableForReact` is the writable that React directly writes to.
+// Essentially: what React writes to `writableForReact` is piped to `writableFromUser`
+
 type Pipe = (writable: StreamNodeWritable) => void
 
-async function createPipeWrapper(pipeOriginal: Pipe, { onReactBug }: { onReactBug: (err: unknown) => void }) {
+async function createPipeWrapper(pipeFromReact: Pipe, { onReactBug }: { onReactBug: (err: unknown) => void }) {
   const { Writable } = await loadNodeStreamModule()
-  const { pipeWrapper, streamEnd } = createPipeWrapper()
+  const { pipeForUser, streamEnd } = createPipeForUser()
   const bufferParams: {
     writeChunk: null | ((_chunk: string) => void)
   } = {
     writeChunk: null
   }
   const { injectToStream, onBeforeWrite, onBeforeEnd } = createBuffer(bufferParams)
-  return { pipeWrapper, streamEnd, injectToStream }
+  return { pipeForUser, streamEnd, injectToStream }
 
-  function createPipeWrapper(): { pipeWrapper: Pipe; streamEnd: Promise<void> } {
-    debug('createPipeWrapper()')
+  function createPipeForUser(): { pipeForUser: Pipe; streamEnd: Promise<void> } {
+    debug('createPipeForUser()')
     let onEnded!: () => void
     const streamEnd = new Promise<void>((r) => {
       onEnded = () => r()
     })
-    const pipeWrapper: Pipe = (writableOriginal: StreamNodeWritable) => {
-      const writableProxy = new Writable({
+    const pipeForUser: Pipe = (writableFromUser: StreamNodeWritable) => {
+      const writableForReact = new Writable({
         write(chunk: unknown, encoding, callback) {
           debug('write')
           onBeforeWrite(chunk)
-          writableOriginal.write(chunk, encoding, callback)
+          writableFromUser.write(chunk, encoding, callback)
         },
         final(callback) {
           debug('final')
           onBeforeEnd()
-          writableOriginal.end()
+          writableFromUser.end()
           onEnded()
           callback()
         },
@@ -44,20 +50,20 @@ async function createPipeWrapper(pipeOriginal: Pipe, { onReactBug }: { onReactBu
           debug(`destroy (\`!!err === ${!!err}\`)`)
           // Upon React internal errors (i.e. React bugs), React destroys the stream.
           if (err) onReactBug(err)
-          writableOriginal.destroy(err ?? undefined)
+          writableFromUser.destroy(err ?? undefined)
           onEnded()
         }
       })
       bufferParams.writeChunk = (chunk: string) => {
-        writableOriginal.write(chunk)
+        writableFromUser.write(chunk)
       }
-      ;(writableProxy as any).flush = () => {
-        if (typeof (writableOriginal as any).flush === 'function') {
-          ;(writableOriginal as any).flush()
+      ;(writableForReact as any).flush = () => {
+        if (typeof (writableFromUser as any).flush === 'function') {
+          ;(writableFromUser as any).flush()
         }
       }
-      pipeOriginal(writableProxy)
+      pipeFromReact(writableForReact)
     }
-    return { pipeWrapper, streamEnd }
+    return { pipeForUser, streamEnd }
   }
 }
