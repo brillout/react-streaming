@@ -25,6 +25,8 @@
     "build:cjs": "tsc --project ./tsconfig.cjs.json",
     "build:esm": "tsc --project ./tsconfig.esm.json",
     "prepublishOnly": "pnpm run build",
+    "// === https://deno.land/x, see #12 ===": "",
+    "postpublish": "PACKAGE_VERSION=$(cat package.json | grep \\\"version\\\" | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git tag v$PACKAGE_VERSION && git push --tags",
     "clean": "rm -rf dist/"
   },
   "exports": {
