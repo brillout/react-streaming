@@ -24,10 +24,11 @@
     "build": "pnpm run clean && pnpm run build:cjs && pnpm run build:esm",
     "build:cjs": "tsc --project ./tsconfig.cjs.json",
     "build:esm": "tsc --project ./tsconfig.esm.json",
+    "clean": "rm -rf dist/",
+    "// === Release ===": "",
     "prepublishOnly": "pnpm run build",
-    "// === https://deno.land/x, see #12 ===": "",
-    "postpublish": "PACKAGE_VERSION=$(cat package.json | grep \\\"version\\\" | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git tag v$PACKAGE_VERSION && git push --tags",
-    "clean": "rm -rf dist/"
+    "postpublish": " git push && git push --tags",
+    "release": "npm version patch && npm publish"
   },
   "exports": {
     ".": {
