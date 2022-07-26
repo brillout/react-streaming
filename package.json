@@ -8,8 +8,8 @@
     "react-dom": ">=18"
   },
   "dependencies": {
+    "@brillout/debug": "^0.1.1",
     "@brillout/json-s": "^0.4.5",
-    "debug": "4.3.4",
     "isbot-fast": "1.2.0"
   },
   "scripts": {

@@ -1,12 +1,12 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@brillout/debug': ^0.1.1
   '@brillout/json-s': ^0.4.5
   '@types/debug': 4.1.7
   '@types/node': ^15.12.2
   '@types/react': ^18.0.9
   '@types/react-dom': ^18.0.4
-  debug: 4.3.4
   isbot-fast: 1.2.0
   react: 18.1.0
   react-dom: 18.1.0
@@ -14,8 +14,8 @@ specifiers:
   vitest: ^0.9.4
 
 dependencies:
+  '@brillout/debug': 0.1.1
   '@brillout/json-s': 0.4.5
-  debug: 4.3.4
   isbot-fast: 1.2.0
 
 devDependencies:
@@ -29,6 +29,10 @@ devDependencies:
   vitest: 0.9.4
 
 packages:
+
+  /@brillout/debug/0.1.1:
+    resolution: {integrity: sha512-8eswfYbIoRp1Uz0i50Fztk6z207YRY+rxNL0nkvZ1qYPUx2wxsFQr3J1agmmXXgoahsy/HFqhyApsSuaq8DHgw==}
+    dev: false
 
   /@brillout/json-s/0.4.5:
     resolution: {integrity: sha512-hiB4LVW4aFoxvJg//93/B1IlnVfVG15RnRFug+mAaCeM7LZzlQV4anAM4y4VzMVPShUCdbx208tnnb8N4I8dvg==}
@@ -104,18 +108,6 @@ packages:
   /csstype/3.0.11:
     resolution: {integrity: sha512-sa6P2wJ+CAbgyy4KFssIb/JNMLxFvKF1pCYCSXS8ZMuqZnMsrxqI2E5sPyoTpxoPU/gVZMzr2zjOfg8GIZOMsw==}
     dev: true
-
-  /debug/4.3.4:
-    resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
-    engines: {node: '>=6.0'}
-    peerDependencies:
-      supports-color: '*'
-    peerDependenciesMeta:
-      supports-color:
-        optional: true
-    dependencies:
-      ms: 2.1.2
-    dev: false
 
   /deep-eql/3.0.1:
     resolution: {integrity: sha512-+QeIQyN5ZuO+3Uk5DYh6/1eKO0m0YmJFGNmFHGACpf1ClL1nmlV/p4gNgbl2pJGxgXb4faqo6UE+M5ACEMyVcw==}
@@ -387,10 +379,6 @@ packages:
     dependencies:
       get-func-name: 2.0.0
     dev: true
-
-  /ms/2.1.2:
-    resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
-    dev: false
 
   /nanoid/3.3.3:
     resolution: {integrity: sha512-p1sjXuopFs0xg+fPASzQ28agW1oHD7xDsd9Xkf3T15H3c/cifrFHVwrh74PdoklAPi+i7MdRsE47vm2r6JoB+w==}
