@@ -34,11 +34,13 @@
     ".": {
       "worker": "./dist/cjs/index.js",
       "node": "./dist/cjs/index.js",
-      "browser": "./dist/esm/index.js"
+      "browser": "./dist/esm/index.js",
+      "deno": "./dist/esm/index.js"
     },
     "./server": {
       "worker": "./dist/cjs/server.js",
-      "node": "./dist/cjs/server.js"
+      "node": "./dist/cjs/server.js",
+      "deno": "./dist/esm/server.js"
     },
     "./client": {
       "browser": "./dist/esm/client.js"
