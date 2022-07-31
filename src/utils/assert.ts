@@ -1,12 +1,8 @@
-export function isServerSide() {
-  return !isClientSide()
-}
+export { assert }
+export { assertUsage }
+export { assertWarning }
 
-export function isClientSide() {
-  return typeof window !== 'undefined' && typeof window?.getComputedStyle === 'function'
-}
-
-export function assert(condition: unknown, debugInfo?: unknown): asserts condition {
+function assert(condition: unknown, debugInfo?: unknown): asserts condition {
   if (condition) return
 
   const debugStr = debugInfo && (typeof debugInfo === 'string' ? debugInfo : '`' + JSON.stringify(debugInfo) + '`')
@@ -23,12 +19,12 @@ export function assert(condition: unknown, debugInfo?: unknown): asserts conditi
   )
 }
 
-export function assertUsage(condition: unknown, msg: string): asserts condition {
+function assertUsage(condition: unknown, msg: string): asserts condition {
   if (condition) return
   throw new Error('[react-streaming][Wrong Usage] ' + msg)
 }
 
-export function assertWarning(condition: unknown, msg: string) {
+function assertWarning(condition: unknown, msg: string) {
   if (condition) return
   console.warn('[react-streaming][Warning] ' + msg)
 }
