@@ -39,6 +39,7 @@ type Result = (
     }
 ) & {
   streamEnd: Promise<boolean>
+  disabled: boolean
   injectToStream: (chunk: string) => void
 }
 
@@ -64,10 +65,11 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   debug(`disable === ${disable} && webStream === ${webStream}`)
 
   let result: Result
+  const resultPartial: Pick<Result, 'disabled'> = { disabled: disable }
   if (!webStream) {
-    result = await renderToNodeStream(element, disable, options)
+    result = { ...resultPartial, ...(await renderToNodeStream(element, disable, options)) }
   } else {
-    result = await renderToWebStream(element, disable, options)
+    result = { ...resultPartial, ...(await renderToWebStream(element, disable, options)) }
   }
 
   injectToStream = result.injectToStream
