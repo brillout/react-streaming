@@ -27,7 +27,7 @@
     "clean": "rm -rf dist/",
     "// === Release ===": "",
     "prepublishOnly": "pnpm run build",
-    "release": "npm version patch && npm publish git push && git push --tags"
+    "release": "npm version patch && npm publish && git push && git push --tags"
   },
   "exports": {
     ".": {
