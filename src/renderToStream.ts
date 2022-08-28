@@ -12,8 +12,7 @@ import { StreamProvider } from './useStream'
 import { createPipeWrapper, Pipe } from './renderToStream/createPipeWrapper'
 import { createReadableWrapper } from './renderToStream/createReadableWrapper'
 import { resolveSeoStrategy, SeoStrategy } from './renderToStream/resolveSeoStrategy'
-import { assert, assertUsage } from './utils'
-import { createDebugger } from '@brillout/debug'
+import { assert, assertUsage, createDebugger } from './utils'
 import { nodeStreamModuleIsAvailable } from './renderToStream/loadNodeStreamModule'
 const debug = createDebugger('react-streaming:flow')
 

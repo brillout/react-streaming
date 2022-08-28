@@ -2,7 +2,7 @@ export { createPipeWrapper }
 export type { Pipe }
 
 import type { Writable as StreamNodeWritable } from 'stream'
-import { createDebugger } from '@brillout/debug'
+import { createDebugger } from '../utils'
 import { createBuffer } from './createBuffer'
 import { loadNodeStreamModule } from './loadNodeStreamModule'
 const debug = createDebugger('react-streaming:createPipeWrapper')

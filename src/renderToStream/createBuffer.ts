@@ -1,7 +1,6 @@
 export { createBuffer }
 
-import { assert, assertUsage } from '../utils'
-import { createDebugger } from '@brillout/debug'
+import { assert, assertUsage, createDebugger } from '../utils'
 
 const debug = createDebugger('react-streaming:buffer')
 

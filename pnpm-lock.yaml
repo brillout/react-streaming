@@ -1,7 +1,6 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@brillout/debug': ^0.1.1
   '@brillout/json-s': ^0.4.5
   '@types/debug': 4.1.7
   '@types/node': ^15.12.2
@@ -14,7 +13,6 @@ specifiers:
   vitest: ^0.9.4
 
 dependencies:
-  '@brillout/debug': 0.1.1
   '@brillout/json-s': 0.4.5
   isbot-fast: 1.2.0
 
@@ -29,10 +27,6 @@ devDependencies:
   vitest: 0.9.4
 
 packages:
-
-  /@brillout/debug/0.1.1:
-    resolution: {integrity: sha512-8eswfYbIoRp1Uz0i50Fztk6z207YRY+rxNL0nkvZ1qYPUx2wxsFQr3J1agmmXXgoahsy/HFqhyApsSuaq8DHgw==}
-    dev: false
 
   /@brillout/json-s/0.4.5:
     resolution: {integrity: sha512-hiB4LVW4aFoxvJg//93/B1IlnVfVG15RnRFug+mAaCeM7LZzlQV4anAM4y4VzMVPShUCdbx208tnnb8N4I8dvg==}
