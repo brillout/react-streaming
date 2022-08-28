@@ -1,7 +1,7 @@
 {
   "name": "react-streaming",
   "description": "React 18 Streaming. Full-fledged & Easy.",
-  "version": "0.2.20",
+  "version": "0.2.21",
   "main": "./dist/cjs/index.js",
   "peerDependencies": {
     "react": ">=18",
@@ -54,7 +54,11 @@
     "typescript": "4.7.0-beta",
     "vitest": "^0.9.4"
   },
-  "files": ["dist/", "*.d.ts", "*.js"],
+  "files": [
+    "dist/",
+    "*.d.ts",
+    "*.js"
+  ],
   "repository": "github:brillout/react-streaming",
   "license": "MIT"
 }
