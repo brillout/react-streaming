@@ -3,7 +3,7 @@ export { useSsrData }
 
 import React, { useContext } from 'react'
 import { useStream } from './useStream'
-import { assert, isClientSide, isServerSide, isPromise } from './utils'
+import { assert, assertUsage, isClientSide, isServerSide, isPromise } from './utils'
 import { parse, stringify } from '@brillout/json-s'
 import type { DependencyList } from './types'
 
@@ -41,6 +41,7 @@ function findSsrData(key: string): { elem: Element; data: SsrData } | null {
 function useSsrData<T>(key: string, asyncFn: () => Promise<T>, deps: DependencyList = []): T {
   return handleHookError(() => {
     const suspenses = useContext(ctxSuspenses)
+    assertUsage(suspenses, "react-streaming isn't properly installed: <ReactStreaming> is wrapper missing.")
 
     let hasChanged = false
     if (isClientSide()) {
