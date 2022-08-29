@@ -1,10 +1,10 @@
 export { render }
 
-import { renderToStream } from '../src/renderToStream'
+import { renderToStream } from '../src/server'
 import { renderToReadableStream } from 'react-dom/server.browser'
 import { Writable } from 'stream'
 import { onConsoleError } from './onConsoleError'
-import { assertUsage } from '../src/utils'
+import { assertUsage } from '../src/utils/assert'
 
 assertUsage(
   typeof ReadableStream !== 'undefined',

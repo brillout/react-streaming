@@ -1,1 +1,1 @@
-export { renderToStream, disable } from './renderToStream'
+export { renderToStream, disable } from './node/renderToStream'

@@ -2,39 +2,43 @@ export { createReadableWrapper }
 
 import { createBuffer } from './createBuffer'
 
-function createReadableWrapper(readableOriginal: ReadableStream) {
+// `readableFromReact` is the readable stream provided by React
+// `readableForUser` is the readable stream we give to the user (the wrapper)
+// Essentially: what React writes to `readableFromReact` is forwarded to `readableForUser`
+
+function createReadableWrapper(readableFromReact: ReadableStream) {
   const bufferParams: {
     writeChunk: null | ((_chunk: string) => void)
   } = {
     writeChunk: null
   }
-  let controllerWrapper: ReadableStreamController<any>
+  let controllerOfUserStream: ReadableStreamController<any>
   let onEnded!: () => void
   const streamEnd = new Promise<void>((r) => {
     onEnded = () => r()
   })
-  const readableWrapper = new ReadableStream({
+  const readableForUser = new ReadableStream({
     start(controller) {
-      controllerWrapper = controller
+      controllerOfUserStream = controller
       onReady(onEnded)
     }
   })
   const { injectToStream, onBeforeWrite, onBeforeEnd } = createBuffer(bufferParams)
-  return { readableWrapper, streamEnd, injectToStream }
+  return { readableForUser, streamEnd, injectToStream }
 
   async function onReady(onEnded: () => void) {
     const writeChunk = (bufferParams.writeChunk = (chunk: unknown) => {
-      controllerWrapper.enqueue(encodeForWebStream(chunk))
+      controllerOfUserStream.enqueue(encodeForWebStream(chunk))
     })
 
-    const reader = readableOriginal.getReader()
+    const reader = readableFromReact.getReader()
 
     while (true) {
       let result: ReadableStreamDefaultReadResult<any>
       try {
         result = await reader.read()
       } catch (err) {
-        controllerWrapper.close()
+        controllerOfUserStream.close()
         throw err
       }
       const { value, done } = result
@@ -48,7 +52,7 @@ function createReadableWrapper(readableOriginal: ReadableStream) {
     // Collect `injectToStream()` calls stuck in an async call
     setTimeout(() => {
       onBeforeEnd()
-      controllerWrapper.close()
+      controllerOfUserStream.close()
       onEnded()
     }, 0)
   }

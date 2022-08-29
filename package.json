@@ -1,7 +1,7 @@
 {
   "name": "react-streaming",
   "description": "React 18 Streaming. Full-fledged & Easy.",
-  "version": "0.2.13",
+  "version": "0.2.22",
   "main": "./dist/cjs/index.js",
   "peerDependencies": {
     "react": ">=18",
@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@brillout/json-s": "^0.4.5",
-    "debug": "4.3.4",
     "isbot-fast": "1.2.0"
   },
   "scripts": {
@@ -24,20 +23,22 @@
     "build": "pnpm run clean && pnpm run build:cjs && pnpm run build:esm",
     "build:cjs": "tsc --project ./tsconfig.cjs.json",
     "build:esm": "tsc --project ./tsconfig.esm.json",
+    "clean": "rm -rf dist/",
+    "// === Release ===": "",
     "prepublishOnly": "pnpm run build",
-    "clean": "rm -rf dist/"
+    "release": "npm version patch && npm publish && git push && git push --tags"
   },
   "exports": {
     ".": {
       "worker": "./dist/cjs/index.js",
-      "require": "./dist/cjs/index.js",
+      "node": "./dist/cjs/index.js",
       "browser": "./dist/esm/index.js",
-      "import": "./dist/esm/index.js"
+      "deno": "./dist/esm/index.js"
     },
     "./server": {
       "worker": "./dist/cjs/server.js",
-      "require": "./dist/cjs/server.js",
-      "import": "./dist/esm/server.js"
+      "node": "./dist/cjs/server.js",
+      "deno": "./dist/esm/server.js"
     },
     "./client": {
       "browser": "./dist/esm/client.js"

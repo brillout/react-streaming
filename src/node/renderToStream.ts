@@ -7,8 +7,8 @@ import type {
   renderToPipeableStream as RenderToPipeableStream,
   renderToReadableStream as RenderToReadableStream
 } from 'react-dom/server'
-import { SsrDataProvider } from './useSsrData'
-import { StreamProvider } from './useStream'
+import { SsrDataProvider } from '../hooks/useSsrData'
+import { StreamProvider } from '../hooks/useStream'
 import { createPipeWrapper, Pipe } from './renderToStream/createPipeWrapper'
 import { createReadableWrapper } from './renderToStream/createReadableWrapper'
 import { resolveSeoStrategy, SeoStrategy } from './renderToStream/resolveSeoStrategy'
@@ -38,6 +38,7 @@ type Result = (
     }
 ) & {
   streamEnd: Promise<boolean>
+  disabled: boolean
   injectToStream: (chunk: string) => void
 }
 
@@ -63,10 +64,11 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   debug(`disable === ${disable} && webStream === ${webStream}`)
 
   let result: Result
+  const resultPartial: Pick<Result, 'disabled'> = { disabled: disable }
   if (!webStream) {
-    result = await renderToNodeStream(element, disable, options)
+    result = { ...resultPartial, ...(await renderToNodeStream(element, disable, options)) }
   } else {
-    result = await renderToWebStream(element, disable, options)
+    result = { ...resultPartial, ...(await renderToWebStream(element, disable, options)) }
   }
 
   injectToStream = result.injectToStream
@@ -127,7 +129,7 @@ async function renderToNodeStream(
     onError
   })
   let promiseResolved = false
-  const { pipeWrapper, injectToStream, streamEnd } = await createPipeWrapper(pipeOriginal, {
+  const { pipeForUser, injectToStream, streamEnd } = await createPipeWrapper(pipeOriginal, {
     onReactBug(err) {
       debug('react bug')
       didError = true
@@ -145,7 +147,7 @@ async function renderToNodeStream(
   if (didError) throw firstErr
   promiseResolved = true
   return {
-    pipe: pipeWrapper,
+    pipe: pipeForUser,
     readable: null,
     streamEnd: wrapStreamEnd(streamEnd, didError),
     injectToStream
@@ -196,10 +198,10 @@ async function renderToWebStream(
   if (didError) throw firstErr
   if (disable) await allReady
   if (didError) throw firstErr
-  const { readableWrapper, streamEnd, injectToStream } = createReadableWrapper(readableOriginal)
+  const { readableForUser, streamEnd, injectToStream } = createReadableWrapper(readableOriginal)
   promiseResolved = true
   return {
-    readable: readableWrapper,
+    readable: readableForUser,
     pipe: null,
     streamEnd: wrapStreamEnd(streamEnd, didError),
     injectToStream
