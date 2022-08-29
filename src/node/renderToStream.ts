@@ -52,10 +52,17 @@ function disable() {
 
 async function renderToStream(element: React.ReactNode, options: Options = {}): Promise<Result> {
   element = React.createElement(SsrDataProvider, null, element)
-  let injectToStream: (chunk: string) => void
+  let injectToStream: (chunk: string) => void = (chunk) => buffer.push(chunk)
+  const buffer: string[] = []
   element = React.createElement(
     StreamProvider,
-    { value: { injectToStream: (chunk: string) => injectToStream(chunk) } },
+    {
+      value: {
+        injectToStream: (chunk: string) => {
+          injectToStream(chunk)
+        }
+      }
+    },
     element
   )
 
@@ -72,6 +79,8 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   }
 
   injectToStream = result.injectToStream
+  buffer.forEach((chunk) => injectToStream(chunk))
+  buffer.length = 0
 
   debug('promise `await renderToStream()` resolved')
   return result
