@@ -34,7 +34,7 @@ function createReadableWrapper(readableFromReact: ReadableStream) {
     const reader = readableFromReact.getReader()
 
     while (true) {
-      let result: ReadableStreamDefaultReadResult<any>
+      let result: ReadableStreamReadResult<any>
       try {
         result = await reader.read()
       } catch (err) {
