@@ -35,7 +35,7 @@ async function render(
   }: {
     streamType: 'web' | 'node'
     onBoundaryError?: (err: unknown) => void
-    disable: boolean
+    disable?: boolean
   }
 ) {
   const options = { userAgent, onBoundaryError, disable }
