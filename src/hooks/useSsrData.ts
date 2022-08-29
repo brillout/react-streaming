@@ -3,7 +3,7 @@ export { useSsrData }
 
 import React, { useContext } from 'react'
 import { useStream } from './useStream'
-import { assert, isClientSide, isServerSide } from './utils'
+import { assert, isClientSide, isServerSide, isPromise } from './utils'
 import { parse, stringify } from '@brillout/json-s'
 import type { DependencyList } from './types'
 
@@ -39,50 +39,72 @@ function findSsrData(key: string): { elem: Element; data: SsrData } | null {
 }
 
 function useSsrData<T>(key: string, asyncFn: () => Promise<T>, deps: DependencyList = []): T {
-  const suspenses = useContext(ctxSuspenses)
+  return handleHookError(() => {
+    const suspenses = useContext(ctxSuspenses)
 
-  let hasChanged = false
-  if (isClientSide()) {
-    const { data } = findSsrData(key) || {}
-    if (data) {
-      hasChanged = data.deps.some((d, index) => !Object.is(d, deps[index]))
-      if (!hasChanged) return data.value as T
+    let hasChanged = false
+    if (isClientSide()) {
+      const { data } = findSsrData(key) || {}
+      if (data) {
+        hasChanged = data.deps.some((d, index) => !Object.is(d, deps[index]))
+        if (!hasChanged) return data.value as T
+      }
     }
-  }
 
-  let suspense = suspenses[key]
-  if (!suspense || hasChanged) {
-    const streamUtils = useStream()
-    const promise = (async () => {
-      let value: unknown
-      try {
-        value = await asyncFn()
-      } catch (error) {
-        // React seems buggy around error handling; we handle errors ourselves
-        suspense = suspenses[key] = { state: 'error', error }
-        return
-      }
-      suspense = suspenses[key] = { state: 'done', value }
-      if (isServerSide()) {
-        assert(streamUtils)
-        streamUtils.injectToStream(getHtmlChunk({ key, value, deps }))
-      } else {
-        const { elem } = findSsrData(key) || {}
-        if (elem) {
-          elem.textContent = stringify([{ key, value: suspense.value, deps }])
+    let suspense = suspenses[key]
+    if (!suspense || hasChanged) {
+      const streamUtils = useStream()
+      const promise = (async () => {
+        let value: unknown
+        try {
+          value = await asyncFn()
+        } catch (error) {
+          // React seems buggy around error handling; we handle errors ourselves
+          suspense = suspenses[key] = { state: 'error', error }
+          return
         }
-      }
-    })()
-    suspense = suspenses[key] = { state: 'pending', promise }
+        suspense = suspenses[key] = { state: 'done', value }
+        if (isServerSide()) {
+          assert(streamUtils)
+          streamUtils.injectToStream(getHtmlChunk({ key, value, deps }))
+        } else {
+          const { elem } = findSsrData(key) || {}
+          if (elem) {
+            elem.textContent = stringify([{ key, value: suspense.value, deps }])
+          }
+        }
+      })()
+      suspense = suspenses[key] = { state: 'pending', promise }
+    }
+    if (suspense.state === 'pending') {
+      throw suspense.promise
+    }
+    if (suspense.state === 'error') {
+      throw suspense.error
+    }
+    if (suspense.state === 'done') {
+      return suspense.value as T
+    }
+    assert(false)
+  })
+}
+
+/** Handle server-side suspense error. (Workaround for React swallowing errors upon suspense boundary errors.) */
+function handleHookError<T>(fn: () => T): T {
+  if (isClientSide()) {
+    return fn()
   }
-  if (suspense.state === 'pending') {
-    throw suspense.promise
+  let ret: T
+  try {
+    ret = fn()
+  } catch (err) {
+    if (isPromise(err)) {
+      err = err.catch((err) => {
+        console.error(err)
+        throw err
+      })
+    }
+    throw err
   }
-  if (suspense.state === 'error') {
-    throw suspense.error
-  }
-  if (suspense.state === 'done') {
-    return suspense.value as T
-  }
-  assert(false)
+  return ret
 }
