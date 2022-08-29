@@ -3,7 +3,6 @@ lockfileVersion: 5.4
 specifiers:
   '@brillout/json-s': ^0.4.5
   '@brillout/part-regex': ^0.1.2
-  '@types/debug': 4.1.7
   '@types/node': ^15.12.2
   '@types/react': ^18.0.9
   '@types/react-dom': ^18.0.4
@@ -19,7 +18,6 @@ dependencies:
 
 devDependencies:
   '@brillout/part-regex': 0.1.2
-  '@types/debug': 4.1.7
   '@types/node': 15.14.9
   '@types/react': 18.0.9
   '@types/react-dom': 18.0.4
@@ -46,16 +44,6 @@ packages:
 
   /@types/chai/4.3.1:
     resolution: {integrity: sha512-/zPMqDkzSZ8t3VtxOa4KPq7uzzW978M9Tvh+j7GHKuo6k6GTLxPJ4J5gE5cjfJ26pnXst0N5Hax8Sr0T2Mi9zQ==}
-    dev: true
-
-  /@types/debug/4.1.7:
-    resolution: {integrity: sha512-9AonUzyTjXXhEOa0DnqpzZi6VHlqKMswga9EXjpXnnqxwLtdvPPtlO8evrI5D9S6asFRCQ6v+wpiUKbw+vKqyg==}
-    dependencies:
-      '@types/ms': 0.7.31
-    dev: true
-
-  /@types/ms/0.7.31:
-    resolution: {integrity: sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==}
     dev: true
 
   /@types/node/15.14.9:
