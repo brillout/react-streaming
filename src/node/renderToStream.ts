@@ -7,8 +7,8 @@ import type {
   renderToPipeableStream as RenderToPipeableStream,
   renderToReadableStream as RenderToReadableStream
 } from 'react-dom/server'
-import { SsrDataProvider } from './useSsrData'
-import { StreamProvider } from './useStream'
+import { SsrDataProvider } from '../hooks/useSsrData'
+import { StreamProvider } from '../hooks/useStream'
 import { createPipeWrapper, Pipe } from './renderToStream/createPipeWrapper'
 import { createReadableWrapper } from './renderToStream/createReadableWrapper'
 import { resolveSeoStrategy, SeoStrategy } from './renderToStream/resolveSeoStrategy'

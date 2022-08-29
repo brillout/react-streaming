@@ -1,1 +1,1 @@
-export { SsrDataProvider as ReactStreaming } from './useSsrData'
+export { SsrDataProvider as ReactStreaming } from './hooks/useSsrData'
