@@ -1,18 +1,19 @@
 export { SsrDataProvider }
 export { useSsrData }
+export type { DependencyList }
 
 import React, { useContext } from 'react'
 import { useStream } from './useStream'
 import { assert, assertUsage, isClientSide, isServerSide, isPromise } from './utils'
 import { parse, stringify } from '@brillout/json-s'
-import type { DependencyList } from './types'
 
 const ctxSuspenses = React.createContext<Suspenses>(undefined as any)
 type Suspenses = Record<string, Suspense>
 type Suspense =
-  | { state: 'pending'; promise: Promise<unknown>; deps?: DependencyList }
-  | { state: 'error'; error: unknown }
-  | { state: 'done'; value: unknown; deps?: DependencyList }
+  | { state: 'pending'; promise: Promise<unknown>; deps: DependencyList }
+  | { state: 'error'; error: unknown; deps: DependencyList }
+  | { state: 'done'; value: unknown; deps: DependencyList }
+type DependencyList = ReadonlyArray<unknown>
 
 function SsrDataProvider({ children }: { children: React.ReactNode }) {
   const suspenses = {}
@@ -39,20 +40,28 @@ function findSsrData(key: string): { elem: Element; data: SsrData } | null {
 }
 
 function useSsrData<T>(key: string, asyncFn: () => Promise<T>, deps: DependencyList = []): T {
+  assert(deps)
+
   return handleHookError(() => {
     const suspenses = useContext(ctxSuspenses)
     assertUsage(suspenses, "react-streaming isn't properly installed: <ReactStreaming> is wrapper missing.")
 
-    let hasChanged = false
-    if (isClientSide()) {
+    let suspense = suspenses[key]
+
+    if (!suspense && isClientSide()) {
       const { data } = findSsrData(key) || {}
       if (data) {
-        hasChanged = data.deps.some((d, index) => !Object.is(d, deps[index]))
-        if (!hasChanged) return data.value as T
+        const { deps, value } = data
+        suspense = suspenses[key] = { state: 'done', value, deps }
       }
     }
 
-    let suspense = suspenses[key]
+    let hasChanged: boolean | null = null
+    if (suspense) {
+      const depsPrev = suspense.deps
+      hasChanged = depsPrev.length !== deps.length || depsPrev.some((d, index) => !Object.is(d, deps[index]))
+    }
+
     if (!suspense || hasChanged) {
       const streamUtils = useStream()
       const promise = (async () => {
@@ -61,10 +70,10 @@ function useSsrData<T>(key: string, asyncFn: () => Promise<T>, deps: DependencyL
           value = await asyncFn()
         } catch (error) {
           // React seems buggy around error handling; we handle errors ourselves
-          suspense = suspenses[key] = { state: 'error', error }
+          suspense = suspenses[key] = { state: 'error', error, deps }
           return
         }
-        suspense = suspenses[key] = { state: 'done', value }
+        suspense = suspenses[key] = { state: 'done', value, deps }
         if (isServerSide()) {
           assert(streamUtils)
           streamUtils.injectToStream(getHtmlChunk({ key, value, deps }))
@@ -75,7 +84,7 @@ function useSsrData<T>(key: string, asyncFn: () => Promise<T>, deps: DependencyL
           }
         }
       })()
-      suspense = suspenses[key] = { state: 'pending', promise }
+      suspense = suspenses[key] = { state: 'pending', promise, deps }
     }
     if (suspense.state === 'pending') {
       throw suspense.promise
