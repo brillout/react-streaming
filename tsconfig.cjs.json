@@ -5,5 +5,6 @@
     "target": "ES2017",
     "module": "CommonJS",
     "moduleResolution": "nodenext"
-  }
+  },
+  "include": ["src/server/**/*"]
 }

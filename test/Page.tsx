@@ -1,7 +1,7 @@
 export { Page }
 
 import React, { useState, Suspense } from 'react'
-import { useAsync } from '../src/index'
+import { useAsync } from '../src/server/hooks'
 
 function Page() {
   return (
@@ -36,7 +36,8 @@ function LazyComponent() {
     () =>
       new Promise<string>((resolve) => {
         setTimeout(() => resolve('Hello, I was lazy.'), 100)
-      })
+      }),
+    'hello-component-key'
   )
   return <p>{val}</p>
 }

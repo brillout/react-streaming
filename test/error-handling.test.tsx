@@ -2,7 +2,7 @@ import { describe, expect, it, vitest } from 'vitest'
 import { render } from './render'
 import { onConsoleError } from './onConsoleError'
 import React, { Suspense } from 'react'
-import { useAsync } from '../src/index'
+import { useAsync } from '../src/server/hooks'
 import { partRegex } from '@brillout/part-regex'
 
 describe('error handling', async () => {
@@ -60,7 +60,8 @@ describe('error handling', async () => {
           () =>
             new Promise<string>((resolve) => {
               setTimeout(() => resolve('Hello, I was lazy.'), 100)
-            })
+            }),
+          'lazy-component-key'
         )
         throw new Error('some-error')
       }
@@ -84,7 +85,7 @@ describe('error handling', async () => {
           // Page Shell
           '<!--$?--><template id="B:0"></template><p>Loading...</p><!--/$-->',
           // `useAsync()` script injection
-          '<script class="react-streaming_ssr-data" type="application/json">{"key":":R0:","value":"Hello, I was lazy.","deps":[]}</script>',
+          '<script class="react-streaming_ssr-data" type="application/json">{"key":"lazy-component-key","value":"Hello, I was lazy.","deps":[]}</script>'
         ].join('')
         try {
           expect(dataBegin).toMatch(dataContentExpected)
@@ -95,9 +96,17 @@ describe('error handling', async () => {
           throw err
         }
         // React handling the suspense boundary error
-        expect(split + dataEnd).toMatch(
-          partRegex`<script>function $RX(b,c,d,e){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data="$!",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),b._reactRetry&&b._reactRetry())};$RX("B:0","","some-error","\\n    at Page (${filePointer})\\n    at SsrDataProvider (${filePointer})")</script>`
-        )
+        {
+          const content = split + dataEnd
+          try {
+            expect(content).toMatch(
+              partRegex`<script>function $RX(b,c,d,e){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data="$!",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),b._reactRetry&&b._reactRetry())};$RX("B:0","","some-error","\\n    at Page (${filePointer})\\n    at InitDataProvider (${filePointer})")</script>`
+            )
+          } catch (err) {
+            console.log('actual:', content)
+            throw err
+          }
+        }
       }
       expect(onBoundaryError).toBeCalled()
     })
