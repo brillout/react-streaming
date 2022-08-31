@@ -44,7 +44,10 @@ function useSsrData<T>(key: string, asyncFn: () => Promise<T>, deps: DependencyL
 
   return handleHookError(() => {
     const suspenses = useContext(ctxSuspenses)
-    assertUsage(suspenses, "react-streaming isn't properly installed: <ReactStreaming> is wrapper missing.")
+    assertUsage(
+      suspenses,
+      `react-streaming isn't properly installed: wrapper <ReactStreaming> is missing, see react-streaming's "Get Started" documentation.`
+    )
 
     let suspense = suspenses[key]
 
