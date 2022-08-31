@@ -85,7 +85,7 @@ describe('error handling', async () => {
           // Page Shell
           '<!--$?--><template id="B:0"></template><p>Loading...</p><!--/$-->',
           // `useAsync()` script injection
-          '<script class="react-streaming_ssr-data" type="application/json">{"key":"lazy-component-key","value":"Hello, I was lazy.","deps":[]}</script>'
+          '<script class="react-streaming_initData" type="application/json">{"key":"lazy-component-key","value":"Hello, I was lazy.","deps":[]}</script>'
         ].join('')
         try {
           expect(dataBegin).toMatch(dataContentExpected)
