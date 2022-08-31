@@ -16,7 +16,7 @@
     "// Make sure to run `pnpm run build` or `pnpm run dev` before running `pnpm run test`": "",
     "test": "vitest",
     "// === Dev ===": "",
-    "dev": "pnpm run dev:cjs && pnpm run dev:esm",
+    "dev": "pnpm run dev:cjs & pnpm run dev:esm",
     "dev:cjs": "tsc --project ./tsconfig.cjs.json --incremental --watch",
     "dev:esm": "tsc --project ./tsconfig.esm.json --incremental --watch",
     "// === Build ===": "",
