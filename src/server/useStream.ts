@@ -1,8 +1,9 @@
-import React, { useContext } from 'react'
-import { isClientSide } from './utils'
-
 export { useStream }
 export { StreamProvider }
+export type { StreamUtils }
+
+import React, { useContext } from 'react'
+import { assert } from './utils'
 
 type StreamUtils = {
   injectToStream: (htmlChunk: string) => void
@@ -10,10 +11,8 @@ type StreamUtils = {
 const StreamContext = React.createContext<StreamUtils | null>(null)
 const StreamProvider = StreamContext.Provider
 
-function useStream() {
-  if (isClientSide()) {
-    return null
-  }
+function useStream(): StreamUtils | null {
   const streamUtils = useContext(StreamContext)
+  assert(streamUtils)
   return streamUtils
 }

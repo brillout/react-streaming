@@ -21,10 +21,9 @@ Chat: <a href="https://discord.com/invite/H23tjRxFvx">Discord > Vike<img src="/i
 - [Get Started](#get-started)
   - [Options](#options)
   - [Error Handling](#error-handling)
-  - [Bonus: `useAsync()`](#bonus-useasync)
-- [Get Started (Library Authors)](#get-started-library-authors)
   - [`useAsync()`](#useasync)
-  - [`useSsrData()`](#usessrdata)
+- [Get Started (Library Authors)](#get-started-library-authors)
+  - [`useAsync()` (Library Authors)](#useasync-library-authors)
   - [`injectToStream()`](#injecttostream)
 
 ## Intro
@@ -32,16 +31,15 @@ Chat: <a href="https://discord.com/invite/H23tjRxFvx">Discord > Vike<img src="/i
 Features (for React users):
 
 - Unlocks `<Suspense>` for SSR apps.
-- Unlocks React libraries of tomorrow. (Such as using [Telefunc](https://telefunc.com/) for SSR data fetching.)
-- Seamless support for Node.js (serverless) platforms (Vercel, AWS EC2, ...) and Edge platforms (Cloudflare Workers, Deno Deploy, Netlify Edge, Vercel Edge, ...).
+- `useAsync()`: easily fetch data for SSR apps.
 - Two SEO strategies: `conservative` or `google-speed`.
+- Seamless support for Node.js (serverless) platforms (Vercel, AWS EC2, ...) and Edge platforms (Cloudflare Workers, Deno Deploy, Netlify Edge, Vercel Edge, ...).
 - Easy error handling.
-- **Bonus**: new `useAsync()` hook.
 
 Features (for library authors):
 
-- `useSsrData()`: Define isomorphic data.
-- `injectToStream()`: Inject chunks to the stream.
+- `useAsync()`: add data fetching capabilities to your library. High-level and easy to use.
+- `injectToStream()`: inject chunks to the stream for your library. Low-level and difficult to use, but highly flexible.
 
 Easy:
 
@@ -62,15 +60,17 @@ const {
 
 React 18's new SSR streaming architecture unlocks many capabilities:
 
-- Data Fetching:
-  - Use RPC to fetch data in a seamless way, e.g. with [Telefunc](https://telefunc.com). (Data fetching SSR hooks will be a thing of the past: no more Next.js `getServerSideProps()` nor [`vite-plugin-ssr`](https://vite-plugin-ssr.com/)'s `onBeforeRender()`.)
-  - Expect your GraphQL tools to significantly improve, both on performance and DX. (Also expect new tools such as [Vilay](https://github.com/XiNiHa/vilay).)
-- Fundamentally improved mobile performance. (Mobile users can progressively load the page as data is fetched, before even a single line of JavaScript is loaded. Especially important for low-end or poorly-connected devices.)
+- Easily fetch data for SSR apps.
+- Fundamentally improved mobile performance. (Mobile users can progressively load the page as data is fetched, before even a single line of JavaScript is loaded. Especially important for users with a low-end device and users with a poor internet connection.)
 - Progressive Hydration. (Page is interactive before even the page has finished loading.)
 
-The problem: The current React 18 Streaming architecture is low-level and its ergonomics are cumbersome. (E.g. there is no standard way for library authors to take advantage of the new streaming architecture.)
+The problem: the current React 18 Streaming architecture is low-level and difficult to use.
 
 The solution: `react-streaming`.
+
+> `react-streaming` makes it easy to build the libraries of tomorrow, for example:
+>  - Use [Telefunc](https://telefunc.com/) to easily fetch data for your Next.js app or your [Vite + `vite-plugin-ssr`](https://vite-plugin-ssr.com/) app. (Replacing Next.js's `getServerSideProps()` and `vite-plugin-ssr`'s `onBeforeRender()`.)
+>  - Better GraphQL tools, e.g. [Vilay](https://github.com/XiNiHa/vilay).
 
 <br/>
 
@@ -92,16 +92,7 @@ The solution: `react-streaming`.
    } = await renderToStream(<Page />)
    ```
 
-3. Client-side
-   ```jsx
-   import { ReactStreaming } from 'react-streaming/client'
-   // Wrap your root component `<Page>` (aka `<App>`) with `<ReactStreaming>`
-   const page = (
-     <ReactStreaming>
-       <Page />
-     </ReactStreaming>
-   )
-   ```
+That's it.
 
 ### Options
 
@@ -178,45 +169,45 @@ The stream returned by `await renderToStream()` doesn't emit errors.
 >
 > You can use `options.onBoundaryError()` for error tracking purposes.
 
-### Bonus: `useAsync()`
+### `useAsync()`
 
 ```jsx
 import { useAsync } from 'react-streaming'
 
-function StarWarsMovies() {
+function Page({ movieId }) {
   return (
-    <div>
-      <p>List of Star Wars movies:</p>
-      <Suspense fallback={<p>Loading...</p>}>
-        <MovieList />
-      </Suspense>
-    </div>
+    <Suspense fallback={<p>Loading...</p>}>
+      <Movie id={movieId}/>
+    </Suspense>
   )
 }
 
 // This component is isomorphic: it works on both the client-side and server-side.
 // The data fetched while SSR is automatically passed and re-used on the client for hydration.
-function MovieList() {
-  const movies = useAsync(async () => {
-    const response = await fetch('https://star-wars.brillout.com/api/films.json')
-    return response.json()
-  })
+function Movie({ id }) {
+  const movie = useAsync(
+    async () => {
+      const response = await fetch(`https://star-wars.brillout.com/api/films/${id}.json`)
+      return response.json()
+    },
+    'star-wars-movies', // You need to provide a unique key
+    [id] // Only re-run if `id` changes
+  )
   return (
     <ul>
-      {movies.forEach((movie) => (
-        <li>
-          {movie.title} ({movie.release_date})
-        </li>
-      ))}
+      <li>
+        Title: {movie.title}
+      </li>
+      <li>
+        Release Date: {movie.release_date}
+      </li>
     </ul>
   )
 }
 ```
 
-> ⚠️
-> `useAsync()` currently doesn't work because of a React bug: [#24669 - Bug: `useId()` not working inside `<Suspense>`](https://github.com/facebook/react/issues/24669).
-
 <br/>
+
 
 ## Get Started (Library Authors)
 
@@ -228,50 +219,42 @@ The novelty here is that it's isomorphic:
 
 You have the choice between three methods:
 
-- `useAsync()`: Highest-level & easiest.
-- `useSsrData()`: High-level & easy.
-- `injectToStream()`: Low-level and highly flexible (both `useAsync()` and `useSsrData()` are based on it). Easy & recommended for injecting script and style tags. Complex for data fetching (if possible, use `useSsrData()` or `useAsync()` instead).
+- `useAsync()`: High-level and easy.
+- `injectToStream()`: Low-level and highly flexible (`useAsync()` is based on it). Easy & recommended for injecting script and style tags. Complex for data fetching (if possible, use `useAsync()` instead).
 
-### `useAsync()`
+### `useAsync()` (Library Authors)
 
-For how to use `useAsync()`, see example [above](#bonus-useasync).
-
-### `useSsrData()`
+> This section is a low-level description of `useAsync()`. For a high-levl description, see [`useAsync()`](#useasync) instead.
 
 ```jsx
-import { useSsrData } from 'react-streaming'
+import { useAsync } from 'react-streaming'
 
 function SomeComponent() {
-  const key = 'some-unique-key'
   const someAsyncFunc = async function () {
     const value = 'someData'
     return value
   }
-  // `useSsrData()` suspends rendering until the promise returned by `someAsyncFunc()` resolves.
-  const value = useSsrData(key, someAsyncFunc)
+  const key = 'some-unique-key'
+  const deps = ['some-cache-invalidating-values']
+  // `useAsync()` suspends rendering until the promise returned by `someAsyncFunc()` resolves.
+  const value = useAsync(
+    someAsyncFunc,
+    key, // Required, and should be unique for each component.
+    deps // Optional: array of values.
+  )
   assert(value === 'someData')
 }
 ```
 
-If `<SomeComponent>` is rendered only on the client-side, then `useSsrData()` is essentially a
-cache that never invalidates. (If you want to re-run `someAsyncFunc()`, then change the key.)
+When `<SomeComponent>` is rendered on the server-side (SSR), it injects the
+resolved value into the stream and the client-side picks up the injected value. This means that the
+client-side doesn't call `someAsyncFunc()`: instead, the client-side re-uses the value resolved on
+the server-side.
 
-If `<SomeComponent>` is rendered on the server-side (SSR), it injects the
-resolved value into the stream and the client-side picks up the injected value. (So that the
-client-side doesn't call `someAsyncFunc()` but, instead, re-uses the value resolved on
-the server-side.)
+If you want to re-run `someAsyncFunc()`, then change `deps`. This is similar to the `deps` argument of React's `useEffect(fn, deps)`.
 
-This is for example how `useAsync()` is implemented:
+If `<SomeComponent>` is rendered only on the client-side, then `useAsync()` is essentially just a cache.
 
-```jsx
-import { useId } from 'react'
-import { useSsrData } from 'react-streaming'
-
-function useAsync(asyncFn) {
-  const id = useId()
-  return useSsrData(id, asyncFn)
-}
-```
 
 ### `injectToStream()`
 
@@ -312,4 +295,4 @@ injectToStream('<styles>.some-component { color: blue }</styles>')
 injectToStream(`<script type="application/json">${JSON.stringify(someData)}</script>`)
 ```
 
-For a full example of using `injectToStream()`, have a look at `useSsrData()`'s implementation.
+For a full example of using `injectToStream()`, have a look at `useAsync()`'s implementation.

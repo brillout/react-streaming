@@ -7,8 +7,8 @@ import type {
   renderToPipeableStream as RenderToPipeableStream,
   renderToReadableStream as RenderToReadableStream
 } from 'react-dom/server'
-import { SsrDataProvider } from '../hooks/useSsrData'
-import { StreamProvider } from '../hooks/useStream'
+import { InitDataProvider } from './useAsync'
+import { StreamProvider } from './useStream'
 import { createPipeWrapper, Pipe } from './renderToStream/createPipeWrapper'
 import { createReadableWrapper } from './renderToStream/createReadableWrapper'
 import { resolveSeoStrategy, SeoStrategy } from './renderToStream/resolveSeoStrategy'
@@ -51,7 +51,7 @@ function disable() {
 }
 
 async function renderToStream(element: React.ReactNode, options: Options = {}): Promise<Result> {
-  element = React.createElement(SsrDataProvider, null, element)
+  element = React.createElement(InitDataProvider, null, element)
   let injectToStream: (chunk: string) => void = (chunk) => buffer.push(chunk)
   const buffer: string[] = []
   element = React.createElement(
