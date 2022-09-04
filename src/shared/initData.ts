@@ -1,6 +1,5 @@
 export type { InitData }
 export { initDataHtmlClass }
 
-import type { Deps } from './deps'
-type InitData = { key: string; value: unknown; deps: Deps }
+type InitData = { value: unknown; asyncKey: string; elementId: string }
 const initDataHtmlClass = 'react-streaming_initData'

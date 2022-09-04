@@ -2,52 +2,78 @@ export { useSuspense }
 export type { Suspenses }
 export type { Suspense }
 
-import { hasDepsChanged, Deps } from './deps'
 import { assert } from './utils'
 
-type Suspenses = Record<string, Suspense>
+type Suspenses = Record<
+  string, // `suspenseId`
+  Suspense
+>
 type Suspense =
-  | { state: 'pending'; promise: Promise<unknown>; deps: Deps }
-  | { state: 'error'; err: unknown; deps: Deps }
-  | { state: 'done'; value: unknown; deps: Deps }
+  | { state: 'pending'; promise: Promise<unknown> }
+  | { state: 'error'; err: unknown }
+  | { state: 'done'; value: unknown }
+
+// We basically rename `suspenseId`
+const brokenIds: Record<
+  string, // `asyncKey`
+  { suspenseId: string }
+> = {}
 
 function useSuspense<T>({
-  key,
-  deps,
+  asyncKey,
+  elementId,
   suspenses,
   resolver,
-  resolverSync
+  resolverSync,
+  needsWorkaround
 }: {
+  asyncKey: string
+  elementId: string
   suspenses: Suspenses
   resolver: () => Promise<T>
-  resolverSync?: () => null | { value: T; deps: Deps }
-  key: string
-  deps: Deps
+  needsWorkaround?: true
+  resolverSync?: () => null | { value: T }
 }): T {
-  let suspense = suspenses[key]
+  const suspenseId = getSuspenseId(asyncKey, elementId)
+  let suspense = suspenses[suspenseId]
+
+  {
+    const broken = brokenIds[asyncKey]
+    if (broken) {
+      delete brokenIds[asyncKey]
+
+      assert(!suspense) // If this assertion fails then we don't need the workarond around anymore. Hooray!
+      suspense = suspenses[suspenseId] = suspenses[broken.suspenseId]!
+      assert(suspense)
+      assert(suspense.state === 'done')
+      delete suspenses[broken.suspenseId]
+    }
+  }
 
   // Sync
   if (!suspense && resolverSync) {
     const resolved = resolverSync()
     if (resolved) {
-      const { value, deps } = resolved
-      suspense = suspenses[key] = { state: 'done', value, deps }
+      const { value } = resolved
+      suspense = suspenses[suspenseId] = { state: 'done', value }
     }
   }
 
   // Async
-  if (!suspense || hasDepsChanged(deps, suspense.deps)) {
+  if (!suspense) {
     let promise: Promise<T>
     try {
       promise = resolver()
       promise.then((value) => {
-        suspense = suspenses[key] = { state: 'done', value, deps }
+        suspense = suspenses[suspenseId] = { state: 'done', value }
+        if (needsWorkaround) {
+          brokenIds[asyncKey] = { suspenseId }
+        }
       })
-      suspense = { state: 'pending', promise, deps }
+      suspense = suspenses[suspenseId] = { state: 'pending', promise }
     } catch (err) {
-      suspense = { state: 'error', err, deps }
+      suspense = suspenses[suspenseId] = { state: 'error', err }
     }
-    suspenses[key] = suspense
   }
 
   if (suspense.state === 'pending') {
@@ -55,7 +81,7 @@ function useSuspense<T>({
   }
   if (suspense.state === 'error') {
     // Retry next time
-    delete suspenses[key]
+    delete suspenses[suspenseId]
     const { err } = suspense
     // React swallows boundary errors
     console.error(err)
@@ -65,4 +91,9 @@ function useSuspense<T>({
     return suspense.value as T
   }
   assert(false)
+}
+
+function getSuspenseId(asyncKey: string, elementId: string) {
+  assert(!elementId.includes('_'))
+  return `${asyncKey}_${elementId}`
 }

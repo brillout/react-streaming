@@ -1,44 +1,37 @@
 export { useAsync }
-export { InitDataProvider }
 
-import React, { useContext } from 'react'
+import { useId } from 'react'
 import { StreamUtils, useStream } from './useStream'
 import { assert } from './utils'
-import { Deps } from '../shared/deps'
 import { stringify } from '@brillout/json-s/stringify'
 import { InitData, initDataHtmlClass } from '../shared/initData'
-import { Suspenses, useSuspense } from '../shared/useSuspense'
+import { useSuspense } from '../shared/useSuspense'
+import { assertKey, stringifyKey } from '../shared/key'
+import { useSuspenseData } from './useAsync/useSuspenseData'
 
-const ctxSuspenses = React.createContext<Suspenses>(undefined as never)
-
-function InitDataProvider({ children }: { children: React.ReactNode }) {
-  const suspenses = {}
-  return React.createElement(ctxSuspenses.Provider, { value: suspenses }, children)
-}
-
-function useAsync<T>(asyncFn: () => Promise<T>, key: string, deps: Deps = []): T {
-  assert(deps)
-  assert(key)
+function useAsync<T>(key: unknown, asyncFn: () => Promise<T>): T {
+  assertKey(key)
+  const asyncKey = stringifyKey(key)
+  const elementId = useId()
 
   const streamUtils = useStream()
   assert(streamUtils)
 
   const resolver = async () => {
     const value = await asyncFn()
-    provideInitData(streamUtils, { key, value, deps })
+    provideInitData(streamUtils, { asyncKey, value, elementId })
     return value
   }
 
-  const suspenses = useContext(ctxSuspenses)
+  const suspenses = useSuspenseData()
   assert(suspenses)
 
-  return useSuspense({ suspenses, resolver, key, deps })
+  return useSuspense({ suspenses, resolver, asyncKey, elementId })
 }
 
 // See consumer `getInitData()`
 function provideInitData(streamUtils: StreamUtils, initData: InitData) {
-  const initDataSerialized = `<script class="${initDataHtmlClass}" type="application/json">${stringify(
-    initData
-  )}</script>`
-  streamUtils.injectToStream(initDataSerialized)
+  const initDataSerialized = stringify(initData)
+  const initDataInjection = `<script class="${initDataHtmlClass}" type="application/json">${initDataSerialized}</script>`
+  streamUtils.injectToStream(initDataInjection)
 }

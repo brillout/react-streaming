@@ -7,7 +7,7 @@ import type {
   renderToPipeableStream as RenderToPipeableStream,
   renderToReadableStream as RenderToReadableStream
 } from 'react-dom/server'
-import { InitDataProvider } from './useAsync'
+import { SuspenseData } from './useAsync/useSuspenseData'
 import { StreamProvider } from './useStream'
 import { createPipeWrapper, Pipe } from './renderToStream/createPipeWrapper'
 import { createReadableWrapper } from './renderToStream/createReadableWrapper'
@@ -51,7 +51,7 @@ function disable() {
 }
 
 async function renderToStream(element: React.ReactNode, options: Options = {}): Promise<Result> {
-  element = React.createElement(InitDataProvider, null, element)
+  element = React.createElement(SuspenseData, null, element)
   let injectToStream: (chunk: string) => void = (chunk) => buffer.push(chunk)
   const buffer: string[] = []
   element = React.createElement(
@@ -236,7 +236,7 @@ function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Promise<boo
 //  - https://stackoverflow.com/questions/21056748/seriously-debugging-node-js-cannot-find-module-xyz-abcd
 //  - https://stackoverflow.com/questions/59865584/how-to-invalidate-cached-require-resolve-results
 function assertReact() {
-  const versionMajor = parseInt(reactDomVersion.split('.')[0], 10)
+  const versionMajor = parseInt(reactDomVersion.split('.')[0]!, 10)
   assertUsage(
     versionMajor >= 18,
     `\`react-dom@${reactDomVersion}\` was loaded, but react-streaming only works with React version 18 or greater.`
