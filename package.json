@@ -8,7 +8,7 @@
     "react-dom": ">=18"
   },
   "dependencies": {
-    "@brillout/json-s": "^0.5.1",
+    "@brillout/json-serializer": "^0.5.1",
     "isbot-fast": "1.2.0"
   },
   "scripts": {

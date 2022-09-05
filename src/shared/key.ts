@@ -1,7 +1,7 @@
 export { stringifyKey }
 export { assertKey }
 
-import { stringify } from '@brillout/json-s/stringify'
+import { stringify } from '@brillout/json-serializer/stringify'
 import { assertUsage } from './utils'
 
 function stringifyKey(key: unknown): string {

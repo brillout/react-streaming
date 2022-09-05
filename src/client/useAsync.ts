@@ -2,7 +2,7 @@ export { useAsync }
 
 import { useId } from 'react'
 import { assert, getGlobalVariable } from './utils'
-import { parse } from '@brillout/json-s/parse'
+import { parse } from '@brillout/json-serializer/parse'
 import { InitData, initDataHtmlClass } from '../shared/initData'
 import { useSuspense, Suspenses } from '../shared/useSuspense'
 import { assertKey, stringifyKey } from '../shared/key'
