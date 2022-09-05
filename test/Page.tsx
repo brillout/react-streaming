@@ -33,11 +33,11 @@ function Counter() {
 
 function LazyComponent() {
   const val = useAsync(
+    'hello-component-key',
     () =>
       new Promise<string>((resolve) => {
         setTimeout(() => resolve('Hello, I was lazy.'), 100)
-      }),
-    'hello-component-key'
+      })
   )
   return <p>{val}</p>
 }

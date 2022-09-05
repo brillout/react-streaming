@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@brillout/json-s': ^0.4.5
+  '@brillout/json-s': ^0.5.1
   '@brillout/part-regex': ^0.1.2
   '@types/node': ^15.12.2
   '@types/react': ^18.0.9
@@ -13,7 +13,7 @@ specifiers:
   vitest: ^0.14.1
 
 dependencies:
-  '@brillout/json-s': 0.4.5
+  '@brillout/json-s': 0.5.1
   isbot-fast: 1.2.0
 
 devDependencies:
@@ -28,8 +28,8 @@ devDependencies:
 
 packages:
 
-  /@brillout/json-s/0.4.5:
-    resolution: {integrity: sha512-hiB4LVW4aFoxvJg//93/B1IlnVfVG15RnRFug+mAaCeM7LZzlQV4anAM4y4VzMVPShUCdbx208tnnb8N4I8dvg==}
+  /@brillout/json-s/0.5.1:
+    resolution: {integrity: sha512-8wXiEa4NM7uEPyuxQqzMRSuxQYCxjKJ85Tf01Zepeog09BrLH6IlB6La7+5r9UazwyW9qx+zL2u6uzQJv7ulJA==}
     dev: false
 
   /@brillout/part-regex/0.1.2:

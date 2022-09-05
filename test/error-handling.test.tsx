@@ -57,11 +57,11 @@ describe('error handling', async () => {
     it(`throw Error() after suspense boundary - ${streamType} stream`, async () => {
       const LazyComponent = () => {
         useAsync(
+          'lazy-component-key',
           () =>
             new Promise<string>((resolve) => {
               setTimeout(() => resolve('Hello, I was lazy.'), 100)
-            }),
-          'lazy-component-key'
+            })
         )
         throw new Error('some-error')
       }
@@ -78,21 +78,21 @@ describe('error handling', async () => {
       await streamEnd
       {
         const filePointer = /[^\)]+/
-        const split = '<script>'
+        const split = 'at Page'
         const [dataBegin, dataEnd, ...rest] = data.content.split(split)
         expect(rest.length).toBe(0)
         const dataContentExpected = [
           // Page Shell
           '<!--$?--><template id="B:0"></template><p>Loading...</p><!--/$-->',
           // `useAsync()` script injection
-          '<script class="react-streaming_initData" type="application/json">{"key":"lazy-component-key","value":"Hello, I was lazy.","deps":[]}</script>'
+          '<script class="react-streaming_initData" type="application/json">{"asyncKey":"\\"lazy-component-key\\"","value":"Hello, I was lazy.","elementId":":R0:"}</script>',
+          `<script>function $RX(b,c,d,e){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data="$!",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),b._reactRetry&&b._reactRetry())};$RX("B:0","","some-error","\\n    `
         ].join('')
         try {
           expect(dataBegin).toMatch(dataContentExpected)
         } catch (err) {
-          console.log('expected:', dataContentExpected)
-          console.log('actual:', data.content)
-          console.log('\n\n\n')
+          console.log('=== expected ===\n', dataContentExpected)
+          console.log('=== actual ===\n', data.content)
           throw err
         }
         // React handling the suspense boundary error
@@ -100,7 +100,7 @@ describe('error handling', async () => {
           const content = split + dataEnd
           try {
             expect(content).toMatch(
-              partRegex`<script>function $RX(b,c,d,e){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data="$!",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),b._reactRetry&&b._reactRetry())};$RX("B:0","","some-error","\\n    at Page (${filePointer})\\n    at InitDataProvider (${filePointer})")</script>`
+              partRegex`at Page (${filePointer})\\n    at SuspenseData (${filePointer})")</script>`
             )
           } catch (err) {
             console.log('actual:', content)
