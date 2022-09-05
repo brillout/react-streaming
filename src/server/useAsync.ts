@@ -9,9 +9,9 @@ import { useSuspense } from '../shared/useSuspense'
 import { assertKey, stringifyKey } from '../shared/key'
 import { useSuspenseData } from './useAsync/useSuspenseData'
 
-function useAsync<T>(key: unknown, asyncFn: () => Promise<T>): T {
-  assertKey(key)
-  const asyncKey = stringifyKey(key)
+function useAsync<T>(keyValue: unknown, asyncFn: () => Promise<T>): T {
+  assertKey(keyValue)
+  const key = stringifyKey(keyValue)
   const elementId = useId()
 
   const streamUtils = useStream()
@@ -19,14 +19,14 @@ function useAsync<T>(key: unknown, asyncFn: () => Promise<T>): T {
 
   const resolver = async () => {
     const value = await asyncFn()
-    provideInitData(streamUtils, { asyncKey, value, elementId })
+    provideInitData(streamUtils, { key, value, elementId })
     return value
   }
 
   const suspenses = useSuspenseData()
   assert(suspenses)
 
-  return useSuspense({ suspenses, resolver, asyncKey, elementId })
+  return useSuspense({ suspenses, resolver, key, elementId })
 }
 
 // See consumer `getInitData()`

@@ -85,7 +85,7 @@ describe('error handling', async () => {
           // Page Shell
           '<!--$?--><template id="B:0"></template><p>Loading...</p><!--/$-->',
           // `useAsync()` script injection
-          '<script class="react-streaming_initData" type="application/json">{"asyncKey":"\\"lazy-component-key\\"","value":"Hello, I was lazy.","elementId":":R0:"}</script>',
+          '<script class="react-streaming_initData" type="application/json">{"key":"\\"lazy-component-key\\"","value":"Hello, I was lazy.","elementId":":R0:"}</script>',
           `<script>function $RX(b,c,d,e){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data="$!",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),b._reactRetry&&b._reactRetry())};$RX("B:0","","some-error","\\n    `
         ].join('')
         try {

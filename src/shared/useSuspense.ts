@@ -9,15 +9,15 @@ type Suspenses = Record<
   Suspense
 >
 
-type SuspenseDone = { state: 'done'; value: unknown }
-type SuspensePending = { state: 'pending'; promise: Promise<unknown> }
-type SuspenseError = { state: 'error'; err: unknown }
-type Suspense = SuspenseDone | SuspensePending | SuspenseError
+type Suspense =
+  | { state: 'done'; value: unknown }
+  | { state: 'pending'; promise: Promise<unknown> }
+  | { state: 'error'; err: unknown }
 
 // Workaround for React useId() bug
 const workaroundCache = getGlobalVariable<
   Record<
-    string, // `asyncKey`
+    string, // `key`
     { suspense: Suspense; cacheTimeout: null | ReturnType<typeof setTimeout> }
   >
 >('workaroundCache', {})
@@ -29,23 +29,23 @@ const DEBUG = true
 //*/
 
 function useSuspense<T>({
-  asyncKey,
+  key,
   elementId,
   suspenses,
   resolver,
   resolverSync,
   needsWorkaround
 }: {
-  asyncKey: string
+  key: string
   elementId: string
   suspenses: Suspenses
   resolver: () => Promise<T>
-  needsWorkaround?: true
   resolverSync?: () => null | { value: T }
+  needsWorkaround?: true
 }): T {
   DEBUG && console.log('=== useSuspense()')
 
-  const suspenseId = getSuspenseId(asyncKey, elementId)
+  const suspenseId = getSuspenseId(key, elementId)
   DEBUG && console.log('suspenseId', suspenseId)
   let suspense = suspenses[suspenseId]
   DEBUG && console.log('suspense', suspense)
@@ -62,7 +62,7 @@ function useSuspense<T>({
 
   // We need to use a cache to workaround [Bug: useId() not working inside <Suspense> #24669](https://github.com/facebook/react/issues/24669)
   if (!suspense && needsWorkaround) {
-    const found = workaroundCache[asyncKey]
+    const found = workaroundCache[key]
     if (found) {
       suspense = found.suspense
       DEBUG && console.log('from workaroundCache', suspense)
@@ -73,7 +73,7 @@ function useSuspense<T>({
           found.cacheTimeout = setTimeout(
             () => {
               found.cacheTimeout = null
-              delete workaroundCache[asyncKey]
+              delete workaroundCache[key]
             },
             // Too low => concurrent <Suspense> boundaries with the same key may re-trigger data fetching upon heavy & slow rendering.
             // Too high => user navigating to another page and quickly going back will see cached data. (But we don't want our low-level `useAsync()` hook to be a cache: it should be higher-level wrapper hooks such as React Query that implement caching.)
@@ -93,12 +93,12 @@ function useSuspense<T>({
         return
       }
       {
-        const found = workaroundCache[asyncKey]
+        const found = workaroundCache[key]
         if (found?.cacheTimeout) {
           clearTimeout(found.cacheTimeout)
         }
       }
-      workaroundCache[asyncKey] = {
+      workaroundCache[key] = {
         suspense,
         cacheTimeout: null
       }
@@ -137,7 +137,7 @@ function useSuspense<T>({
   assert(false)
 }
 
-function getSuspenseId(asyncKey: string, elementId: string) {
+function getSuspenseId(key: string, elementId: string) {
   assert(!elementId.includes('_'))
-  return `${asyncKey}_${elementId}`
+  return `${key}_${elementId}`
 }

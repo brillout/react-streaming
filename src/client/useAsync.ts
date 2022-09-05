@@ -9,9 +9,9 @@ import { assertKey, stringifyKey } from '../shared/key'
 
 const suspenses = getGlobalVariable<Suspenses>('suspenses', {})
 
-function useAsync<T>(key: unknown, asyncFn: () => Promise<T>): T {
-  assertKey(key)
-  const asyncKey = stringifyKey(key)
+function useAsync<T>(keyValue: unknown, asyncFn: () => Promise<T>): T {
+  assertKey(keyValue)
+  const key = stringifyKey(keyValue)
   const elementId = useId()
 
   const resolver = async () => {
@@ -20,7 +20,7 @@ function useAsync<T>(key: unknown, asyncFn: () => Promise<T>): T {
   }
 
   const resolverSync = () => {
-    const initData = getInitData(asyncKey, elementId)
+    const initData = getInitData(key, elementId)
     if (initData) {
       const { value } = initData
       return { value: value as T }
@@ -28,18 +28,18 @@ function useAsync<T>(key: unknown, asyncFn: () => Promise<T>): T {
     return null
   }
 
-  return useSuspense({ suspenses, resolver, resolverSync, asyncKey, elementId, needsWorkaround: true })
+  return useSuspense({ suspenses, resolver, resolverSync, key, elementId, needsWorkaround: true })
 }
 
 // See provider `provideInitData()`
-function getInitData(asyncKey: string, elementId: string): InitData | null {
+function getInitData(key: string, elementId: string): InitData | null {
   const elements = Array.from(window.document.querySelectorAll(`.${initDataHtmlClass}`))
   for (const elem of elements) {
     assert(elem.textContent)
     const initData = parse(elem.textContent) as InitData
-    assert(typeof initData.asyncKey === 'string')
+    assert(typeof initData.key === 'string')
     assert(typeof initData.elementId === 'string')
-    if (initData.asyncKey === asyncKey && initData.elementId === elementId) {
+    if (initData.key === key && initData.elementId === elementId) {
       return initData
     }
   }
