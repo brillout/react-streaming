@@ -182,17 +182,19 @@ function Page({ movieId }) {
   )
 }
 
+async function fetchMovie(id) {
+  const response = await fetch(`https://star-wars.brillout.com/api/films/${id}.json`)
+  return response.json()
+}
+
 // This component is isomorphic: it works on both the client-side and server-side.
 // The data fetched while SSR is automatically passed and re-used on the client for hydration.
 function Movie({ id }) {
-  const movie = useAsync(
-    async () => {
-      const response = await fetch(`https://star-wars.brillout.com/api/films/${id}.json`)
-      return response.json()
-    },
-    'star-wars-movies', // You need to provide a unique key
-    [id] // Only re-run if `id` changes
-  )
+  const key = [
+    'star-wars-movies',
+    id // Re-run `fetchMovie()` if `id` changes
+  ]
+  const movie = useAsync(key, () => fetchMovie(id))
   return (
     <ul>
       <li>
@@ -205,6 +207,8 @@ function Movie({ id }) {
   )
 }
 ```
+
+See [`useAsync()` (Library Authors)](#useasync-library-authors) for more information.
 
 <br/>
 
@@ -222,9 +226,10 @@ You have the choice between three methods:
 - `useAsync()`: High-level and easy.
 - `injectToStream()`: Low-level and highly flexible (`useAsync()` is based on it). Easy & recommended for injecting script and style tags. Complex for data fetching (if possible, use `useAsync()` instead).
 
+
 ### `useAsync()` (Library Authors)
 
-> This section is a low-level description of `useAsync()`. For a high-levl description, see [`useAsync()`](#useasync) instead.
+> This section is a low-level description of `useAsync()`. For a high-level description, see [`useAsync()`](#useasync) instead.
 
 ```jsx
 import { useAsync } from 'react-streaming'
@@ -234,14 +239,9 @@ function SomeComponent() {
     const value = 'someData'
     return value
   }
-  const key = 'some-unique-key'
-  const deps = ['some-cache-invalidating-values']
+  const key = ['some', 'invalidating', 'values']
   // `useAsync()` suspends rendering until the promise returned by `someAsyncFunc()` resolves.
-  const value = useAsync(
-    someAsyncFunc,
-    key, // Required, and should be unique for each component.
-    deps // Optional: array of values.
-  )
+  const value = useAsync(key, someAsyncFunc)
   assert(value === 'someData')
 }
 ```
@@ -251,9 +251,11 @@ resolved value into the stream and the client-side picks up the injected value. 
 client-side doesn't call `someAsyncFunc()`: instead, the client-side re-uses the value resolved on
 the server-side.
 
-If you want to re-run `someAsyncFunc()`, then change `deps`. This is similar to the `deps` argument of React's `useEffect(fn, deps)`.
+If you want `someAsyncFunc()` to be re-run, then change `key`. The `someAsyncFunc()` is only re-run if when the component is un-mounted and re-mounted, or if `key` changes. For example, changing the state of your component (e.g. with `useState()`) will *not* re-run `someAsyncFunc()` if you provide the same `key`.
 
-If `<SomeComponent>` is rendered only on the client-side, then `useAsync()` is essentially just a cache.
+Usually the key is set to `['name-of-the-function', ...functionArguments]`.
+
+> You can think of `key` to serve a similar purpose to [React Queries's key](https://tanstack.com/query/v4/docs/guides/query-keys), and to the `deps` argument of React's [`useEffect(fn, deps)`](https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects).
 
 
 ### `injectToStream()`
