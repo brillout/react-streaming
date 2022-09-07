@@ -2,7 +2,7 @@ export { useSuspense }
 export type { Suspenses }
 export type { Suspense }
 
-import { assert, getGlobalVariable } from './utils'
+import { assert, assertWarning, isPromise, getGlobalVariable } from './utils'
 
 type Suspenses = Record<
   string, // `suspenseId`
@@ -34,15 +34,17 @@ function useSuspense<T>({
   suspenses,
   resolver,
   resolverSync,
-  needsWorkaround
+  needsWorkaround,
+  asyncFnName
 }: {
   key: string
   elementId: string
   suspenses: Suspenses
-  resolver: () => Promise<T>
-  resolverSync?: () => null | { value: T }
+  resolver: () => T
+  resolverSync?: () => null | { value: Awaited<T> }
   needsWorkaround?: true
-}): T {
+  asyncFnName: string
+}): Awaited<T> {
   DEBUG && console.log('=== useSuspense()')
 
   const suspenseId = getSuspenseId(key, elementId)
@@ -86,7 +88,7 @@ function useSuspense<T>({
 
   // Async
   {
-    const updateSuspense = (s: Suspense) => {
+    const updateSuspenseAsync = (s: Suspense) => {
       suspense = s
       if (!needsWorkaround) {
         suspenses[suspenseId] = suspense
@@ -104,17 +106,30 @@ function useSuspense<T>({
       }
     }
     if (!suspense) {
-      let promise: Promise<T>
+      let promise: T
       try {
         promise = resolver()
         DEBUG && console.log('resolver()')
-        promise.then((value) => {
-          updateSuspense({ state: 'done', value })
-          DEBUG && console.log('=== resolver() done', suspense)
-        })
-        updateSuspense({ state: 'pending', promise })
+        if (!isPromise(promise)) {
+          const fnName = asyncFnName || 'fn'
+          assertWarning(
+            false,
+            `[useAsync(key, ${fnName})] You provided a function \`${fnName}\` which didn't return a promise`,
+            {
+              onlyOnce: true,
+              showStackTrace: true
+            }
+          )
+          suspense = suspenses[suspenseId] = { state: 'done', value: promise }
+        } else {
+          promise.then((value) => {
+            updateSuspenseAsync({ state: 'done', value })
+            DEBUG && console.log('=== resolver() done', suspense)
+          })
+          updateSuspenseAsync({ state: 'pending', promise })
+        }
       } catch (err) {
-        updateSuspense({ state: 'error', err })
+        updateSuspenseAsync({ state: 'error', err })
       }
       assert(suspense)
     }
@@ -132,7 +147,7 @@ function useSuspense<T>({
     throw err
   }
   if (suspense.state === 'done') {
-    return suspense.value as T
+    return suspense.value as Awaited<T>
   }
   assert(false)
 }

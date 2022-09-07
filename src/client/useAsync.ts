@@ -9,7 +9,7 @@ import { assertKey, stringifyKey } from '../shared/key'
 
 const suspenses = getGlobalVariable<Suspenses>('suspenses', {})
 
-function useAsync<T>(keyValue: unknown, asyncFn: () => Promise<T>): T {
+function useAsync<T>(keyValue: unknown, asyncFn: () => T): Awaited<T> {
   assertKey(keyValue)
   const key = stringifyKey(keyValue)
   const elementId = useId()
@@ -23,12 +23,20 @@ function useAsync<T>(keyValue: unknown, asyncFn: () => Promise<T>): T {
     const initData = getInitData(key, elementId)
     if (initData) {
       const { value } = initData
-      return { value: value as T }
+      return { value: value as Awaited<T> }
     }
     return null
   }
 
-  return useSuspense({ suspenses, resolver, resolverSync, key, elementId, needsWorkaround: true })
+  return useSuspense({
+    suspenses,
+    resolver,
+    resolverSync,
+    key,
+    elementId,
+    needsWorkaround: true,
+    asyncFnName: asyncFn.name
+  })
 }
 
 // See provider `provideInitData()`
