@@ -11,7 +11,7 @@ type Suspenses = Record<
 
 type Suspense =
   | { state: 'done'; value: unknown }
-  | { state: 'pending'; promise: Promise<unknown> }
+  | { state: 'pending'; promise: Promise<void> }
   | { state: 'error'; err: unknown }
 
 // Workaround for React useId() bug
@@ -106,11 +106,11 @@ function useSuspense<T>({
       }
     }
     if (!suspense) {
-      let promise: T
+      let ret: T
       try {
-        promise = resolver()
+        ret = resolver()
         DEBUG && console.log('resolver()')
-        if (!isPromise(promise)) {
+        if (!isPromise(ret)) {
           const fnName = asyncFnName || 'fn'
           assertWarning(
             false,
@@ -120,9 +120,9 @@ function useSuspense<T>({
               showStackTrace: true
             }
           )
-          suspense = suspenses[suspenseId] = { state: 'done', value: promise }
+          suspense = suspenses[suspenseId] = { state: 'done', value: ret }
         } else {
-          promise.then((value) => {
+          const promise = ret.then((value) => {
             updateSuspenseAsync({ state: 'done', value })
             DEBUG && console.log('=== resolver() done', suspense)
           })
@@ -136,6 +136,7 @@ function useSuspense<T>({
   }
 
   if (suspense.state === 'pending') {
+    assert(isPromise(suspense.promise))
     throw suspense.promise
   }
   if (suspense.state === 'error') {
