@@ -136,6 +136,7 @@ function useSuspense<T>({
   }
 
   if (suspense.state === 'pending') {
+    bugCatcher()
     assert(isPromise(suspense.promise))
     throw suspense.promise
   }
@@ -151,6 +152,23 @@ function useSuspense<T>({
     return suspense.value as Awaited<T>
   }
   assert(false)
+}
+
+// Infinite look catcher.
+//  - It works like this: throw an error if `bugCatcher()` is called >1000 times within 30 seconds.
+var count: number | undefined
+function bugCatcher() {
+  if (count === undefined) {
+    count = 0
+    setTimeout(() => {
+      count = undefined
+    }, 30 * 1000)
+  }
+  if (++count > 1000) {
+    throw new Error(
+      'Infinite loop detected. This possibly is a React bug. Reach out to the https://github.com/brillout/react-streaming maintainer.'
+    )
+  }
 }
 
 function getSuspenseId(key: string, elementId: string) {
