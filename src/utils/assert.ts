@@ -7,7 +7,7 @@ export { getProjectError }
 import { createErrorWithCleanStackTrace } from './createErrorWithCleanStackTrace'
 import { projectInfo } from './projectInfo'
 
-const errorPrefix = `[${projectInfo.npmPackageName}]`
+const errorPrefix = `[${projectInfo.npmPackageName}@${projectInfo.projectVersion}]`
 const internalErrorPrefix = `${errorPrefix}[Bug]`
 const usageErrorPrefix = `${errorPrefix}[Wrong Usage]`
 const warningPrefix = `${errorPrefix}[Warning]`
