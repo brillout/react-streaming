@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@brillout/part-regex": "^0.1.2",
-    "@brillout/release-me": "^0.0.6",
+    "@brillout/release-me": "^0.0.7",
     "@types/node": "^15.12.2",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.4",
