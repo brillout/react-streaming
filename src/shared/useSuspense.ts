@@ -48,6 +48,7 @@ function useSuspense<T>({
   DEBUG && console.log('=== useSuspense()')
 
   const suspenseId = getSuspenseId(key, elementId)
+  DEBUG && console.log('key', key)
   DEBUG && console.log('suspenseId', suspenseId)
   let suspense = suspenses[suspenseId]
   DEBUG && console.log('suspense', suspense)
@@ -122,10 +123,15 @@ function useSuspense<T>({
           )
           suspense = suspenses[suspenseId] = { state: 'done', value: ret }
         } else {
-          const promise = ret.then((value) => {
-            updateSuspenseAsync({ state: 'done', value })
-            DEBUG && console.log('=== resolver() done', suspense)
-          })
+          const promise = ret
+            .then((value) => {
+              updateSuspenseAsync({ state: 'done', value })
+              DEBUG && console.log('=== resolver() done', suspense)
+            })
+            .catch((err) => {
+              updateSuspenseAsync({ state: 'error', err })
+              DEBUG && console.log('=== resolver() error', suspense)
+            })
           updateSuspenseAsync({ state: 'pending', promise })
         }
       } catch (err) {
