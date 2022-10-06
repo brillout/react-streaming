@@ -1,16 +1,14 @@
 export { createReadableWrapper }
 
-import { createBuffer } from './createBuffer'
+import { createBuffer, StreamOperations } from './createBuffer'
 
 // `readableFromReact` is the readable stream provided by React
 // `readableForUser` is the readable stream we give to the user (the wrapper)
 // Essentially: what React writes to `readableFromReact` is forwarded to `readableForUser`
 
 function createReadableWrapper(readableFromReact: ReadableStream) {
-  const bufferParams: {
-    writeChunk: null | ((_chunk: string) => void)
-  } = {
-    writeChunk: null
+  const streamOperations: StreamOperations = {
+    operations: null
   }
   let controllerOfUserStream: ReadableStreamController<any>
   let onEnded!: () => void
@@ -23,13 +21,16 @@ function createReadableWrapper(readableFromReact: ReadableStream) {
       onReady(onEnded)
     }
   })
-  const { injectToStream, onBeforeWrite, onBeforeEnd } = createBuffer(bufferParams)
+  const { injectToStream, onBeforeWrite, onBeforeEnd } = createBuffer(streamOperations)
   return { readableForUser, streamEnd, injectToStream }
 
   async function onReady(onEnded: () => void) {
-    const writeChunk = (bufferParams.writeChunk = (chunk: unknown) => {
-      controllerOfUserStream.enqueue(encodeForWebStream(chunk))
-    })
+    streamOperations.operations = {
+      writeChunk(chunk) {
+        controllerOfUserStream.enqueue(encodeForWebStream(chunk))
+      },
+      flush: null
+    }
 
     const reader = readableFromReact.getReader()
 
@@ -46,7 +47,7 @@ function createReadableWrapper(readableFromReact: ReadableStream) {
         break
       }
       onBeforeWrite(value)
-      writeChunk(value)
+      streamOperations.operations.writeChunk(value)
     }
 
     // Collect `injectToStream()` calls stuck in an async call

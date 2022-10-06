@@ -3,7 +3,7 @@ export type { Pipe }
 
 import type { Writable as StreamNodeWritable } from 'stream'
 import { createDebugger } from '../utils'
-import { createBuffer } from './createBuffer'
+import { createBuffer, StreamOperations } from './createBuffer'
 import { loadNodeStreamModule } from './loadNodeStreamModule'
 const debug = createDebugger('react-streaming:createPipeWrapper')
 
@@ -18,12 +18,10 @@ type Pipe = (writable: StreamNodeWritable) => void
 async function createPipeWrapper(pipeFromReact: Pipe, { onReactBug }: { onReactBug: (err: unknown) => void }) {
   const { Writable } = await loadNodeStreamModule()
   const { pipeForUser, streamEnd } = createPipeForUser()
-  const bufferParams: {
-    writeChunk: null | ((_chunk: string) => void)
-  } = {
-    writeChunk: null
+  const streamOperations: StreamOperations = {
+    operations: null
   }
-  const { injectToStream, onBeforeWrite, onBeforeEnd } = createBuffer(bufferParams)
+  const { injectToStream, onBeforeWrite, onBeforeEnd } = createBuffer(streamOperations)
   return { pipeForUser, streamEnd, injectToStream }
 
   function createPipeForUser(): { pipeForUser: Pipe; streamEnd: Promise<void> } {
@@ -54,14 +52,20 @@ async function createPipeWrapper(pipeFromReact: Pipe, { onReactBug }: { onReactB
           onEnded()
         }
       })
-      bufferParams.writeChunk = (chunk: string) => {
-        writableFromUser.write(chunk)
-      }
-      ;(writableForReact as any).flush = () => {
+      const flush = () => {
         if (typeof (writableFromUser as any).flush === 'function') {
           ;(writableFromUser as any).flush()
+          debug('stream flushed (Node.js Writable)')
         }
       }
+      streamOperations.operations = {
+        flush,
+        writeChunk(chunk: unknown) {
+          writableFromUser.write(chunk)
+        }
+      }
+      // Forward the flush() call. E.g. used by React to flush GZIP buffers, see https://github.com/brillout/vite-plugin-ssr/issues/466#issuecomment-1269601710
+      ;(writableForReact as any).flush = flush
       pipeFromReact(writableForReact)
     }
     return { pipeForUser, streamEnd }

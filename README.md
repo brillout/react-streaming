@@ -260,7 +260,7 @@ Usually the key is set to `['name-of-the-function', ...functionArguments]`.
 
 ### `injectToStream()`
 
-`injectToStream(htmlChunk: string)` allows you to inject strings to the current stream.
+`injectToStream(chunk: string | Buffer | unknown, options?: { flush?: boolean })` enables you to inject chunks to the current stream.
 
 There are two ways to access `injectToStream()`:
  1. With `renderToStream()`:
@@ -288,13 +288,15 @@ Usage examples:
 
 ```jsx
 // Inject JavaScript (e.g. for progressive hydration)
-injectToStream('<script type="module" src="/main.js"></script>')
+injectToStream('<script type="module" src="/main.js"></script>', { flush: true })
 
 // Inject CSS (e.g. for CSS-in-JS)
-injectToStream('<styles>.some-component { color: blue }</styles>')
+injectToStream('<styles>.some-component { color: blue }</styles>', { flush: true })
 
 // Pass data to client
 injectToStream(`<script type="application/json">${JSON.stringify(someData)}</script>`)
 ```
 
 For a full example of using `injectToStream()`, have a look at `useAsync()`'s implementation.
+
+If setting `options.flush` to `true`, then the stream will be flushed after `chunk` has been written to the stream. This is only applicable for Node.js streams and only if you are using a compression library that makes a `flush()` method available. For example, [`compression` adds a `res.flush()` method](https://www.npmjs.com/package/compression#resflush). The option is ignored if there isn't a `flush()` method available.
