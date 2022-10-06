@@ -77,11 +77,10 @@ describe('error handling', async () => {
       const { data, streamEnd } = await render(<Page />, { streamType, onBoundaryError })
       await streamEnd
       {
-        const filePointer = /[^\)]+/
         const split = 'at Page'
         const [dataBegin, dataEnd, ...rest] = data.content.split(split)
         expect(rest.length).toBe(0)
-        const dataContentExpected = [
+        const dataBeginExpected = [
           // Page Shell
           '<!--$?--><template id="B:0"></template><p>Loading...</p><!--/$-->',
           // `useAsync()` script injection
@@ -89,15 +88,16 @@ describe('error handling', async () => {
           `<script>function $RX(b,c,d,e){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data="$!",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),b._reactRetry&&b._reactRetry())};$RX("B:0","","some-error","\\n    `
         ].join('')
         try {
-          expect(dataBegin).toMatch(dataContentExpected)
+          expect(dataBegin).toMatch(dataBeginExpected)
         } catch (err) {
-          console.log('=== expected ===\n', dataContentExpected)
-          console.log('=== actual ===\n', data.content)
+          console.log('=== expected ===\n', dataBeginExpected)
+          console.log('=== actual ===\n', dataBegin)
           throw err
         }
         // React handling the suspense boundary error
         {
           const content = split + dataEnd
+          const filePointer = /[^\)]+/
           try {
             expect(content).toMatch(
               partRegex`at Page (${filePointer})\\n    at SuspenseData (${filePointer})")</script>`
