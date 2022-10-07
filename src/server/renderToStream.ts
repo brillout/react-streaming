@@ -39,7 +39,7 @@ type Result = (
 ) & {
   streamEnd: Promise<boolean>
   disabled: boolean
-  injectToStream: (chunk: string) => void
+  injectToStream: (chunk: unknown) => void
 }
 
 const globalConfig: { disable: boolean } = ((globalThis as any).__react_streaming = (globalThis as any)
@@ -52,13 +52,13 @@ function disable() {
 
 async function renderToStream(element: React.ReactNode, options: Options = {}): Promise<Result> {
   element = React.createElement(SuspenseData, null, element)
-  let injectToStream: (chunk: string) => void = (chunk) => buffer.push(chunk)
-  const buffer: string[] = []
+  let injectToStream: (chunk: unknown) => void = (chunk) => buffer.push(chunk)
+  const buffer: unknown[] = []
   element = React.createElement(
     StreamProvider,
     {
       value: {
-        injectToStream: (chunk: string) => {
+        injectToStream: (chunk: unknown) => {
           injectToStream(chunk)
         }
       }
