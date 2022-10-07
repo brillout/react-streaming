@@ -1,4 +1,4 @@
-const PROJECT_VERSION = '0.3.4'
+const PROJECT_VERSION = '0.3.5'
 
 export const projectInfo = {
   projectName: 'react-streaming' as const,
