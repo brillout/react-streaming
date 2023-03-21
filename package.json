@@ -29,8 +29,9 @@
   },
   "exports": {
     ".": {
+      "browser": "./dist/esm/client/hooks.js",
       "node": "./dist/cjs/server/hooks.js",
-      "default": "./dist/esm/client/hooks.js"
+      "default": "./dist/esm/server/hooks.js"
     },
     "./server": {
       "node": "./dist/cjs/server/index.js",
