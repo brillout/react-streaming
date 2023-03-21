@@ -32,8 +32,7 @@
       "worker": "./dist/cjs/server/hooks.js",
       "node": "./dist/cjs/server/hooks.js",
       "browser": "./dist/esm/client/hooks.js",
-      "deno": "./dist/esm/client/hooks.js",
-      "default": "./dist/esm/client/hooks.js"
+      "deno": "./dist/esm/client/hooks.js"
     },
     "./server": {
       "worker": "./dist/cjs/server/index.js",
