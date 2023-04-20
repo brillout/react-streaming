@@ -31,11 +31,11 @@
     ".": {
       "browser": "./dist/esm/client/hooks.js",
       "node": "./dist/cjs/server/hooks.js",
-      "default": "./dist/esm/server/hooks.js"
+      "default": "./dist/cjs/server/hooks.js"
     },
     "./server": {
       "node": "./dist/cjs/server/index.js",
-      "default": "./dist/esm/server/index.js"
+      "default": "./dist/cjs/server/index.js"
     }
   },
   "devDependencies": {
