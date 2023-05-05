@@ -1,7 +1,7 @@
 {
   "name": "react-streaming",
   "description": "React 18 Streaming. Full-fledged & Easy.",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "main": "./dist/cjs/server/hooks.js",
   "peerDependencies": {
     "react": ">=18",
