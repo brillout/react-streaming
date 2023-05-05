@@ -6,9 +6,12 @@
 
 # `react-streaming`
 
-> React 18 Streaming. Full-fledged & Easy.
+React 18 Streaming. Full-fledged & Easy.
 
-> Unfamiliar with React Streaming? Check out [Dan's article about SSR and Streaming](https://github.com/reactwg/react-18/discussions/37).
+> Unfamiliar with React 18 Streaming? Check out [Dan's article about SSR and Streaming](https://github.com/reactwg/react-18/discussions/37).
+
+> ⚠️
+> While `react-streaming` is stable in itself (it's used in production and has good CI test coverage), note that React's SSR streaming support is still early and that the React team is working on high-level APIs that will make `react-streaming` (partially) obsolete, see [React RFC injectToStream - @sebmarkbage comment](https://github.com/reactjs/rfcs/pull/219#issuecomment-1115398084).
 
 Follow: [Twitter > @brillout](https://twitter.com/brillout)
 <br/>
@@ -51,9 +54,6 @@ const {
 } = await renderToStream(<Page />)
 ```
 
-> ⚠️
-> While `react-streaming` is stable in itself (it's used in production and has good CI test coverage), note that React's SSR streaming support is still early and that the React team is working on high-level APIs that may make parts of `react-streaming` obsolete, see [React RFC injectToStream - @sebmarkbage comment](https://github.com/reactjs/rfcs/pull/219#issuecomment-1115398084).
-
 <br/>
 
 ## Why Streaming
@@ -64,9 +64,9 @@ React 18's new SSR streaming architecture unlocks many capabilities:
 - Fundamentally improved mobile performance. (Mobile users can progressively load the page as data is fetched, before even a single line of JavaScript is loaded. Especially important for users with a low-end device and users with a poor internet connection.)
 - Progressive Hydration. (Page is interactive before even the page has finished loading.)
 
-The problem: the current React 18 Streaming architecture is low-level and difficult to use.
+Problem: the current React 18 Streaming architecture is low-level and difficult to use.
 
-The solution: `react-streaming`.
+Solution: `react-streaming`.
 
 > `react-streaming` makes it easy to build the libraries of tomorrow, for example:
 >  - Use [Telefunc](https://telefunc.com/) to easily fetch data for your Next.js app or your [Vite + `vite-plugin-ssr`](https://vite-plugin-ssr.com/) app. (Replacing Next.js's `getServerSideProps()` and `vite-plugin-ssr`'s `onBeforeRender()`.)
