@@ -8,14 +8,14 @@
 
 React 18 Streaming. Full-fledged & Easy.
 
+Follow: [Twitter > @brillout](https://twitter.com/brillout)
+<br/>
+Chat: <a href="https://discord.com/invite/H23tjRxFvx">Discord > Vike<img src="/images/hash.svg" height="17" width="23" valign="text-bottom" alt="hash"/>react-streaming</a>
+
 > Unfamiliar with React 18 Streaming? Check out [Dan's article about SSR and Streaming](https://github.com/reactwg/react-18/discussions/37).
 
 > ⚠️
 > While `react-streaming` is stable in itself (it's used in production and has good CI test coverage), note that React's SSR streaming support is still early and that the React team is working on high-level APIs that will make `react-streaming` (partially) obsolete, see [React RFC injectToStream - @sebmarkbage comment](https://github.com/reactjs/rfcs/pull/219#issuecomment-1115398084).
-
-Follow: [Twitter > @brillout](https://twitter.com/brillout)
-<br/>
-Chat: <a href="https://discord.com/invite/H23tjRxFvx">Discord > Vike<img src="/images/hash.svg" height="17" width="23" valign="text-bottom" alt="hash"/>react-streaming</a>
 
 <b>Contents</b>
 
