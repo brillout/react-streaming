@@ -8,9 +8,8 @@
 
 React 18 Streaming. Full-fledged & Easy.
 
-Follow: [Twitter > @brillout](https://twitter.com/brillout)
-<br/>
-Chat: <a href="https://discord.com/invite/H23tjRxFvx">Discord > Vike<img src="/images/hash.svg" height="17" width="23" valign="text-bottom" alt="hash"/>react-streaming</a>
+Follow: [Twitter > @brillout](https://twitter.com/brillout)  
+Chat: <a href="https://discord.com/invite/H23tjRxFvx">Discord > Cubes > <img src="/images/hash.svg" height="17" width="19" valign="middle" alt="hash"/>react-streaming</a>
 
 > Unfamiliar with React 18 Streaming? Check out [Dan's article about SSR and Streaming](https://github.com/reactwg/react-18/discussions/37).
 
