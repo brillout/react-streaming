@@ -38,6 +38,8 @@ async function createPipeWrapper(pipeFromReact: Pipe, { onReactBug }: { onReactB
           // fix: #20
           if (!writableFromUser.destroyed) {
             writableFromUser.write(chunk, encoding, callback)
+          } else {
+            writableForReact.destroy()
           }
         },
         final(callback) {
