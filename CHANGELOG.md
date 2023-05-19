@@ -1,3 +1,13 @@
+## [0.3.11](https://github.com/brillout/react-streaming/compare/v0.3.10...v0.3.11) (2023-05-19)
+
+
+### Bug Fixes
+
+* disable write after stream destoryed ([660d252](https://github.com/brillout/react-streaming/commit/660d2524400830ec0512a23d7ca360909075f7a7))
+* writableForReact destory if writableFromUser not available ([68a4d65](https://github.com/brillout/react-streaming/commit/68a4d656df4d9202a28070848708fd8cdddeb74d))
+
+
+
 ## [0.3.10](https://github.com/brillout/react-streaming/compare/v0.3.9...v0.3.10) (2023-05-05)
 
 
