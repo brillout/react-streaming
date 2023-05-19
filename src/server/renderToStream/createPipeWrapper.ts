@@ -35,7 +35,10 @@ async function createPipeWrapper(pipeFromReact: Pipe, { onReactBug }: { onReactB
         write(chunk: unknown, encoding, callback) {
           debug('write')
           onBeforeWrite(chunk)
-          writableFromUser.write(chunk, encoding, callback)
+          // fix: #20
+          if (!writableFromUser.destroyed) {
+            writableFromUser.write(chunk, encoding, callback)
+          }
         },
         final(callback) {
           debug('final')
