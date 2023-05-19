@@ -30,7 +30,7 @@ Chat: <a href="https://discord.com/invite/H23tjRxFvx">Discord > Cubes > <img src
 
 ## Intro
 
-Features (for React users):
+**Features (for React users)**
 
 - Unlocks `<Suspense>` for SSR apps.
 - `useAsync()`: easily fetch data for SSR apps.
@@ -38,12 +38,12 @@ Features (for React users):
 - Seamless support for Node.js (serverless) platforms (Vercel, AWS EC2, ...) and Edge platforms (Cloudflare Workers, Deno Deploy, Netlify Edge, Vercel Edge, ...).
 - Easy error handling.
 
-Features (for library authors):
+**Features (for library authors)**
 
 - `useAsync()`: add data fetching capabilities to your library. High-level and easy to use.
 - `injectToStream()`: inject chunks to the stream for your library. Low-level and difficult to use, but highly flexible.
 
-Easy:
+**Easy**
 
 ```jsx
 import { renderToStream } from 'react-streaming/server'
