@@ -35,10 +35,10 @@ async function createPipeWrapper(pipeFromReact: Pipe, { onReactBug }: { onReactB
         write(chunk: unknown, encoding, callback) {
           debug('write')
           onBeforeWrite(chunk)
-          // fix: #20
           if (!writableFromUser.destroyed) {
             writableFromUser.write(chunk, encoding, callback)
           } else {
+            // Destroying twice is fine: https://github.com/brillout/react-streaming/pull/21#issuecomment-1554517163
             writableForReact.destroy()
           }
         },
