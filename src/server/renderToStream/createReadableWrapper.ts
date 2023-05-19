@@ -27,7 +27,7 @@ function createReadableWrapper(readableFromReact: ReadableStream) {
   async function onReady(onEnded: () => void) {
     streamOperations.operations = {
       writeChunk(chunk) {
-        controllerOfUserStream.enqueue(encodeForWebStream(chunk))
+        controllerOfUserStream.enqueue(encodeForWebStream(chunk) as any)
       },
       flush: null
     }
