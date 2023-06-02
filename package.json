@@ -25,7 +25,8 @@
     "build:esm": "tsc --project ./tsconfig.esm.json",
     "clean": "rm -rf dist/",
     "// === Release ===": "",
-    "release": "release-me patch"
+    "release": "release-me patch",
+    "release:commit": "release-me commit"
   },
   "exports": {
     ".": {
@@ -42,7 +43,7 @@
   },
   "devDependencies": {
     "@brillout/part-regex": "^0.1.2",
-    "@brillout/release-me": "^0.0.7",
+    "@brillout/release-me": "^0.1.6",
     "@types/node": "^15.12.2",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.4",

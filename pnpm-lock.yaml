@@ -13,8 +13,8 @@ devDependencies:
     specifier: ^0.1.2
     version: 0.1.2
   '@brillout/release-me':
-    specifier: ^0.0.7
-    version: 0.0.7
+    specifier: ^0.1.6
+    version: 0.1.6
   '@types/node':
     specifier: ^15.12.2
     version: 15.14.9
@@ -68,8 +68,8 @@ packages:
     resolution: {integrity: sha512-3b/5PLhJ4xMF/cyY1aJXIMQT0TONFFgUX3tH2wfdrHe78OYe8igl0iaHkJ3kzgN0V+x562Of2AoMwThtLaAj5Q==}
     dev: true
 
-  /@brillout/release-me@0.0.7:
-    resolution: {integrity: sha512-QXKntxVQ3M7bh+olW7fCFu55cjkuGGonQb1mv/cbDXwkwDdQBwa736bonaKNaRlMjkrTbgYFb2HSIGim5bHECA==}
+  /@brillout/release-me@0.1.6:
+    resolution: {integrity: sha512-EHwDLwd+Eseo0W7LmyLFdBJ5zsj69mJo/b54nkmkm13yd8rJ3b0IJI9yXBfr618PY71XjMmSjJH6FZ9zpsZb0Q==}
     hasBin: true
     dependencies:
       conventional-changelog: 3.1.25
