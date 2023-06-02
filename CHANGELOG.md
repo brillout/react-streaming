@@ -1,3 +1,12 @@
+## [0.3.12](https://github.com/brillout/react-streaming/compare/v0.3.11...v0.3.12) (2023-06-02)
+
+
+### Bug Fixes
+
+* improve assertion that server files aren't loaded in browser (fix [#22](https://github.com/brillout/react-streaming/issues/22)) ([794dd95](https://github.com/brillout/react-streaming/commit/794dd95fa7332d30deba03e1bc66b1c7a40d8a38))
+
+
+
 ## [0.3.11](https://github.com/brillout/react-streaming/compare/v0.3.10...v0.3.11) (2023-05-19)
 
 
