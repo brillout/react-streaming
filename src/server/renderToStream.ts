@@ -122,7 +122,8 @@ async function renderToNodeStream(
     })
   }
   const renderToPipeableStream =
-    options.renderToPipeableStream ?? (await import('react-dom/server')).renderToPipeableStream
+    options.renderToPipeableStream ??
+    ((await import('react-dom/server.node' as string)).renderToPipeableStream as typeof RenderToPipeableStream)
   assertReactImport(renderToPipeableStream, 'renderToPipeableStream')
   const { pipe: pipeOriginal } = renderToPipeableStream(element, {
     onShellReady() {
@@ -187,7 +188,8 @@ async function renderToWebStream(
     })
   }
   const renderToReadableStream =
-    options.renderToReadableStream ?? (await import('react-dom/server')).renderToReadableStream
+    options.renderToReadableStream ??
+    ((await import('react-dom/server.browser' as string)).renderToReadableStream as typeof RenderToReadableStream)
   assertReactImport(renderToReadableStream, 'renderToReadableStream')
   const readableOriginal = await renderToReadableStream(element, { onError })
   const { allReady } = readableOriginal
