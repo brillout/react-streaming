@@ -246,14 +246,7 @@ function assertReact() {
       typeof ReactDOMServer.renderToReadableStream === 'function'
   )
 }
-function assertReactImport(fn: unknown, fnName: string) {
-  assertUsage(
-    fn,
-    [
-      'Your environment seems broken.',
-      `(Could not import \`${fnName}\` from \`react-dom/server\`).`,
-      'Create a new GitHub issue at https://github.com/brillout/react-streaming to discuss a solution.'
-    ].join(' ')
-  )
+function assertReactImport(fn: unknown, fnName: 'renderToPipeableStream' | 'renderToReadableStream') {
   assert(typeof fn === 'function')
+  assertUsage(fn, `Couldn't import ${fnName}() from 'react-dom/server'`)
 }
