@@ -1,3 +1,13 @@
+## [0.3.13](https://github.com/brillout/react-streaming/compare/v0.3.12...v0.3.13) (2023-06-03)
+
+
+### Bug Fixes
+
+* improve assertUsage message ([5e94949](https://github.com/brillout/react-streaming/commit/5e94949351857c3141fa4d69d40d03aa5e7055de))
+* improve import renderToReadableStream() in Node.js ([22494a1](https://github.com/brillout/react-streaming/commit/22494a17177c6f3a35eb7bbd25d791bba18f74c0))
+
+
+
 ## [0.3.12](https://github.com/brillout/react-streaming/compare/v0.3.11...v0.3.12) (2023-06-02)
 
 
