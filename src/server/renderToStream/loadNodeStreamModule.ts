@@ -2,7 +2,7 @@ export { loadNodeStreamModule }
 export { nodeStreamModuleIsAvailable }
 
 import type { Readable as StreamNodeReadable, Writable as StreamNodeWritable } from 'stream'
-import { loadModule } from '../utils'
+import import_ from '@brillout/import'
 
 type StreamModule = {
   Readable: typeof StreamNodeReadable
@@ -10,18 +10,18 @@ type StreamModule = {
 }
 
 async function loadNodeStreamModule(): Promise<StreamModule> {
-  const streamModule = await loadStreamModule()
+  const streamModule = await loadModule()
   const { Readable, Writable } = streamModule
   return { Readable, Writable }
 }
 async function nodeStreamModuleIsAvailable(): Promise<boolean> {
   try {
-    await loadStreamModule()
+    await loadModule()
     return true
   } catch (err) {
     return false
   }
 }
-function loadStreamModule() {
-  return loadModule('stream') as Promise<StreamModule>
+function loadModule() {
+  return import_('stream') as Promise<StreamModule>
 }
