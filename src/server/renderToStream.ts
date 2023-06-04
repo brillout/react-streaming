@@ -250,5 +250,5 @@ function assertReact() {
 }
 function assertReactImport(fn: unknown, fnName: 'renderToPipeableStream' | 'renderToReadableStream') {
   assert(typeof fn === 'function')
-  assertUsage(fn, `Couldn't import ${fnName}() from 'react-dom/server'`)
+  assertUsage(fn, `Couldn't import ${fnName}() from 'react-dom'`)
 }
