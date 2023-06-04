@@ -14,6 +14,7 @@ import { createReadableWrapper } from './renderToStream/createReadableWrapper'
 import { resolveSeoStrategy, SeoStrategy } from './renderToStream/resolveSeoStrategy'
 import { assert, assertUsage, createDebugger } from './utils'
 import { nodeStreamModuleIsAvailable } from './renderToStream/loadNodeStreamModule'
+import import_ from '@brillout/import'
 const debug = createDebugger('react-streaming:flow')
 
 assertReact()
@@ -123,7 +124,8 @@ async function renderToNodeStream(
   }
   const renderToPipeableStream =
     options.renderToPipeableStream ??
-    ((await import('react-dom/server.node' as string)).renderToPipeableStream as typeof RenderToPipeableStream)
+    // We don't directly use import() because it shouldn't be bundled for Cloudflare Workers
+    ((await import_('react-dom/server.node')).renderToPipeableStream as typeof RenderToPipeableStream)
   assertReactImport(renderToPipeableStream, 'renderToPipeableStream')
   const { pipe: pipeOriginal } = renderToPipeableStream(element, {
     onShellReady() {
@@ -189,6 +191,7 @@ async function renderToWebStream(
   }
   const renderToReadableStream =
     options.renderToReadableStream ??
+    // We directly use import() because it needs to be bundled for Cloudflare Workers
     ((await import('react-dom/server.browser' as string)).renderToReadableStream as typeof RenderToReadableStream)
   assertReactImport(renderToReadableStream, 'renderToReadableStream')
   const readableOriginal = await renderToReadableStream(element, { onError })
