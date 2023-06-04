@@ -124,7 +124,7 @@ async function renderToNodeStream(
   }
   const renderToPipeableStream =
     options.renderToPipeableStream ??
-    // We don't directly use import() because it shouldn't be bundled for Cloudflare Workers
+    // We don't directly use import() because it shouldn't be bundled for Cloudflare Workers: the module react-dom/server.node contains a require('stream') which fails on Cloudflare Workers
     ((await import_('react-dom/server.node')).renderToPipeableStream as typeof RenderToPipeableStream)
   assertReactImport(renderToPipeableStream, 'renderToPipeableStream')
   const { pipe: pipeOriginal } = renderToPipeableStream(element, {
