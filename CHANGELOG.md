@@ -1,3 +1,13 @@
+## [0.3.14](https://github.com/brillout/react-streaming/compare/v0.3.13...v0.3.14) (2023-06-04)
+
+
+### Bug Fixes
+
+* avoid 'react-dom/server.node' to be bundled ([02449a7](https://github.com/brillout/react-streaming/commit/02449a76343ce3318622a5578b4a7a97e8039b68))
+* improve error message ([4eed291](https://github.com/brillout/react-streaming/commit/4eed291caf45a781a5a095906aecec67dcbcdb75))
+
+
+
 ## [0.3.13](https://github.com/brillout/react-streaming/compare/v0.3.12...v0.3.13) (2023-06-03)
 
 
