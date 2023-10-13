@@ -39,7 +39,8 @@
     "./server": {
       "node": "./dist/cjs/server/index.js",
       "worker": "./dist/esm/server/index.js",
-      "deno": "./dist/esm/server/index.js"
+      "deno": "./dist/esm/server/index.js",
+      "browser": "./dist/esm/server/hooks.js"
     }
   },
   "devDependencies": {
