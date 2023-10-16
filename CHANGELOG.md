@@ -1,3 +1,12 @@
+## [0.3.15](https://github.com/brillout/react-streaming/compare/v0.3.14...v0.3.15) (2023-10-16)
+
+
+### Bug Fixes
+
+* make react-streaming/server browser entry a poison pill ([854011b](https://github.com/brillout/react-streaming/commit/854011bacc80e1d5aefca3e62b22a1ca435b8b75))
+
+
+
 ## [0.3.14](https://github.com/brillout/react-streaming/compare/v0.3.13...v0.3.14) (2023-06-04)
 
 
