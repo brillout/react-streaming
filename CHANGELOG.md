@@ -1,3 +1,12 @@
+## [0.3.16](https://github.com/brillout/react-streaming/compare/v0.3.15...v0.3.16) (2023-11-15)
+
+
+### Bug Fixes
+
+* remove Discord links ([117df16](https://github.com/brillout/react-streaming/commit/117df16d33c773aa56782db980453bda80440ea9))
+
+
+
 ## [0.3.15](https://github.com/brillout/react-streaming/compare/v0.3.14...v0.3.15) (2023-10-16)
 
 
