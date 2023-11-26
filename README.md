@@ -59,7 +59,7 @@ const {
 React 18's new SSR streaming architecture unlocks many capabilities:
 
 - Easily fetch data for SSR apps.
-- Fundamentally improved mobile performance. (Mobile users can progressively load the page as data is fetched, before even a single line of JavaScript is loaded. Especially important for users with a low-end device and users with a poor internet connection.)
+- Fundamentally improved mobile performance. (Mobile users can progressively load the page as data is fetched, before even a single line of JavaScript is loaded. Especially important for users with a low-end device and poor internet connection.)
 - Progressive Hydration. (Page is interactive before even the page has finished loading.)
 
 Problem: the current React 18 Streaming architecture is low-level and difficult to use.
@@ -67,7 +67,7 @@ Problem: the current React 18 Streaming architecture is low-level and difficult 
 Solution: `react-streaming`.
 
 > `react-streaming` makes it easy to build the libraries of tomorrow, for example:
->  - Use [Telefunc](https://telefunc.com/) to easily fetch data for your Next.js app or your [Vite + `vite-plugin-ssr`](https://vite-plugin-ssr.com/) app. (Replacing Next.js's `getServerSideProps()` and `vite-plugin-ssr`'s `onBeforeRender()`.)
+>  - Use [Telefunc](https://telefunc.com/) to easily fetch data for your Next.js app or your Vite + [`vite-plugin-ssr`](https://vite-plugin-ssr.com/) app. (Replacing Next.js's `getServerSideProps()` and `vite-plugin-ssr`'s `onBeforeRender()`.)
 >  - Better GraphQL tools, e.g. [Vilay](https://github.com/XiNiHa/vilay).
 
 <br/>
