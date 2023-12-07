@@ -7,7 +7,7 @@ import { InitData, initDataHtmlClass } from '../shared/initData'
 import { useSuspense, Suspenses } from '../shared/useSuspense'
 import { assertKey, stringifyKey } from '../shared/key'
 
-const suspenses = getGlobalObject<Suspenses>('useAsync.ts', {})
+const globalObject = getGlobalObject<{ suspenses: Suspenses }>('useAsync.ts', { suspenses: {} })
 
 function useAsync<T>(keyValue: unknown, asyncFn: () => T): Awaited<T> {
   assertKey(keyValue)
@@ -29,7 +29,7 @@ function useAsync<T>(keyValue: unknown, asyncFn: () => T): Awaited<T> {
   }
 
   return useSuspense({
-    suspenses,
+    suspenses: globalObject.suspenses,
     resolver,
     resolverSync,
     key,

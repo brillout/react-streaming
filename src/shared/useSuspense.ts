@@ -15,12 +15,15 @@ type Suspense =
   | { state: 'error'; err: unknown }
 
 // Workaround for React useId() bug
-const workaroundCache = getGlobalObject<
-  Record<
+const globalObject = getGlobalObject<{
+  workaroundCache: Record<
     string, // `key`
     { suspense: Suspense; cacheTimeout: null | ReturnType<typeof setTimeout> }
   >
->('useSuspense.ts', {})
+}>('useSuspense.ts', {
+  workaroundCache: {}
+})
+const { workaroundCache } = globalObject
 
 //*/
 const DEBUG = false
