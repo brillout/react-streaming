@@ -2,7 +2,7 @@ export { useSuspense }
 export type { Suspenses }
 export type { Suspense }
 
-import { assert, assertWarning, isPromise, getGlobalVariable } from './utils'
+import { assert, assertWarning, isPromise, getGlobalObject } from './utils'
 
 type Suspenses = Record<
   string, // `suspenseId`
@@ -15,12 +15,12 @@ type Suspense =
   | { state: 'error'; err: unknown }
 
 // Workaround for React useId() bug
-const workaroundCache = getGlobalVariable<
+const workaroundCache = getGlobalObject<
   Record<
     string, // `key`
     { suspense: Suspense; cacheTimeout: null | ReturnType<typeof setTimeout> }
   >
->('workaroundCache', {})
+>('useSuspense.ts', {})
 
 //*/
 const DEBUG = false
