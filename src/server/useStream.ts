@@ -3,12 +3,16 @@ export { StreamProvider }
 export type { StreamUtils }
 
 import React, { useContext } from 'react'
-import { assert } from './utils'
+import { assert, getGlobalObject } from './utils'
 
 type StreamUtils = {
   injectToStream: (htmlChunk: string) => void
 }
-const StreamContext = React.createContext<StreamUtils | null>(null)
+
+const globalObject = getGlobalObject('useStream.ts', {
+  StreamContext: React.createContext<StreamUtils | null>(null)
+})
+const { StreamContext } = globalObject
 const StreamProvider = StreamContext.Provider
 
 function useStream(): StreamUtils | null {
