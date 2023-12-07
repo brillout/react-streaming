@@ -1,3 +1,12 @@
+## [0.3.17](https://github.com/brillout/react-streaming/compare/v0.3.16...v0.3.17) (2023-12-07)
+
+
+### Bug Fixes
+
+* ensure StreamContext is a singltone ([b2172d7](https://github.com/brillout/react-streaming/commit/b2172d7ded196d6494ba54b34270f05b999cd89c))
+
+
+
 ## [0.3.16](https://github.com/brillout/react-streaming/compare/v0.3.15...v0.3.16) (2023-11-15)
 
 
