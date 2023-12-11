@@ -34,13 +34,15 @@
       "node": "./dist/cjs/server/hooks.js",
       "worker": "./dist/esm/server/hooks.js",
       "deno": "./dist/esm/server/hooks.js",
-      "browser": "./dist/esm/client/hooks.js"
+      "browser": "./dist/esm/client/hooks.js",
+      "types": "./dist/cjs/server/hooks.d.ts"
     },
     "./server": {
       "node": "./dist/cjs/server/index.js",
       "worker": "./dist/esm/server/index.js",
       "deno": "./dist/esm/server/index.js",
-      "browser": "./dist/esm/server/client-poison-pill.js"
+      "browser": "./dist/esm/server/client-poison-pill.js",
+      "types": "./dist/cjs/server/index.d.ts"
     }
   },
   "devDependencies": {
