@@ -3,7 +3,7 @@ export { StreamProvider }
 export type { StreamUtils }
 
 import React, { useContext } from 'react'
-import { assert, getGlobalObject } from './utils'
+import { assertUsage, getGlobalObject } from './utils'
 
 type StreamUtils = {
   injectToStream: (htmlChunk: string) => void
@@ -17,6 +17,6 @@ const StreamProvider = StreamContext.Provider
 
 function useStream(): StreamUtils | null {
   const streamUtils = useContext(StreamContext)
-  assert(streamUtils)
+  assertUsage(streamUtils, `react-streaming isn't installed`)
   return streamUtils
 }
