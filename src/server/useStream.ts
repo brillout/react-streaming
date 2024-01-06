@@ -12,11 +12,10 @@ type StreamUtils = {
 const globalObject = getGlobalObject('useStream.ts', {
   StreamContext: React.createContext<StreamUtils | null>(null)
 })
-const { StreamContext } = globalObject
-const StreamProvider = StreamContext.Provider
+const StreamProvider = globalObject.StreamContext.Provider
 
 function useStream(): StreamUtils | null {
-  const streamUtils = useContext(StreamContext)
+  const streamUtils = useContext(globalObject.StreamContext)
   assertUsage(streamUtils, `react-streaming isn't installed`)
   return streamUtils
 }
