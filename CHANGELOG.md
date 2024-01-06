@@ -1,3 +1,13 @@
+## [0.3.19](https://github.com/brillout/react-streaming/compare/v0.3.18...v0.3.19) (2024-01-06)
+
+
+### Bug Fixes
+
+* ensure single version ([d4293c7](https://github.com/brillout/react-streaming/commit/d4293c7f295673f55da0d25f921775b17e165c5f))
+* improve error message (fix [#31](https://github.com/brillout/react-streaming/issues/31)) ([27cd8fb](https://github.com/brillout/react-streaming/commit/27cd8fb5e30fe98ec2ab0b487ad7632288825555))
+
+
+
 ## [0.3.18](https://github.com/brillout/react-streaming/compare/v0.3.17...v0.3.18) (2023-12-11)
 
 
