@@ -67,7 +67,7 @@ Problem: the current React 18 Streaming architecture is low-level and difficult 
 Solution: `react-streaming`.
 
 > `react-streaming` makes it easy to build the libraries of tomorrow, for example:
->  - Use [Telefunc](https://telefunc.com/) to easily fetch data for your Next.js app or your Vite + [`vite-plugin-ssr`](https://vite-plugin-ssr.com/) app. (Replacing Next.js's `getServerSideProps()` and `vite-plugin-ssr`'s `onBeforeRender()`.)
+>  - Use [Telefunc](https://telefunc.com) to fetch data for your Next.js or [Vike](https://vike.dev) app. (Instead of Next.js's `getServerSideProps()` / `Vike`'s `data()`.)
 >  - Better GraphQL tools, e.g. [Vilay](https://github.com/XiNiHa/vilay).
 
 <br/>
