@@ -25,7 +25,9 @@ type Options = {
   seoStrategy?: SeoStrategy
   userAgent?: string
   onBoundaryError?: (err: unknown) => void
+  // Needed by https://github.com/brillout/react-streaming/blob/43941f65e84e88a05801a93723df0e38687df872/test/render.tsx#L51
   renderToReadableStream?: typeof RenderToReadableStream
+  // This option was introduced by https://github.com/brillout/react-streaming/commit/9f0403d7b738e59ddc3dcaa27f0e3fd33a8f5895 but I don't remember why. Do we still it?
   renderToPipeableStream?: typeof RenderToPipeableStream
 }
 type Result = (
