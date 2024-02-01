@@ -2,7 +2,6 @@
   "name": "react-streaming",
   "description": "React 18 Streaming. Full-fledged & Easy.",
   "version": "0.3.19",
-  "main": "./dist/cjs/server/hooks.js",
   "peerDependencies": {
     "react": ">=18",
     "react-dom": ">=18"
@@ -11,6 +10,23 @@
     "@brillout/import": "^0.2.3",
     "@brillout/json-serializer": "^0.5.1",
     "isbot-fast": "1.2.0"
+  },
+  "main": "./dist/cjs/server/hooks.js",
+  "exports": {
+    ".": {
+      "node": "./dist/cjs/server/hooks.js",
+      "worker": "./dist/esm/server/hooks.js",
+      "deno": "./dist/esm/server/hooks.js",
+      "browser": "./dist/esm/client/hooks.js",
+      "types": "./dist/cjs/server/hooks.d.ts"
+    },
+    "./server": {
+      "node": "./dist/cjs/server/index.js",
+      "worker": "./dist/esm/server/index.js",
+      "deno": "./dist/esm/server/index.js",
+      "browser": "./dist/esm/server/client-poison-pill.js",
+      "types": "./dist/cjs/server/index.d.ts"
+    }
   },
   "scripts": {
     "// === Test ===": "",
@@ -28,22 +44,6 @@
     "// === Release ===": "",
     "release": "release-me patch",
     "release:commit": "release-me commit"
-  },
-  "exports": {
-    ".": {
-      "node": "./dist/cjs/server/hooks.js",
-      "worker": "./dist/esm/server/hooks.js",
-      "deno": "./dist/esm/server/hooks.js",
-      "browser": "./dist/esm/client/hooks.js",
-      "types": "./dist/cjs/server/hooks.d.ts"
-    },
-    "./server": {
-      "node": "./dist/cjs/server/index.js",
-      "worker": "./dist/esm/server/index.js",
-      "deno": "./dist/esm/server/index.js",
-      "browser": "./dist/esm/server/client-poison-pill.js",
-      "types": "./dist/cjs/server/index.d.ts"
-    }
   },
   "devDependencies": {
     "@brillout/part-regex": "^0.1.2",
