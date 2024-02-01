@@ -4,8 +4,8 @@ export type { Pipe }
 import type { Writable as StreamNodeWritable } from 'stream'
 import { createDebugger } from '../utils'
 import { createBuffer, StreamOperations } from './createBuffer'
-import { loadNodeStreamModule } from './loadNodeStreamModule'
 const debug = createDebugger('react-streaming:createPipeWrapper')
+import { Writable } from 'stream'
 
 // `pipeFromReact` is the pipe provided by React
 // `pipeForUser` is the pipe we give to the user will (the wrapper)
@@ -16,7 +16,6 @@ const debug = createDebugger('react-streaming:createPipeWrapper')
 type Pipe = (writable: StreamNodeWritable) => void
 
 async function createPipeWrapper(pipeFromReact: Pipe, { onReactBug }: { onReactBug: (err: unknown) => void }) {
-  const { Writable } = await loadNodeStreamModule()
   const { pipeForUser, streamEnd } = createPipeForUser()
   const streamOperations: StreamOperations = {
     operations: null

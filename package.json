@@ -21,7 +21,7 @@
       "types": "./dist/cjs/server/hooks.d.ts"
     },
     "./server": {
-      "node": "./dist/cjs/server/index.js",
+      "node": "./dist/cjs/server/index.node.js",
       "worker": "./dist/esm/server/index.js",
       "deno": "./dist/esm/server/index.js",
       "browser": "./dist/esm/server/client-poison-pill.js",

@@ -1,9 +1,10 @@
 export { renderToNodeStream }
 
 import React from 'react'
-import type { renderToPipeableStream as RenderToPipeableStream } from 'react-dom/server'
+// @ts-expect-error types export missing
+import { renderToPipeableStream as renderToPipeableStream_ } from 'react-dom/server.node'
+import type { renderToPipeableStream as renderToPipeableStream__ } from 'react-dom/server'
 import { createPipeWrapper } from './createPipeWrapper'
-import import_ from '@brillout/import'
 import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './misc'
 
 async function renderToNodeStream(
@@ -12,7 +13,7 @@ async function renderToNodeStream(
   options: {
     debug?: boolean
     onBoundaryError?: (err: unknown) => void
-    renderToPipeableStream?: typeof RenderToPipeableStream
+    renderToPipeableStream?: typeof renderToPipeableStream__
   }
 ) {
   debugFlow('creating Node.js Stream Pipe')
@@ -41,10 +42,7 @@ async function renderToNodeStream(
       }
     })
   }
-  const renderToPipeableStream =
-    options.renderToPipeableStream ??
-    // We don't directly use import() because it shouldn't be bundled for Cloudflare Workers: the module react-dom/server.node contains a require('stream') which fails on Cloudflare Workers
-    ((await import_('react-dom/server.node')).renderToPipeableStream as typeof RenderToPipeableStream)
+  const renderToPipeableStream = options.renderToPipeableStream ?? (renderToPipeableStream_ as typeof renderToPipeableStream__)
   assertReactImport(renderToPipeableStream, 'renderToPipeableStream')
   const { pipe: pipeOriginal } = renderToPipeableStream(element, {
     onShellReady() {

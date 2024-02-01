@@ -1,6 +1,6 @@
 export { render }
 
-import { renderToStream } from '../src/server'
+import { renderToStream } from '../src/server/index.node'
 import { renderToReadableStream } from 'react-dom/server.browser'
 import { Writable } from 'stream'
 import { onConsoleError } from './onConsoleError'

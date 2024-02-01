@@ -1,5 +1,6 @@
 export { renderToStream }
 export { disable }
+export { renderToNodeStream_set }
 
 import React from 'react'
 import ReactDOMServer, { version as reactDomVersion } from 'react-dom/server'
@@ -11,11 +12,13 @@ import { SuspenseData } from './useAsync/useSuspenseData'
 import { StreamProvider } from './useStream'
 import type { Pipe } from './renderToStream/createPipeWrapper'
 import { resolveSeoStrategy, SeoStrategy } from './renderToStream/resolveSeoStrategy'
-import { assert, assertUsage } from './utils'
-import { nodeStreamModuleIsAvailable } from './renderToStream/loadNodeStreamModule'
+import { assert, assertUsage, getGlobalObject } from './utils'
 import { renderToWebStream } from './renderToStream/renderToWebStream'
-import { renderToNodeStream } from './renderToStream/renderToNodeStream'
+import type { renderToNodeStream as renderToNodeStream_ } from './renderToStream/renderToNodeStream'
 import { debugFlow } from './renderToStream/misc'
+const globalObject = getGlobalObject('renderToStream.ts', {
+  renderToNodeStream: null as null | typeof renderToNodeStream_
+})
 
 assertReact()
 
@@ -70,13 +73,13 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   )
 
   const disable = globalConfig.disable || (options.disable ?? resolveSeoStrategy(options).disableStream)
-  const webStream = options.webStream ?? !(await nodeStreamModuleIsAvailable())
+  const webStream = options.webStream ?? !globalObject.renderToNodeStream
   debugFlow(`disable === ${disable} && webStream === ${webStream}`)
 
   let result: Result
   const resultPartial: Pick<Result, 'disabled'> = { disabled: disable }
   if (!webStream) {
-    result = { ...resultPartial, ...(await renderToNodeStream(element, disable, options)) }
+    result = { ...resultPartial, ...(await globalObject.renderToNodeStream!(element, disable, options)) }
   } else {
     result = { ...resultPartial, ...(await renderToWebStream(element, disable, options)) }
   }
@@ -87,6 +90,10 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
 
   debugFlow('promise `await renderToStream()` resolved')
   return result
+}
+
+function renderToNodeStream_set(renderToNodeStream: typeof renderToNodeStream_) {
+  globalObject.renderToNodeStream = renderToNodeStream
 }
 
 // To debug wrong peer dependency loading:
