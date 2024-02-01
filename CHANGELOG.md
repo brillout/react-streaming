@@ -1,3 +1,12 @@
+## [0.3.20](https://github.com/brillout/react-streaming/compare/v0.3.19...v0.3.20) (2024-02-01)
+
+
+### Bug Fixes
+
+* use package.json exports instead of dynamic import() ([f4da7fc](https://github.com/brillout/react-streaming/commit/f4da7fc6a002afcf4adae7bdd924bfb4d523de32))
+
+
+
 ## [0.3.19](https://github.com/brillout/react-streaming/compare/v0.3.18...v0.3.19) (2024-01-06)
 
 
