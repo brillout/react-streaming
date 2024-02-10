@@ -1,6 +1,8 @@
 export { renderToWebStream }
 
 import React from 'react'
+// @ts-expect-error types export missing
+import { renderToReadableStream as renderToReadableStream_ } from 'react-dom/server.browser'
 import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
 import { createReadableWrapper } from './createReadableWrapper'
 import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './misc'
@@ -30,9 +32,7 @@ async function renderToWebStream(
     })
   }
   const renderToReadableStream =
-    options.renderToReadableStream ??
-    // We directly use import() because it needs to be bundled for Cloudflare Workers
-    ((await import('react-dom/server.browser' as string)).renderToReadableStream as typeof renderToReadableStream__)
+    options.renderToReadableStream ?? (renderToReadableStream_ as typeof renderToReadableStream__)
   if (!options.renderToReadableStream) {
     assertReactImport(renderToReadableStream, 'renderToReadableStream')
   }
