@@ -1,6 +1,7 @@
 export { renderToStream }
 export { disable }
 export { renderToNodeStream_set }
+export { renderToWebStream_set }
 
 import React from 'react'
 import ReactDOMServer, { version as reactDomVersion } from 'react-dom/server'
@@ -13,11 +14,12 @@ import { StreamProvider } from './useStream'
 import type { Pipe } from './renderToStream/createPipeWrapper'
 import { resolveSeoStrategy, SeoStrategy } from './renderToStream/resolveSeoStrategy'
 import { assert, assertUsage, getGlobalObject } from './utils'
-import { renderToWebStream } from './renderToStream/renderToWebStream'
 import type { renderToNodeStream as renderToNodeStream_ } from './renderToStream/renderToNodeStream'
+import type { renderToWebStream as renderToWebStream_ } from './renderToStream/renderToWebStream'
 import { debugFlow } from './renderToStream/misc'
 const globalObject = getGlobalObject('renderToStream.ts', {
-  renderToNodeStream: null as null | typeof renderToNodeStream_
+  renderToNodeStream: null as null | typeof renderToNodeStream_,
+  renderToWebStream: null as null | typeof renderToWebStream_
 })
 
 assertReact()
@@ -81,7 +83,8 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   if (!webStream) {
     result = { ...resultPartial, ...(await globalObject.renderToNodeStream!(element, disable, options)) }
   } else {
-    result = { ...resultPartial, ...(await renderToWebStream(element, disable, options)) }
+    assert(globalObject.renderToWebStream)
+    result = { ...resultPartial, ...(await globalObject.renderToWebStream(element, disable, options)) }
   }
 
   injectToStream = result.injectToStream
@@ -94,6 +97,9 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
 
 function renderToNodeStream_set(renderToNodeStream: typeof renderToNodeStream_) {
   globalObject.renderToNodeStream = renderToNodeStream
+}
+function renderToWebStream_set(renderToWebStream: typeof renderToWebStream_) {
+  globalObject.renderToWebStream = renderToWebStream
 }
 
 // To debug wrong peer dependency loading:

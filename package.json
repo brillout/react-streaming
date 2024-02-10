@@ -21,9 +21,21 @@
       "types": "./dist/cjs/server/hooks.d.ts"
     },
     "./server": {
-      "node": "./dist/cjs/server/index.node.js",
-      "worker": "./dist/esm/server/index.js",
-      "deno": "./dist/esm/server/index.js",
+      "node": "./dist/cjs/server/index.node-and-web.js",
+      "worker": "./dist/esm/server/index.web-only.js",
+      "deno": "./dist/esm/server/index.web-only.js",
+      "browser": "./dist/esm/server/client-poison-pill.js",
+      "types": "./dist/cjs/server/index.d.ts"
+    },
+    "./server.web": {
+      "node": "./dist/cjs/server/index.web-only.js",
+      "worker": "./dist/esm/server/index.web-only.js",
+      "deno": "./dist/esm/server/index.web-only.js",
+      "browser": "./dist/esm/server/client-poison-pill.js",
+      "types": "./dist/cjs/server/index.d.ts"
+    },
+    "./server.node": {
+      "node": "./dist/cjs/server/index.node-only.js",
       "browser": "./dist/esm/server/client-poison-pill.js",
       "types": "./dist/cjs/server/index.d.ts"
     }
