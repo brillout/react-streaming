@@ -1,7 +1,7 @@
 export { renderToWebStream }
 
 import React from 'react'
-import type { renderToReadableStream as RenderToReadableStream } from 'react-dom/server'
+import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
 import { createReadableWrapper } from './createReadableWrapper'
 import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './misc'
 
@@ -11,7 +11,7 @@ async function renderToWebStream(
   options: {
     debug?: boolean
     onBoundaryError?: (err: unknown) => void
-    renderToReadableStream?: typeof RenderToReadableStream
+    renderToReadableStream?: typeof renderToReadableStream__
   }
 ) {
   debugFlow('creating Web Stream Pipe')
@@ -32,7 +32,7 @@ async function renderToWebStream(
   const renderToReadableStream =
     options.renderToReadableStream ??
     // We directly use import() because it needs to be bundled for Cloudflare Workers
-    ((await import('react-dom/server.browser' as string)).renderToReadableStream as typeof RenderToReadableStream)
+    ((await import('react-dom/server.browser' as string)).renderToReadableStream as typeof renderToReadableStream__)
   if (!options.renderToReadableStream) {
     assertReactImport(renderToReadableStream, 'renderToReadableStream')
   }
