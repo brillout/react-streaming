@@ -1,3 +1,13 @@
+## [0.3.22](https://github.com/brillout/react-streaming/compare/v0.3.21...v0.3.22) (2024-02-10)
+
+
+### Bug Fixes
+
+* deprecated outdated options ([9b15c37](https://github.com/brillout/react-streaming/commit/9b15c371a07b3c6d2089ef895d40ba341ef605ca))
+* improve export strategy ([#32](https://github.com/brillout/react-streaming/issues/32)) ([fbcaf92](https://github.com/brillout/react-streaming/commit/fbcaf92aba5ecffca77df327309f2d97f37b8d3e))
+
+
+
 ## [0.3.21](https://github.com/brillout/react-streaming/compare/v0.3.20...v0.3.21) (2024-02-10)
 
 
