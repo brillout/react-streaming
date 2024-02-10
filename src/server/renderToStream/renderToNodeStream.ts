@@ -42,8 +42,11 @@ async function renderToNodeStream(
       }
     })
   }
-  const renderToPipeableStream = options.renderToPipeableStream ?? (renderToPipeableStream_ as typeof renderToPipeableStream__)
-  assertReactImport(renderToPipeableStream, 'renderToPipeableStream')
+  const renderToPipeableStream =
+    options.renderToPipeableStream ?? (renderToPipeableStream_ as typeof renderToPipeableStream__)
+  if (!options.renderToPipeableStream) {
+    assertReactImport(renderToPipeableStream, 'renderToPipeableStream')
+  }
   const { pipe: pipeOriginal } = renderToPipeableStream(element, {
     onShellReady() {
       debugFlow('[react] onShellReady()')

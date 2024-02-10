@@ -33,7 +33,9 @@ async function renderToWebStream(
     options.renderToReadableStream ??
     // We directly use import() because it needs to be bundled for Cloudflare Workers
     ((await import('react-dom/server.browser' as string)).renderToReadableStream as typeof RenderToReadableStream)
-  assertReactImport(renderToReadableStream, 'renderToReadableStream')
+  if (!options.renderToReadableStream) {
+    assertReactImport(renderToReadableStream, 'renderToReadableStream')
+  }
   const readableOriginal = await renderToReadableStream(element, { onError })
   const { allReady } = readableOriginal
   let promiseResolved = false
