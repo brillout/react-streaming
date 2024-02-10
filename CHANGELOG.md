@@ -1,3 +1,13 @@
+## [0.3.21](https://github.com/brillout/react-streaming/compare/v0.3.20...v0.3.21) (2024-02-10)
+
+
+### Bug Fixes
+
+* assertion ([58cf5b7](https://github.com/brillout/react-streaming/commit/58cf5b7e87fccad3e5a5f3d058643707bc708466))
+* remove last dynamic import (fix [#32](https://github.com/brillout/react-streaming/issues/32)) ([605566a](https://github.com/brillout/react-streaming/commit/605566a6a3409737b2704d84e73af4d80bf08cdc))
+
+
+
 ## [0.3.20](https://github.com/brillout/react-streaming/compare/v0.3.19...v0.3.20) (2024-02-01)
 
 
