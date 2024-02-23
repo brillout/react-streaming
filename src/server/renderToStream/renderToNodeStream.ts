@@ -3,9 +3,10 @@ export { renderToNodeStream }
 import React from 'react'
 // @ts-expect-error types export missing
 import { renderToPipeableStream as renderToPipeableStream_ } from 'react-dom/server.node'
-import type { RenderToPipeableStreamOptions, renderToPipeableStream as renderToPipeableStream__ } from 'react-dom/server'
+import type { renderToPipeableStream as renderToPipeableStream__ } from 'react-dom/server'
 import { createPipeWrapper } from './createPipeWrapper'
 import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './misc'
+import type { ReactStreamOptions } from '../renderToStream'
 
 async function renderToNodeStream(
   element: React.ReactNode,
@@ -13,7 +14,7 @@ async function renderToNodeStream(
   options: {
     debug?: boolean
     onBoundaryError?: (err: unknown) => void
-    nodePipeOptions?: Omit<RenderToPipeableStreamOptions, 'onShellReady' | 'onShellError' | 'onError' | 'onAllReady'>
+    streamOptions?: ReactStreamOptions
     renderToPipeableStream?: typeof renderToPipeableStream__
   }
 ) {
@@ -49,7 +50,7 @@ async function renderToNodeStream(
     assertReactImport(renderToPipeableStream, 'renderToPipeableStream')
   }
   const { pipe: pipeOriginal, abort } = renderToPipeableStream(element, {
-    ...options.nodePipeOptions,
+    ...options.streamOptions,
     onShellReady() {
       debugFlow('[react] onShellReady()')
       onShellReady()

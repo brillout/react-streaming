@@ -140,7 +140,7 @@ await renderToStream(<Page />, options)
    Note that `streamEnd` never rejects.
    > ⚠️
    > Read [Error Handling](#error-handling) before using `streamEnd`. In particular, do not use `success` to change the behavior of your app/stream (because React automatically takes care of gracefully handling `<Suspense>` failures).
-
+- `options.streamOptions?: ReactStreamOptions`: Options to passthrough to Reacts `renderToReadableStream` or `renderToPipeableStream` depending which stream type you are using. This allow for passing in things like `nonce` or other bootstrap scripts etc, it excludes error handling options use [Error Handling](#error-handling). See [renderToPipeableStream](https://react.dev/reference/react-dom/server/renderToPipeableStream#parameters) and [renderToReadableStream](https://react.dev/reference/react-dom/server/renderToReadableStream#parameters).
 
 ### Error Handling
 
