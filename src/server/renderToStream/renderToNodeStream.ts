@@ -3,7 +3,7 @@ export { renderToNodeStream }
 import React from 'react'
 // @ts-expect-error types export missing
 import { renderToPipeableStream as renderToPipeableStream_ } from 'react-dom/server.node'
-import type { renderToPipeableStream as renderToPipeableStream__ } from 'react-dom/server'
+import type { RenderToPipeableStreamOptions, renderToPipeableStream as renderToPipeableStream__ } from 'react-dom/server'
 import { createPipeWrapper } from './createPipeWrapper'
 import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './misc'
 
@@ -13,6 +13,7 @@ async function renderToNodeStream(
   options: {
     debug?: boolean
     onBoundaryError?: (err: unknown) => void
+    nodePipeOptions?: Omit<RenderToPipeableStreamOptions, 'onShellReady' | 'onShellError' | 'onError' | 'onAllReady'>
     renderToPipeableStream?: typeof renderToPipeableStream__
   }
 ) {
@@ -47,7 +48,8 @@ async function renderToNodeStream(
   if (!options.renderToPipeableStream) {
     assertReactImport(renderToPipeableStream, 'renderToPipeableStream')
   }
-  const { pipe: pipeOriginal } = renderToPipeableStream(element, {
+  const { pipe: pipeOriginal, abort } = renderToPipeableStream(element, {
+    ...options.nodePipeOptions,
     onShellReady() {
       debugFlow('[react] onShellReady()')
       onShellReady()
@@ -80,6 +82,7 @@ async function renderToNodeStream(
   promiseResolved = true
   return {
     pipe: pipeForUser,
+    abort,
     readable: null,
     streamEnd: wrapStreamEnd(streamEnd, didError),
     injectToStream

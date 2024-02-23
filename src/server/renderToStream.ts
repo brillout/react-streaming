@@ -7,7 +7,9 @@ import React from 'react'
 import ReactDOMServer, { version as reactDomVersion } from 'react-dom/server'
 import type {
   renderToPipeableStream as RenderToPipeableStream,
-  renderToReadableStream as RenderToReadableStream
+  RenderToPipeableStreamOptions,
+  renderToReadableStream as RenderToReadableStream,
+  RenderToReadableStreamOptions
 } from 'react-dom/server'
 import { SuspenseData } from './useAsync/useSuspenseData'
 import { StreamProvider } from './useStream'
@@ -30,6 +32,8 @@ type Options = {
   seoStrategy?: SeoStrategy
   userAgent?: string
   onBoundaryError?: (err: unknown) => void
+  webStreamOptions?: Omit<RenderToReadableStreamOptions, 'onError'>
+  nodePipeOptions?: Omit<RenderToPipeableStreamOptions, 'onShellReady' | 'onShellError' | 'onError' | 'onAllReady'>
   // Are these two options still needed? I think we can now remove them.
   //  - options.renderToReadableStream used to be needed by https://github.com/brillout/react-streaming/blob/43941f65e84e88a05801a93723df0e38687df872/test/render.tsx#L51 but that isnt' the case anymore.
   //  - option.renderToPipeableStream was introduced by https://github.com/brillout/react-streaming/commit/9f0403d7b738e59ddc3dcaa27f0e3fd33a8f5895 but I don't remember why. Do we still it?
@@ -41,9 +45,11 @@ type Result = (
   | {
       pipe: Pipe
       readable: null
+      abort: () => void;
     }
   | {
       pipe: null
+      abort: null;
       readable: ReadableStream
     }
 ) & {

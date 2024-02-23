@@ -3,7 +3,7 @@ export { renderToWebStream }
 import React from 'react'
 // @ts-expect-error types export missing
 import { renderToReadableStream as renderToReadableStream_ } from 'react-dom/server.browser'
-import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
+import type { RenderToReadableStreamOptions, renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
 import { createReadableWrapper } from './createReadableWrapper'
 import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './misc'
 
@@ -13,6 +13,7 @@ async function renderToWebStream(
   options: {
     debug?: boolean
     onBoundaryError?: (err: unknown) => void
+    webStreamOptions?: Omit<RenderToReadableStreamOptions, 'onError'>
     renderToReadableStream?: typeof renderToReadableStream__
   }
 ) {
@@ -36,7 +37,7 @@ async function renderToWebStream(
   if (!options.renderToReadableStream) {
     assertReactImport(renderToReadableStream, 'renderToReadableStream')
   }
-  const readableOriginal = await renderToReadableStream(element, { onError })
+  const readableOriginal = await renderToReadableStream(element, { onError, ...options.webStreamOptions })
   const { allReady } = readableOriginal
   let promiseResolved = false
   // Upon React internal errors (i.e. React bugs), React rejects `allReady`.
@@ -59,6 +60,7 @@ async function renderToWebStream(
   return {
     readable: readableForUser,
     pipe: null,
+    abort: null,
     streamEnd: wrapStreamEnd(streamEnd, didError),
     injectToStream
   }
