@@ -73,7 +73,7 @@ function disable() {
 
 async function renderToStream(element: React.ReactNode, options: Options = {}): Promise<Result> {
   // Let's see if a user complains
-  assert(!options.renderToPipeableStream && !options.renderToReadableStream, 'using deprecated options')
+  assertUsage(!options.renderToPipeableStream && !options.renderToReadableStream, 'using deprecated options')
 
   element = React.createElement(SuspenseData, null, element)
   let injectToStream: (chunk: unknown) => void = (chunk) => buffer.push(chunk)
