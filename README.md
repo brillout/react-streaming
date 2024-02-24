@@ -86,7 +86,6 @@ Solution: `react-streaming`.
    import { renderToStream } from 'react-streaming/server'
    const {
      pipe, // Defined if running in Node.js, otherwise `null`
-     abort, // Defined if running in Node.js, otherwise `null`
      readable // Defined if running on the Edge (.e.g. Coudflare Workers), otherwise `null`
    } = await renderToStream(<Page />)
    ```
