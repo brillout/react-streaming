@@ -1,3 +1,17 @@
+## [0.3.23](https://github.com/brillout/react-streaming/compare/v0.3.22...v0.3.23) (2024-02-24)
+
+
+### Bug Fixes
+
+* improve error message ([63bd311](https://github.com/brillout/react-streaming/commit/63bd3118f57182a6e03358c9081ece22394494dd))
+
+
+### Features
+
+* streamOptions ([7464875](https://github.com/brillout/react-streaming/commit/7464875330644cad2214f27480f3ff16aa7c2ada))
+
+
+
 ## [0.3.22](https://github.com/brillout/react-streaming/compare/v0.3.21...v0.3.22) (2024-02-10)
 
 
