@@ -125,7 +125,7 @@ await renderToStream(<Page />, options)
 
 - `options.userAgent?: string`: The HTTP User-Agent request header. (Needed for `options.seoStrategy`.)
 - `options.webStream?: boolean`: In Node.js, use a Web Stream instead of a Node.js Stream. ([Node.js 18 released Web Streams support](https://nodejs.org/en/blog/announcements/v18-release-announce/#web-streams-api-experimental).)
-- `options.streamOptions`: Options passed to React's [renderToReadableStream()](https://react.dev/reference/react-dom/server/renderToReadableStream#parameters) and [`renderToPipeableStream()`](https://react.dev/reference/react-dom/server/renderToPipeableStream#parameters). Use this to pass `nonce`, bootstrap scripts, etc. It excludes error handling options, use [Error Handling](#error-handling) instead.
+- `options.streamOptions`: Options passed to React's [`renderToReadableStream()`](https://react.dev/reference/react-dom/server/renderToReadableStream#parameters) and [`renderToPipeableStream()`](https://react.dev/reference/react-dom/server/renderToPipeableStream#parameters). Use this to pass `nonce`, bootstrap scripts, etc. It excludes error handling options, use [Error Handling](#error-handling) instead.
 - `options.onBoundaryError?: (err: unknown) => void`: Called when a `<Suspense>` boundary fails. See [Error Handling](#error-handling).
 -  ```tsx
    const { streamEnd } = await renderToStream(<Page />)
