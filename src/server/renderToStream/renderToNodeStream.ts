@@ -6,7 +6,7 @@ import { renderToPipeableStream as renderToPipeableStream_ } from 'react-dom/ser
 import type { renderToPipeableStream as renderToPipeableStream__ } from 'react-dom/server'
 import { createPipeWrapper } from './createPipeWrapper'
 import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './misc'
-import type { ReactStreamOptions } from '../renderToStream'
+import type { StreamOptions } from '../renderToStream'
 
 async function renderToNodeStream(
   element: React.ReactNode,
@@ -14,7 +14,7 @@ async function renderToNodeStream(
   options: {
     debug?: boolean
     onBoundaryError?: (err: unknown) => void
-    streamOptions?: ReactStreamOptions
+    streamOptions?: StreamOptions
     renderToPipeableStream?: typeof renderToPipeableStream__
   }
 ) {

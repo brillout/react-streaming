@@ -125,7 +125,8 @@ await renderToStream(<Page />, options)
     ```
 
 - `options.userAgent?: string`: The HTTP User-Agent request header. (Needed for `options.seoStrategy`.)
-- `options.webStream?: boolean`: Use Web Streams instead of Node.js Streams in Node.js. ([Node.js 18 released Web Streams support](https://nodejs.org/en/blog/announcements/v18-release-announce/#web-streams-api-experimental).)
+- `options.webStream?: boolean`: In Node.js, use a Web Stream instead of a Node.js Stream. ([Node.js 18 released Web Streams support](https://nodejs.org/en/blog/announcements/v18-release-announce/#web-streams-api-experimental).)
+- `options.streamOptions`: Options passed to React's [renderToReadableStream()](https://react.dev/reference/react-dom/server/renderToReadableStream#parameters) and [`renderToPipeableStream()`](https://react.dev/reference/react-dom/server/renderToPipeableStream#parameters). Use this to pass `nonce`, bootstrap scripts, etc. It excludes error handling options, use [Error Handling](#error-handling) instead.
 - `options.onBoundaryError?: (err: unknown) => void`: Called when a `<Suspense>` boundary fails. See [Error Handling](#error-handling).
 -  ```tsx
    const { streamEnd } = await renderToStream(<Page />)
@@ -141,7 +142,6 @@ await renderToStream(<Page />, options)
    Note that `streamEnd` never rejects.
    > ⚠️
    > Read [Error Handling](#error-handling) before using `streamEnd`. In particular, do not use `success` to change the behavior of your app/stream (because React automatically takes care of gracefully handling `<Suspense>` failures).
-- `options.streamOptions?: ReactStreamOptions`: Options to passthrough to Reacts `renderToReadableStream` or `renderToPipeableStream` depending which stream type you are using. This allows for passing in things like `nonce` or other bootstrap scripts etc, it excludes error handling options use [Error Handling](#error-handling). See [renderToPipeableStream](https://react.dev/reference/react-dom/server/renderToPipeableStream#parameters) and [renderToReadableStream](https://react.dev/reference/react-dom/server/renderToReadableStream#parameters) for available options.
 
 ### Error Handling
 
@@ -168,11 +168,15 @@ The stream returned by `await renderToStream()` doesn't emit errors.
 >
 > You can use `options.onBoundaryError()` for error tracking purposes.
 
-#### Aborting server rendering 
+#### Aborting server rendering
 
 You may want to set a timeout for React rendering as mentioned [here](https://react.dev/reference/react-dom/server/renderToPipeableStream#aborting-server-rendering) and [here](https://react.dev/reference/react-dom/server/renderToReadableStream#aborting-server-rendering).
 
-For `renderToPipeableStream` we return `abort` as part of `Result` from `renderToStream` and for `renderToReadableStream` you can use `options.streamOptions` which accepts the `signal` parameter. These then work as per the React docs linked. 
+When `react-streaming` uses a:
+ - Node.js Stream then you can use the `abort()` function (`const { abort } = await renderToStream(<Page />)`.
+ - Web Stream then you can use the `streamOptions.signal` parameter (`await renderToStream(<Page />, { streamOptions })`).
+
+The `abort()` function and the `signal` parameter work as per the linked React docs.
 
 ### `useAsync()`
 

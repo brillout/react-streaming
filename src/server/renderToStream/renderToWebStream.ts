@@ -6,7 +6,7 @@ import { renderToReadableStream as renderToReadableStream_ } from 'react-dom/ser
 import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
 import { createReadableWrapper } from './createReadableWrapper'
 import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './misc'
-import type { ReactStreamOptions } from '../renderToStream'
+import type { StreamOptions } from '../renderToStream'
 
 async function renderToWebStream(
   element: React.ReactNode,
@@ -14,7 +14,7 @@ async function renderToWebStream(
   options: {
     debug?: boolean
     onBoundaryError?: (err: unknown) => void
-    streamOptions?: ReactStreamOptions
+    streamOptions?: StreamOptions
     renderToReadableStream?: typeof renderToReadableStream__
   }
 ) {
