@@ -29,7 +29,7 @@ assertReact()
 export type ReactStreamOptions = Omit<
   RenderToPipeableStreamOptions,
   'onShellReady' | 'onShellError' | 'onError' | 'onAllReady'
-> &
+> |
   Omit<RenderToReadableStreamOptions, 'onError'>
 
 type Options = {

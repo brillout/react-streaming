@@ -86,6 +86,7 @@ Solution: `react-streaming`.
    import { renderToStream } from 'react-streaming/server'
    const {
      pipe, // Defined if running in Node.js, otherwise `null`
+     abort, // Defined if running in Node.js, otherwise `null`
      readable // Defined if running on the Edge (.e.g. Coudflare Workers), otherwise `null`
    } = await renderToStream(<Page />)
    ```
@@ -163,9 +164,15 @@ The stream returned by `await renderToStream()` doesn't emit errors.
 > Instead of emiting a stream error, React swallows the error on the server-side and retries to resolve the `<Suspense>` boundary on the client-side.
 > If the `<Suspense>` fails again on the client-side, then the client-side throws the error.
 >
-> This means that errros occuring during the stream are handled by React and there is nothing for you to do on the server-side. That said, you may want to gracefully handle the error on the client-side e.g. with [`react-error-boundary`](https://www.npmjs.com/package/react-error-boundary).
+> This means that errors occuring during the stream are handled by React and there is nothing for you to do on the server-side. That said, you may want to gracefully handle the error on the client-side e.g. with [`react-error-boundary`](https://www.npmjs.com/package/react-error-boundary).
 >
 > You can use `options.onBoundaryError()` for error tracking purposes.
+
+#### Aborting server rendering 
+
+You may want to set a timeout for React rendering as mentioned [here](https://react.dev/reference/react-dom/server/renderToPipeableStream#aborting-server-rendering) and [here](https://react.dev/reference/react-dom/server/renderToReadableStream#aborting-server-rendering).
+
+For `renderToPipeableStream` we return `abort` as part of `Result` from `renderToStream` and for `renderToReadableStream` you can use `options.streamOptions` which accepts the `signal` parameter. These then work as per the React docs linked. 
 
 ### `useAsync()`
 
