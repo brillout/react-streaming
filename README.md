@@ -126,6 +126,8 @@ await renderToStream(<Page />, options)
 - `options.userAgent?: string`: The HTTP User-Agent request header. (Needed for `options.seoStrategy`.)
 - `options.webStream?: boolean`: In Node.js, use a Web Stream instead of a Node.js Stream. ([Node.js 18 released Web Streams support](https://nodejs.org/en/blog/announcements/v18-release-announce/#web-streams-api-experimental).)
 - `options.streamOptions`: Options passed to React's [`renderToReadableStream()`](https://react.dev/reference/react-dom/server/renderToReadableStream#parameters) and [`renderToPipeableStream()`](https://react.dev/reference/react-dom/server/renderToPipeableStream#parameters). Use this to pass `nonce`, bootstrap scripts, etc. It excludes error handling options, use [Error Handling](#error-handling) instead.
+- `options.timeout?: number`: A timeout used to abort Reacts rendering, this does not error but tells React to stop server rendering and continue on client. Defaults to 20s. 
+- `options.onTimeout?: () => void`: A callback when the timeout is reached 
 - `options.onBoundaryError?: (err: unknown) => void`: Called when a `<Suspense>` boundary fails. See [Error Handling](#error-handling).
 -  ```tsx
    const { streamEnd } = await renderToStream(<Page />)
@@ -171,11 +173,14 @@ The stream returned by `await renderToStream()` doesn't emit errors.
 
 You may want to set a timeout for React rendering as mentioned [here](https://react.dev/reference/react-dom/server/renderToPipeableStream#aborting-server-rendering) and [here](https://react.dev/reference/react-dom/server/renderToReadableStream#aborting-server-rendering).
 
-When `react-streaming` uses a:
- - Node.js Stream then you can use the `abort()` function (`const { abort } = await renderToStream(<Page />)`.
- - Web Stream then you can use the `streamOptions.signal` parameter (`await renderToStream(<Page />, { streamOptions })`).
+To add a timeout use `options.timeout`, this will abort rendering for you. For logging etc, you can use `options.onTimeout`.
 
-The `abort()` function and the `signal` parameter work as per the linked React docs.
+You can also manually abort if a simple timeout isn't enough:
+
+```tsx
+ const { abort } = await renderToStream(<Page />)
+ abort()
+```
 
 ### `useAsync()`
 

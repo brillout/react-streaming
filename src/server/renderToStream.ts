@@ -30,7 +30,7 @@ export type StreamOptions = Omit<
   RenderToPipeableStreamOptions,
   'onShellReady' | 'onShellError' | 'onError' | 'onAllReady'
 > |
-  Omit<RenderToReadableStreamOptions, 'onError'>
+  Omit<RenderToReadableStreamOptions, 'onError' | 'signal'>
 
 type Options = {
   webStream?: boolean
@@ -39,6 +39,8 @@ type Options = {
   userAgent?: string
   onBoundaryError?: (err: unknown) => void
   streamOptions?: StreamOptions
+  timeout?: number
+  onTimeout?: () => void
   // Are these two options still needed? I think we can now remove them.
   //  - options.renderToReadableStream used to be needed by https://github.com/brillout/react-streaming/blob/43941f65e84e88a05801a93723df0e38687df872/test/render.tsx#L51 but that isnt' the case anymore.
   //  - option.renderToPipeableStream was introduced by https://github.com/brillout/react-streaming/commit/9f0403d7b738e59ddc3dcaa27f0e3fd33a8f5895 but I don't remember why. Do we still it?
@@ -54,7 +56,7 @@ type Result = (
     }
   | {
       pipe: null
-      abort: null
+      abort: () => void
       readable: ReadableStream
     }
 ) & {

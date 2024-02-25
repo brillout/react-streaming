@@ -7,6 +7,7 @@ import type { renderToReadableStream as renderToReadableStream__ } from 'react-d
 import { createReadableWrapper } from './createReadableWrapper'
 import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './misc'
 import type { StreamOptions } from '../renderToStream'
+import { DEFAULT_TIMEOUT } from './constants'
 
 async function renderToWebStream(
   element: React.ReactNode,
@@ -15,10 +16,18 @@ async function renderToWebStream(
     debug?: boolean
     onBoundaryError?: (err: unknown) => void
     streamOptions?: StreamOptions
+    timeout?: number
+    onTimeout?: () => void
     renderToReadableStream?: typeof renderToReadableStream__
   }
 ) {
   debugFlow('creating Web Stream Pipe')
+
+  const controller: AbortController = new AbortController()
+  setTimeout(() => {
+    controller?.abort()
+    options.onTimeout && options.onTimeout()
+  }, options.timeout ?? DEFAULT_TIMEOUT)
 
   let didError = false
   let firstErr: unknown = null
@@ -38,7 +47,11 @@ async function renderToWebStream(
   if (!options.renderToReadableStream) {
     assertReactImport(renderToReadableStream, 'renderToReadableStream')
   }
-  const readableOriginal = await renderToReadableStream(element, { onError, ...options.streamOptions })
+  const readableOriginal = await renderToReadableStream(element, {
+    onError,
+    signal: controller.signal,
+    ...options.streamOptions
+  })
   const { allReady } = readableOriginal
   let promiseResolved = false
   // Upon React internal errors (i.e. React bugs), React rejects `allReady`.
@@ -61,7 +74,7 @@ async function renderToWebStream(
   return {
     readable: readableForUser,
     pipe: null,
-    abort: null,
+    abort: controller?.abort,
     streamEnd: wrapStreamEnd(streamEnd, didError),
     injectToStream
   }
