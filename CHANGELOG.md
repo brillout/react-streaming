@@ -1,3 +1,12 @@
+## [0.3.24](https://github.com/brillout/react-streaming/compare/v0.3.23...v0.3.24) (2024-03-08)
+
+
+### Bug Fixes
+
+* add timeout handling ([#35](https://github.com/brillout/react-streaming/issues/35)) ([6cdfaee](https://github.com/brillout/react-streaming/commit/6cdfaeee8080f14615c1d4ea6c5b48800a6a1fad))
+
+
+
 ## [0.3.23](https://github.com/brillout/react-streaming/compare/v0.3.22...v0.3.23) (2024-02-24)
 
 
