@@ -173,7 +173,7 @@ The stream returned by `await renderToStream()` doesn't emit errors.
 
 After a default [timeout](#options) of 20 seconds `react-streaming` aborts the rendering stream, as recommended by React [here](https://react.dev/reference/react-dom/server/renderToPipeableStream#aborting-server-rendering) and [there](https://react.dev/reference/react-dom/server/renderToReadableStream#aborting-server-rendering).
 
-When the timeout is reached `react-streaming` ends the stream and tells React to stop rendering. Note that there isn't any error thrown: React merely stops server-side rendering and continues on the client-side, see explanation at [Error Handling](#error-handling).
+When the timeout is reached `react-streaming` ends the stream and tells React to stop rendering. Note that there isn't any thrown error: React merely stops server-side rendering and continues on the client-side, see explanation at [Error Handling](#error-handling).
 
 You can also manually abort:
 

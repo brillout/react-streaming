@@ -34,7 +34,7 @@ export function startTimeout(
         abortFn()
         options.onTimeout?.()
       },
-      options.timeout ?? 20 * 1000
+      (options.timeout ?? 20) * 1000
     )
     stopTimeout = () => {
       clearTimeout(t)
