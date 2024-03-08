@@ -6,7 +6,7 @@ import { createBuffer, StreamOperations } from './createBuffer'
 // `readableForUser` is the readable stream we give to the user (the wrapper)
 // Essentially: what React writes to `readableFromReact` is forwarded to `readableForUser`
 
-function createReadableWrapper(readableFromReact: ReadableStream) {
+function createReadableWrapper(readableFromReact: ReadableStream, { stopTimeout }: { stopTimeout?: () => void }) {
   const streamOperations: StreamOperations = {
     operations: null
   }
@@ -49,6 +49,8 @@ function createReadableWrapper(readableFromReact: ReadableStream) {
       onBeforeWrite(value)
       streamOperations.operations.writeChunk(value)
     }
+
+    stopTimeout?.()
 
     // Collect `injectToStream()` calls stuck in an async call
     setTimeout(() => {

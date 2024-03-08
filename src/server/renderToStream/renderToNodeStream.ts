@@ -65,14 +65,19 @@ async function renderToNodeStream(
     onShellError: onError,
     onError
   })
+  let stopTimeout: undefined | (() => void)
   if (options.timeout !== null) {
-    setTimeout(() => {
+    const t = setTimeout(() => {
       abort()
       options.onTimeout?.()
     }, options.timeout ?? DEFAULT_TIMEOUT)
+    stopTimeout = () => {
+      clearTimeout(t)
+    }
   }
   let promiseResolved = false
   const { pipeForUser, injectToStream, streamEnd } = await createPipeWrapper(pipeOriginal, {
+    stopTimeout,
     onReactBug(err) {
       debugFlow('react bug')
       didError = true

@@ -15,7 +15,10 @@ import { Writable } from 'stream'
 
 type Pipe = (writable: StreamNodeWritable) => void
 
-async function createPipeWrapper(pipeFromReact: Pipe, { onReactBug }: { onReactBug: (err: unknown) => void }) {
+async function createPipeWrapper(
+  pipeFromReact: Pipe,
+  { onReactBug, stopTimeout }: { onReactBug: (err: unknown) => void; stopTimeout?: () => void }
+) {
   const { pipeForUser, streamEnd } = createPipeForUser()
   const streamOperations: StreamOperations = {
     operations: null
@@ -43,6 +46,7 @@ async function createPipeWrapper(pipeFromReact: Pipe, { onReactBug }: { onReactB
         },
         final(callback) {
           debug('final')
+          stopTimeout?.()
           onBeforeEnd()
           writableFromUser.end()
           onEnded()
@@ -50,6 +54,7 @@ async function createPipeWrapper(pipeFromReact: Pipe, { onReactBug }: { onReactB
         },
         destroy(err) {
           debug(`destroy (\`!!err === ${!!err}\`)`)
+          stopTimeout?.()
           // Upon React internal errors (i.e. React bugs), React destroys the stream.
           if (err) onReactBug(err)
           writableFromUser.destroy(err ?? undefined)

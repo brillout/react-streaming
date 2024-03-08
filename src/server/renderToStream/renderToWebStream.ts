@@ -23,11 +23,15 @@ async function renderToWebStream(
   debugFlow('creating Web Stream Pipe')
 
   const controller: AbortController = new AbortController()
+  let stopTimeout: undefined | (() => void)
   if (options.timeout !== null) {
-    setTimeout(() => {
+    const t = setTimeout(() => {
       controller?.abort()
       options.onTimeout?.()
     }, options.timeout ?? DEFAULT_TIMEOUT)
+    stopTimeout = () => {
+      clearTimeout(t)
+    }
   }
 
   let didError = false
@@ -70,7 +74,7 @@ async function renderToWebStream(
   if (didError) throw firstErr
   if (disable) await allReady
   if (didError) throw firstErr
-  const { readableForUser, streamEnd, injectToStream } = createReadableWrapper(readableOriginal)
+  const { readableForUser, streamEnd, injectToStream } = createReadableWrapper(readableOriginal, { stopTimeout })
   promiseResolved = true
   return {
     readable: readableForUser,
