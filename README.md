@@ -126,8 +126,8 @@ await renderToStream(<Page />, options)
 - `options.userAgent?: string`: The HTTP User-Agent request header. (Needed for `options.seoStrategy`.)
 - `options.webStream?: boolean`: In Node.js, use a Web Stream instead of a Node.js Stream. ([Node.js 18 released Web Streams support](https://nodejs.org/en/blog/announcements/v18-release-announce/#web-streams-api-experimental).)
 - `options.streamOptions`: Options passed to React's [`renderToReadableStream()`](https://react.dev/reference/react-dom/server/renderToReadableStream#parameters) and [`renderToPipeableStream()`](https://react.dev/reference/react-dom/server/renderToPipeableStream#parameters). Use this to pass `nonce`, bootstrap scripts, etc. It excludes error handling options, use [Error Handling](#error-handling) instead.
-- `options.timeout?: number`: A timeout used to abort Reacts rendering, this does not error but tells React to stop server rendering and continue on client. Defaults to 20s. 
-- `options.onTimeout?: () => void`: A callback when the timeout is reached 
+- `options.timeout?: number | null` (seconds): Timeout after which the rendering stream is aborted, see [Abort](#abort). Defaults to 20 seconds. Set to `null` to disable automatic timeout (we recommend to then implement a manual timeout as explained at [Abort](#abort)).
+- `options.onTimeout?: () => void`: Callback when the timeout is reached.
 - `options.onBoundaryError?: (err: unknown) => void`: Called when a `<Suspense>` boundary fails. See [Error Handling](#error-handling).
 -  ```tsx
    const { streamEnd } = await renderToStream(<Page />)
@@ -169,17 +169,17 @@ The stream returned by `await renderToStream()` doesn't emit errors.
 >
 > You can use `options.onBoundaryError()` for error tracking purposes.
 
-#### Aborting server rendering
+#### Abort
 
-You may want to set a timeout for React rendering as mentioned [here](https://react.dev/reference/react-dom/server/renderToPipeableStream#aborting-server-rendering) and [here](https://react.dev/reference/react-dom/server/renderToReadableStream#aborting-server-rendering).
+After a default [timeout](#options) of 20 seconds `react-streaming` aborts the rendering stream, as recommended by React [here](https://react.dev/reference/react-dom/server/renderToPipeableStream#aborting-server-rendering) and [there](https://react.dev/reference/react-dom/server/renderToReadableStream#aborting-server-rendering).
 
-To add a timeout use `options.timeout`, this will abort rendering for you. For logging etc, you can use `options.onTimeout`.
+When the timeout is reached `react-streaming` ends the stream and tells React to stop rendering. Note that there isn't any error thrown: React merely stops server-side rendering and continues on the client-side, see explanation at [Error Handling](#error-handling).
 
-You can also manually abort if a simple timeout isn't enough:
+You can also manually abort:
 
 ```tsx
- const { abort } = await renderToStream(<Page />)
- abort()
+const { abort } = await renderToStream(<Page />, { timeout: null })
+abort()
 ```
 
 ### `useAsync()`
