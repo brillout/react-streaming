@@ -5,9 +5,8 @@ import React from 'react'
 import { renderToReadableStream as renderToReadableStream_ } from 'react-dom/server.browser'
 import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
 import { createReadableWrapper } from './createReadableWrapper'
-import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './misc'
+import { afterReactBugCatch, assertReactImport, debugFlow, DEFAULT_TIMEOUT, wrapStreamEnd } from './misc'
 import type { StreamOptions } from '../renderToStream'
-import { DEFAULT_TIMEOUT } from './constants'
 
 async function renderToWebStream(
   element: React.ReactNode,
@@ -16,7 +15,7 @@ async function renderToWebStream(
     debug?: boolean
     onBoundaryError?: (err: unknown) => void
     streamOptions?: StreamOptions
-    timeout?: number
+    timeout?: number | null
     onTimeout?: () => void
     renderToReadableStream?: typeof renderToReadableStream__
   }
@@ -26,7 +25,7 @@ async function renderToWebStream(
   const controller: AbortController = new AbortController()
   setTimeout(() => {
     controller?.abort()
-    options.onTimeout && options.onTimeout()
+    options.onTimeout?.()
   }, options.timeout ?? DEFAULT_TIMEOUT)
 
   let didError = false

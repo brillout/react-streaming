@@ -22,3 +22,6 @@ export function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Prom
       .then(() => !didError)
   )
 }
+
+// The default timeout for when we abort the rendering stream
+export const DEFAULT_TIMEOUT = 20000

@@ -26,11 +26,9 @@ const globalObject = getGlobalObject('renderToStream.ts', {
 
 assertReact()
 
-export type StreamOptions = Omit<
-  RenderToPipeableStreamOptions,
-  'onShellReady' | 'onShellError' | 'onError' | 'onAllReady'
-> |
-  Omit<RenderToReadableStreamOptions, 'onError' | 'signal'>
+export type StreamOptions =
+  | Omit<RenderToPipeableStreamOptions, 'onShellReady' | 'onShellError' | 'onError' | 'onAllReady'>
+  | Omit<RenderToReadableStreamOptions, 'onError' | 'signal'>
 
 type Options = {
   webStream?: boolean
