@@ -5,7 +5,7 @@ import React from 'react'
 import { renderToPipeableStream as renderToPipeableStream_ } from 'react-dom/server.node'
 import type { renderToPipeableStream as renderToPipeableStream__ } from 'react-dom/server'
 import { createPipeWrapper } from './createPipeWrapper'
-import { afterReactBugCatch, assertReactImport, debugFlow, DEFAULT_TIMEOUT, wrapStreamEnd } from './misc'
+import { afterReactBugCatch, assertReactImport, debugFlow, startTimeout, wrapStreamEnd } from './misc'
 import type { StreamOptions } from '../renderToStream'
 
 async function renderToNodeStream(
@@ -65,16 +65,7 @@ async function renderToNodeStream(
     onShellError: onError,
     onError
   })
-  let stopTimeout: undefined | (() => void)
-  if (options.timeout !== null) {
-    const t = setTimeout(() => {
-      abort()
-      options.onTimeout?.()
-    }, options.timeout ?? DEFAULT_TIMEOUT)
-    stopTimeout = () => {
-      clearTimeout(t)
-    }
-  }
+  const stopTimeout = startTimeout(() => abort(), options)
   let promiseResolved = false
   const { pipeForUser, injectToStream, streamEnd } = await createPipeWrapper(pipeOriginal, {
     stopTimeout,

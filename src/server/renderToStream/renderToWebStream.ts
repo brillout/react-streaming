@@ -5,7 +5,7 @@ import React from 'react'
 import { renderToReadableStream as renderToReadableStream_ } from 'react-dom/server.browser'
 import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
 import { createReadableWrapper } from './createReadableWrapper'
-import { afterReactBugCatch, assertReactImport, debugFlow, DEFAULT_TIMEOUT, wrapStreamEnd } from './misc'
+import { afterReactBugCatch, assertReactImport, debugFlow, startTimeout, wrapStreamEnd } from './misc'
 import type { StreamOptions } from '../renderToStream'
 
 async function renderToWebStream(
@@ -23,16 +23,7 @@ async function renderToWebStream(
   debugFlow('creating Web Stream Pipe')
 
   const controller: AbortController = new AbortController()
-  let stopTimeout: undefined | (() => void)
-  if (options.timeout !== null) {
-    const t = setTimeout(() => {
-      controller?.abort()
-      options.onTimeout?.()
-    }, options.timeout ?? DEFAULT_TIMEOUT)
-    stopTimeout = () => {
-      clearTimeout(t)
-    }
-  }
+  const stopTimeout = startTimeout(() => controller.abort(), options)
 
   let didError = false
   let firstErr: unknown = null
@@ -79,7 +70,7 @@ async function renderToWebStream(
   return {
     readable: readableForUser,
     pipe: null,
-    abort: controller?.abort,
+    abort: controller.abort,
     streamEnd: wrapStreamEnd(streamEnd, didError),
     injectToStream
   }

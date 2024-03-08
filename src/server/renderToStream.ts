@@ -50,17 +50,16 @@ type Result = (
   | {
       pipe: Pipe
       readable: null
-      abort: () => void
     }
   | {
       pipe: null
-      abort: () => void
       readable: ReadableStream
     }
 ) & {
   streamEnd: Promise<boolean>
   disabled: boolean
   injectToStream: (chunk: unknown) => void
+  abort: () => void
 }
 
 const globalConfig: { disable: boolean } = ((globalThis as any).__react_streaming = (globalThis as any)
