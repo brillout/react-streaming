@@ -15,7 +15,7 @@ async function renderToNodeStream(
     debug?: boolean
     onBoundaryError?: (err: unknown) => void
     streamOptions?: StreamOptions
-    timeout?: number
+    timeout?: number | null
     onTimeout?: () => void
     renderToPipeableStream?: typeof renderToPipeableStream__
   }
@@ -65,10 +65,12 @@ async function renderToNodeStream(
     onShellError: onError,
     onError
   })
-  setTimeout(() => {
-    abort()
-    options.onTimeout?.()
-  }, options.timeout ?? DEFAULT_TIMEOUT)
+  if (options.timeout !== null) {
+    setTimeout(() => {
+      abort()
+      options.onTimeout?.()
+    }, options.timeout ?? DEFAULT_TIMEOUT)
+  }
   let promiseResolved = false
   const { pipeForUser, injectToStream, streamEnd } = await createPipeWrapper(pipeOriginal, {
     onReactBug(err) {

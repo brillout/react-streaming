@@ -23,10 +23,12 @@ async function renderToWebStream(
   debugFlow('creating Web Stream Pipe')
 
   const controller: AbortController = new AbortController()
-  setTimeout(() => {
-    controller?.abort()
-    options.onTimeout?.()
-  }, options.timeout ?? DEFAULT_TIMEOUT)
+  if (options.timeout !== null) {
+    setTimeout(() => {
+      controller?.abort()
+      options.onTimeout?.()
+    }, options.timeout ?? DEFAULT_TIMEOUT)
+  }
 
   let didError = false
   let firstErr: unknown = null

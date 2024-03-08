@@ -37,7 +37,7 @@ type Options = {
   userAgent?: string
   onBoundaryError?: (err: unknown) => void
   streamOptions?: StreamOptions
-  timeout?: number
+  timeout?: number | null
   onTimeout?: () => void
   // Are these two options still needed? I think we can now remove them.
   //  - options.renderToReadableStream used to be needed by https://github.com/brillout/react-streaming/blob/43941f65e84e88a05801a93723df0e38687df872/test/render.tsx#L51 but that isnt' the case anymore.
