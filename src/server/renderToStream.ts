@@ -18,7 +18,7 @@ import { resolveSeoStrategy, SeoStrategy } from './renderToStream/resolveSeoStra
 import { assert, assertUsage, getGlobalObject } from './utils'
 import type { renderToNodeStream as renderToNodeStream_ } from './renderToStream/renderToNodeStream'
 import type { renderToWebStream as renderToWebStream_ } from './renderToStream/renderToWebStream'
-import { debugFlow } from './renderToStream/misc'
+import { debugFlow } from './renderToStream/common'
 const globalObject = getGlobalObject('renderToStream.ts', {
   renderToNodeStream: null as null | typeof renderToNodeStream_,
   renderToWebStream: null as null | typeof renderToWebStream_

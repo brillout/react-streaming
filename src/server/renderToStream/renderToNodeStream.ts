@@ -5,7 +5,7 @@ import React from 'react'
 import { renderToPipeableStream as renderToPipeableStream_ } from 'react-dom/server.node'
 import type { renderToPipeableStream as renderToPipeableStream__ } from 'react-dom/server'
 import { createPipeWrapper } from './createPipeWrapper'
-import { afterReactBugCatch, assertReactImport, debugFlow, startTimeout, wrapStreamEnd } from './misc'
+import { afterReactBugCatch, assertReactImport, debugFlow, startTimeout, wrapStreamEnd } from './common'
 import type { StreamOptions } from '../renderToStream'
 
 async function renderToNodeStream(

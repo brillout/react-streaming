@@ -5,7 +5,7 @@ import React from 'react'
 import { renderToReadableStream as renderToReadableStream_ } from 'react-dom/server.browser'
 import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
 import { createReadableWrapper } from './createReadableWrapper'
-import { afterReactBugCatch, assertReactImport, debugFlow, startTimeout, wrapStreamEnd } from './misc'
+import { afterReactBugCatch, assertReactImport, debugFlow, startTimeout, wrapStreamEnd } from './common'
 import type { StreamOptions } from '../renderToStream'
 
 async function renderToWebStream(
