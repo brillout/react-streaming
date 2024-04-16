@@ -18,7 +18,7 @@ async function renderToNodeStream(
     timeout?: number | null
     onTimeout?: () => void
     renderToPipeableStream?: typeof renderToPipeableStream__
-  }
+  },
 ) {
   debugFlow('creating Node.js Stream Pipe')
 
@@ -63,7 +63,7 @@ async function renderToNodeStream(
       onAllReady()
     },
     onShellError: onError,
-    onError
+    onError,
   })
   const stopTimeout = startTimeout(() => abort(), options)
   let promiseResolved = false
@@ -78,7 +78,7 @@ async function renderToNodeStream(
       if (reactBug !== firstErr || promiseResolved) {
         console.error(reactBug)
       }
-    }
+    },
   })
   await shellReady
   if (didError) throw firstErr
@@ -90,6 +90,6 @@ async function renderToNodeStream(
     abort,
     readable: null,
     streamEnd: wrapStreamEnd(streamEnd, didError),
-    injectToStream
+    injectToStream,
   }
 }

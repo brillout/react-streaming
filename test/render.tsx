@@ -7,7 +7,7 @@ import { assertUsage } from '../src/utils/assert'
 
 assertUsage(
   typeof ReadableStream !== 'undefined',
-  'Cannot run test suite. Because Web Streams are not available. Use a Node.js version that supports Web Streams, such as Node.js 18.'
+  'Cannot run test suite. Because Web Streams are not available. Use a Node.js version that supports Web Streams, such as Node.js 18.',
 )
 
 onConsoleError((arg) => {
@@ -15,7 +15,7 @@ onConsoleError((arg) => {
   if (
     typeof arg === 'string' &&
     arg.startsWith(
-      'Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.'
+      'Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.',
     )
   ) {
     return { suppress: true }
@@ -30,12 +30,12 @@ async function render(
   {
     streamType,
     onBoundaryError,
-    disable
+    disable,
   }: {
     streamType: 'web' | 'node'
     onBoundaryError?: (err: unknown) => void
     disable?: boolean
-  }
+  },
 ) {
   const options = { userAgent, onBoundaryError, disable }
   if (streamType === 'node') {
@@ -47,7 +47,7 @@ async function render(
   if (streamType === 'web') {
     const { readable, injectToStream, streamEnd } = await renderToStream(element, {
       webStream: true,
-      ...options
+      ...options,
     })
     const { writable, data } = createWebWritable()
     readable.pipeTo(writable)
@@ -57,26 +57,26 @@ async function render(
 
 function createWritable() {
   const data = {
-    content: ''
+    content: '',
   }
   const writable = new Writable({
     write(chunk, _encoding, callback) {
       data.content += chunk
       callback()
-    }
+    },
   })
   return { writable, data }
 }
 
 function createWebWritable() {
   const data = {
-    content: ''
+    content: '',
   }
   const writable = new WritableStream({
     write(chunk) {
       chunk = decodeChunk(chunk)
       data.content += chunk
-    }
+    },
   })
   return { writable, data }
 }

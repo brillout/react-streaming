@@ -25,7 +25,7 @@ export function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Prom
 
 export function startTimeout(
   abortFn: () => void,
-  options: { timeout?: number | null; onTimeout?: () => void }
+  options: { timeout?: number | null; onTimeout?: () => void },
 ): undefined | (() => void) {
   let stopTimeout: undefined | (() => void)
   if (options.timeout !== null) {
@@ -34,7 +34,7 @@ export function startTimeout(
         abortFn()
         options.onTimeout?.()
       },
-      (options.timeout ?? 20) * 1000
+      (options.timeout ?? 20) * 1000,
     )
     stopTimeout = () => {
       clearTimeout(t)

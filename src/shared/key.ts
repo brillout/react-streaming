@@ -13,10 +13,10 @@ function stringifyKey(key: unknown): string {
 function assertKey(keyValue: unknown) {
   assertUsage(
     keyValue,
-    `[useAsync(key, asyncFn)] You provided a \`key\` with the value \`${keyValue}\` which is forbidden.`
+    `[useAsync(key, asyncFn)] You provided a \`key\` with the value \`${keyValue}\` which is forbidden.`,
   )
   assertUsage(
     !isCallable(keyValue),
-    `[useAsync(key, asyncFn)] You provided a \`key\` that is a function which is forbidden.`
+    `[useAsync(key, asyncFn)] You provided a \`key\` that is a function which is forbidden.`,
   )
 }

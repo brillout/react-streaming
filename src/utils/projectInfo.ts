@@ -8,11 +8,11 @@ const projectInfo = {
   projectName: 'react-streaming' as const,
   projectVersion: PROJECT_VERSION,
   npmPackageName: 'react-streaming' as const,
-  githubRepository: 'https://github.com/brillout/react-streaming' as const
+  githubRepository: 'https://github.com/brillout/react-streaming' as const,
 }
 
 const { versions } = getGlobalObject('projectInfo.ts', {
-  versions: new Set<string>()
+  versions: new Set<string>(),
 })
 versions.add(projectInfo.projectVersion)
 if (versions.size >= 2) {
@@ -20,6 +20,6 @@ if (versions.size >= 2) {
     .map((v) => `${projectInfo.projectName}@${v}`)
     .join('and')
   throw new Error(
-    `Using different versions is forbidden, but ${versionsStr} are loaded. Make sure only one version is loaded.`
+    `Using different versions is forbidden, but ${versionsStr} are loaded. Make sure only one version is loaded.`,
   )
 }

@@ -21,7 +21,7 @@ const globalObject = getGlobalObject<{
     { suspense: Suspense; cacheTimeout: null | ReturnType<typeof setTimeout> }
   >
 }>('useSuspense.ts', {
-  workaroundCache: {}
+  workaroundCache: {},
 })
 const { workaroundCache } = globalObject
 
@@ -38,7 +38,7 @@ function useSuspense<T>({
   resolver,
   resolverSync,
   needsWorkaround,
-  asyncFnName
+  asyncFnName,
 }: {
   key: string
   elementId: string
@@ -83,7 +83,7 @@ function useSuspense<T>({
             },
             // Too low => concurrent <Suspense> boundaries with the same key may re-trigger data fetching upon heavy & slow rendering.
             // Too high => user navigating to another page and quickly going back will see cached data. (But we don't want our low-level `useAsync()` hook to be a cache: it should be higher-level wrapper hooks such as React Query that implement caching.)
-            1000
+            1000,
           )
         }
       }
@@ -106,7 +106,7 @@ function useSuspense<T>({
       }
       workaroundCache[key] = {
         suspense,
-        cacheTimeout: null
+        cacheTimeout: null,
       }
     }
     if (!suspense) {
@@ -121,8 +121,8 @@ function useSuspense<T>({
             `[useAsync(key, ${fnName})] You provided a function \`${fnName}\` which didn't return a promise`,
             {
               onlyOnce: true,
-              showStackTrace: true
-            }
+              showStackTrace: true,
+            },
           )
           suspense = suspenses[suspenseId] = { state: 'done', value: ret }
         } else {
@@ -175,7 +175,7 @@ function bugCatcher() {
   }
   if (++count > 1000) {
     throw new Error(
-      'Infinite loop detected. This possibly is a React bug. Reach out to the https://github.com/brillout/react-streaming maintainer.'
+      'Infinite loop detected. This possibly is a React bug. Reach out to the https://github.com/brillout/react-streaming maintainer.',
     )
   }
 }

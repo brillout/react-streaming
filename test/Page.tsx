@@ -37,7 +37,7 @@ function LazyComponent() {
     () =>
       new Promise<string>((resolve) => {
         setTimeout(() => resolve('Hello, I was lazy.'), 100)
-      })
+      }),
   )
   return <p>{val}</p>
 }

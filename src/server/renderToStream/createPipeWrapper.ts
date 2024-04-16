@@ -17,11 +17,11 @@ type Pipe = (writable: StreamNodeWritable) => void
 
 async function createPipeWrapper(
   pipeFromReact: Pipe,
-  { onReactBug, stopTimeout }: { onReactBug: (err: unknown) => void; stopTimeout?: () => void }
+  { onReactBug, stopTimeout }: { onReactBug: (err: unknown) => void; stopTimeout?: () => void },
 ) {
   const { pipeForUser, streamEnd } = createPipeForUser()
   const streamOperations: StreamOperations = {
-    operations: null
+    operations: null,
   }
   const { injectToStream, onBeforeWrite, onBeforeEnd } = createBuffer(streamOperations)
   return { pipeForUser, streamEnd, injectToStream }
@@ -59,7 +59,7 @@ async function createPipeWrapper(
           if (err) onReactBug(err)
           writableFromUser.destroy(err ?? undefined)
           onEnded()
-        }
+        },
       })
       const flush = () => {
         if (typeof (writableFromUser as any).flush === 'function') {
@@ -71,7 +71,7 @@ async function createPipeWrapper(
         flush,
         writeChunk(chunk: unknown) {
           writableFromUser.write(chunk)
-        }
+        },
       }
       // Forward the flush() call. E.g. used by React to flush GZIP buffers, see https://github.com/brillout/vite-plugin-ssr/issues/466#issuecomment-1269601710
       ;(writableForReact as any).flush = flush

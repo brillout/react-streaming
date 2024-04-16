@@ -13,7 +13,7 @@ describe('error handling', async () => {
         if (
           typeof arg === 'string' &&
           arg.startsWith(
-            'Warning: Functions are not valid as a React child. This may happen if you return a Component instead of <Component /> from render. Or maybe you meant to call this function rather than return it.'
+            'Warning: Functions are not valid as a React child. This may happen if you return a Component instead of <Component /> from render. Or maybe you meant to call this function rather than return it.',
           )
         ) {
           warning = true
@@ -61,7 +61,7 @@ describe('error handling', async () => {
           () =>
             new Promise<string>((resolve) => {
               setTimeout(() => resolve('Hello, I was lazy.'), 100)
-            })
+            }),
         )
         throw new Error('some-error')
       }
@@ -85,7 +85,7 @@ describe('error handling', async () => {
           '<!--$?--><template id="B:0"></template><p>Loading...</p><!--/$-->',
           // `useAsync()` script injection
           '<script class="react-streaming_initData" type="application/json">{"key":"\\"lazy-component-key\\"","value":"Hello, I was lazy.","elementId":":R0:"}</script>',
-          `<script>function $RX(b,c,d,e){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data="$!",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),b._reactRetry&&b._reactRetry())};$RX("B:0","","some-error","\\n    `
+          `<script>function $RX(b,c,d,e){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data="$!",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),b._reactRetry&&b._reactRetry())};$RX("B:0","","some-error","\\n    `,
         ].join('')
         try {
           expect(dataBegin).toMatch(dataBeginExpected)
@@ -100,7 +100,7 @@ describe('error handling', async () => {
           const filePointer = /[^\)]+/
           try {
             expect(content).toMatch(
-              partRegex`at Page (${filePointer})\\n    at SuspenseData (${filePointer})")</script>`
+              partRegex`at Page (${filePointer})\\n    at SuspenseData (${filePointer})")</script>`,
             )
           } catch (err) {
             console.log('actual:', content)

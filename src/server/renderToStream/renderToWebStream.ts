@@ -18,7 +18,7 @@ async function renderToWebStream(
     timeout?: number | null
     onTimeout?: () => void
     renderToReadableStream?: typeof renderToReadableStream__
-  }
+  },
 ) {
   debugFlow('creating Web Stream Pipe')
 
@@ -46,7 +46,7 @@ async function renderToWebStream(
   const readableOriginal = await renderToReadableStream(element, {
     onError,
     signal: controller.signal,
-    ...options.streamOptions
+    ...options.streamOptions,
   })
   const { allReady } = readableOriginal
   let promiseResolved = false
@@ -72,6 +72,6 @@ async function renderToWebStream(
     pipe: null,
     abort: controller.abort,
     streamEnd: wrapStreamEnd(streamEnd, didError),
-    injectToStream
+    injectToStream,
   }
 }

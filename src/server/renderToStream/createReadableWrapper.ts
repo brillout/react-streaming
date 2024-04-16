@@ -8,7 +8,7 @@ import { createBuffer, StreamOperations } from './createBuffer'
 
 function createReadableWrapper(readableFromReact: ReadableStream, { stopTimeout }: { stopTimeout?: () => void }) {
   const streamOperations: StreamOperations = {
-    operations: null
+    operations: null,
   }
   let controllerOfUserStream: ReadableStreamController<any>
   let onEnded!: () => void
@@ -19,7 +19,7 @@ function createReadableWrapper(readableFromReact: ReadableStream, { stopTimeout 
     start(controller) {
       controllerOfUserStream = controller
       onReady(onEnded)
-    }
+    },
   })
   const { injectToStream, onBeforeWrite, onBeforeEnd } = createBuffer(streamOperations)
   return { readableForUser, streamEnd, injectToStream }
@@ -29,7 +29,7 @@ function createReadableWrapper(readableFromReact: ReadableStream, { stopTimeout 
       writeChunk(chunk) {
         controllerOfUserStream.enqueue(encodeForWebStream(chunk) as any)
       },
-      flush: null
+      flush: null,
     }
 
     const reader = readableFromReact.getReader()

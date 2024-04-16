@@ -10,7 +10,7 @@ type StreamUtils = {
 }
 
 const globalObject = getGlobalObject('useStream.ts', {
-  StreamContext: React.createContext<StreamUtils | null>(null)
+  StreamContext: React.createContext<StreamUtils | null>(null),
 })
 const StreamProvider = globalObject.StreamContext.Provider
 
@@ -20,7 +20,7 @@ function useStream(): StreamUtils | null {
     streamUtils,
     isVikeReactApp()
       ? 'HTML Streaming is disabled: set the option https://vike.dev/stream to true'
-      : "react-streaming isn't installed: make sure to use renderToStream() to render your root React component, see https://github.com/brillout/react-streaming#get-started"
+      : "react-streaming isn't installed: make sure to use renderToStream() to render your root React component, see https://github.com/brillout/react-streaming#get-started",
   )
   return streamUtils
 }

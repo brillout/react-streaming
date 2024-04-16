@@ -35,7 +35,7 @@ function useAsync<T>(keyValue: unknown, asyncFn: () => T): Awaited<T> {
     key,
     elementId,
     needsWorkaround: true,
-    asyncFnName: asyncFn.name
+    asyncFnName: asyncFn.name,
   })
 }
 

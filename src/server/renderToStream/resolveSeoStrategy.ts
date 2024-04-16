@@ -21,9 +21,9 @@ function resolveSeoStrategy(options: { seoStrategy?: SeoStrategy; userAgent?: st
         isVikeReactApp()
           ? 'pageContext.userAgent (typically with `renderPage({ userAgent: req.userAgent })`, see https://vike.dev/renderPage)'
           : 'options.userAgent',
-        '(so that react-streaming is able to disable HTML streaming for bots such as Google Bot). Or set options.disable to `true` to suppress this warning.'
+        '(so that react-streaming is able to disable HTML streaming for bots such as Google Bot). Or set options.disable to `true` to suppress this warning.',
       ].join(' '),
-      { onlyOnce: true }
+      { onlyOnce: true },
     )
     return { disableStream: true }
   }

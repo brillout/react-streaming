@@ -9,7 +9,7 @@ import type {
   renderToPipeableStream as RenderToPipeableStream,
   RenderToPipeableStreamOptions,
   renderToReadableStream as RenderToReadableStream,
-  RenderToReadableStreamOptions
+  RenderToReadableStreamOptions,
 } from 'react-dom/server'
 import { SuspenseData } from './useAsync/useSuspenseData'
 import { StreamProvider } from './useStream'
@@ -21,7 +21,7 @@ import type { renderToWebStream as renderToWebStream_ } from './renderToStream/r
 import { debugFlow } from './renderToStream/common'
 const globalObject = getGlobalObject('renderToStream.ts', {
   renderToNodeStream: null as null | typeof renderToNodeStream_,
-  renderToWebStream: null as null | typeof renderToWebStream_
+  renderToWebStream: null as null | typeof renderToWebStream_,
 })
 
 assertReact()
@@ -64,7 +64,7 @@ type Result = (
 
 const globalConfig: { disable: boolean } = ((globalThis as any).__react_streaming = (globalThis as any)
   .__react_streaming || {
-  disable: false
+  disable: false,
 })
 function disable() {
   globalConfig.disable = true
@@ -83,10 +83,10 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
       value: {
         injectToStream: (chunk: unknown) => {
           injectToStream(chunk)
-        }
-      }
+        },
+      },
     },
-    element
+    element,
   )
 
   const disable = globalConfig.disable || (options.disable ?? resolveSeoStrategy(options).disableStream)
@@ -124,10 +124,10 @@ function assertReact() {
   const versionMajor = parseInt(reactDomVersion.split('.')[0]!, 10)
   assertUsage(
     versionMajor >= 18,
-    `\`react-dom@${reactDomVersion}\` was loaded, but react-streaming only works with React version 18 or greater.`
+    `\`react-dom@${reactDomVersion}\` was loaded, but react-streaming only works with React version 18 or greater.`,
   )
   assert(
     typeof ReactDOMServer.renderToPipeableStream === 'function' ||
-      typeof ReactDOMServer.renderToReadableStream === 'function'
+      typeof ReactDOMServer.renderToReadableStream === 'function',
   )
 }
