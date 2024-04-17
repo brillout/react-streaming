@@ -1,3 +1,13 @@
+## [0.3.26](https://github.com/brillout/react-streaming/compare/v0.3.25...v0.3.26) (2024-04-17)
+
+
+### Bug Fixes
+
+* err msg typo ([ebfa737](https://github.com/brillout/react-streaming/commit/ebfa737faf2efa30e9a66c7b2743a33e87de071a))
+* let user decide stack trace size ([aa1cd2b](https://github.com/brillout/react-streaming/commit/aa1cd2b736acf82e84846b37ab696db58d97dd65))
+
+
+
 ## [0.3.25](https://github.com/brillout/react-streaming/compare/v0.3.24...v0.3.25) (2024-04-16)
 
 
