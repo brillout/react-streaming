@@ -18,7 +18,7 @@ versions.add(projectInfo.projectVersion)
 if (versions.size >= 2) {
   const versionsStr = Array.from(versions)
     .map((v) => `${projectInfo.projectName}@${v}`)
-    .join('and')
+    .join(' and ')
   throw new Error(
     `Using different versions is forbidden, but ${versionsStr} are loaded. Make sure only one version is loaded.`,
   )
