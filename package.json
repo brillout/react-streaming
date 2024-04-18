@@ -9,6 +9,7 @@
   "dependencies": {
     "@brillout/import": "^0.2.3",
     "@brillout/json-serializer": "^0.5.1",
+    "@brillout/picocolors": "^1.0.11",
     "isbot-fast": "1.2.0"
   },
   "main": "./dist/cjs/server/hooks.js",
