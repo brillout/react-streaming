@@ -19,17 +19,17 @@ function onConsoleError(listener: Listener) {
 const loggedErrMsgs: unknown[] = []
 const consoleErrorOriginal = console.error
 vi.spyOn(console, 'error').mockImplementation((...args: unknown[]) => {
-  let supress = false
+  let suppress = false
   listeners.forEach((listener) => {
     const ret = listener(...args)
     if (ret?.removeListener) {
       listeners = listeners.filter((l) => l !== listener)
     }
     if (ret?.suppress) {
-      supress = true
+      suppress = true
     }
   })
-  if (!supress) {
+  if (!suppress) {
     loggedErrMsgs.push(...args)
     consoleErrorOriginal.apply(console, args)
   }
