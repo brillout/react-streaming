@@ -1,3 +1,12 @@
+## [0.3.28](https://github.com/brillout/react-streaming/compare/v0.3.27...v0.3.28) (2024-04-19)
+
+
+### Bug Fixes
+
+* remove pnpm check ([#38](https://github.com/brillout/react-streaming/issues/38), fix [#37](https://github.com/brillout/react-streaming/issues/37)) ([489b599](https://github.com/brillout/react-streaming/commit/489b599c4437d7005650c2eb0f3f8166a5677fc8))
+
+
+
 ## [0.3.27](https://github.com/brillout/react-streaming/compare/v0.3.26...v0.3.27) (2024-04-18)
 
 
