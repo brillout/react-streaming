@@ -63,7 +63,7 @@
     "release": "release-me patch",
     "release:commit": "release-me commit",
     "========= Only allow pnpm; forbid yarn & npm": "",
-    "preinstall": "node ./only-pnpm.js"
+    "preinstall": "npx only-allow pnpm"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.7.0",
