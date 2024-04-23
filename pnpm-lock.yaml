@@ -26,8 +26,8 @@ devDependencies:
     specifier: ^0.1.2
     version: 0.1.2
   '@brillout/release-me':
-    specifier: ^0.3.0
-    version: 0.3.0
+    specifier: ^0.3.4
+    version: 0.3.4
   '@types/node':
     specifier: ^15.12.2
     version: 15.14.9
@@ -180,17 +180,15 @@ packages:
 
   /@brillout/picocolors@1.0.11:
     resolution: {integrity: sha512-ZDIx2xNRjCKm9c6n+zNDXa3qxXniaVlGKXK1F5OKPCYbDt7EfkH2q5ppzowMITt1lxPyVplxy/b3GpTWwJF+Og==}
-    dev: false
 
-  /@brillout/release-me@0.3.0:
-    resolution: {integrity: sha512-j/TorJ4c2vyOFr6zJ0srMluPpRrlE6KmzPk8gHVnKl8cc6WCFYk7p3zVyMYCoIdYuE9RqbwXHhu97T59DD49KA==}
+  /@brillout/release-me@0.3.4:
+    resolution: {integrity: sha512-GfMQQWvpRLlh7w1ie4GfpdsYqrgFzL4oLu2PEPa9R2WaW4x0RClyUwZGvaDyqypHiDHXbmb6kEeld94Mr+NMTQ==}
     hasBin: true
     dependencies:
+      '@brillout/picocolors': 1.0.11
       commander: 11.1.0
       conventional-changelog: 5.1.0
       execa: 5.1.1
-      js-yaml: 4.1.0
-      picocolors: 1.0.0
       semver: 7.6.0
     dev: true
 
@@ -256,10 +254,6 @@ packages:
     engines: {node: '>=4'}
     dependencies:
       color-convert: 1.9.3
-    dev: true
-
-  /argparse@2.0.1:
-    resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
     dev: true
 
   /array-ify@1.0.0:
@@ -837,13 +831,6 @@ packages:
 
   /js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
-    dev: true
-
-  /js-yaml@4.1.0:
-    resolution: {integrity: sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==}
-    hasBin: true
-    dependencies:
-      argparse: 2.0.1
     dev: true
 
   /json-parse-even-better-errors@3.0.1:
