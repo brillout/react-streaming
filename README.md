@@ -162,7 +162,7 @@ By default, `react-streaming` disables streaming for bots and crawlers, such as:
 For `react-streaming` to be able to determine whether a request comes from a bot or a real user, you need to provide <a href="https://github.com/brillout/react-streaming#:~:text=disable%20%7D)-,options.userAgent,-%3F%3A%20string%3A%20The%20HTTP">`options.userAgent`</a>.
 
 > [!NOTE]  
-> If you use [Vike](https://vike.dev) with [`vike-react`](https://github.com/vikejs/vike-react), you can simply set [`renderPage({ headersOriginal })`](https://vike.dev/renderPage#:~:text=the%20HTTP%20Headers-,headersOriginal,-%3A%20req.headers%2C) (`vike-react` will automatically pass `headers['user-agent']` to `react-streaming`).
+> If you use [Vike](https://vike.dev) with [`vike-react`](https://github.com/vikejs/vike-react), you can simply set [`renderPage({ headersOriginal })`](https://vike.dev/renderPage#:~:text=the%20HTTP%20Headers-,headersOriginal,-%3A%20req.headers%2C) instead. (The User-Agent request header will automatically be passed to `react-streaming`).
 
 You can change strategy for the Google Bot, see <a href="https://github.com/brillout/react-streaming#:~:text=%3CSupsense%3E.)-,options.seoStrategy,-%3F%3A%20%27conservative%27%20%7C%20%27google%2Dspeed">`options.seoStrategy`</a>.
 
