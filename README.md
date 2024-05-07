@@ -19,11 +19,14 @@ Follow: [Twitter > @brillout](https://twitter.com/brillout)
 
 - [Intro](#intro)
 - [Why Streaming](#why-streaming)
-- [Get Started](#get-started)
+- Usage
+  - [Get Started](#get-started)
   - [Options](#options)
+  - [Bots](#Bots)
   - [Error Handling](#error-handling)
   - [`useAsync()`](#useasync)
-- [Get Started (Library Authors)](#get-started-library-authors)
+- Usage (Library Authors)
+  - [Overview](#overview)
   - [`useAsync()` (Library Authors)](#useasync-library-authors)
   - [`injectToStream()`](#injecttostream)
 
@@ -72,7 +75,9 @@ Solution: `react-streaming`.
 
 <br/>
 
-## Get Started
+## Usage
+
+### Get Started
 
 1. Install
 
@@ -143,6 +148,20 @@ await renderToStream(<Page />, options)
    Note that `streamEnd` never rejects.
    > ⚠️
    > Read [Error Handling](#error-handling) before using `streamEnd`. In particular, do not use `success` to change the behavior of your app/stream (because React automatically takes care of gracefully handling `<Suspense>` failures).
+
+
+### Bots
+
+By default, `react-streaming` disables streaming for bots and crawlers, such as:
+- The [Google Bot](https://developers.google.com/search/docs/crawling-indexing/googlebot), which crawls the HTML of your pages to be able to show a preview of your website on Google's result pages.
+- The bot of social sites (Twitter/Instagram/WhatsApp...), which crawl the HTML of your pages to be able to show a preview of your website when it is shared on Twitter/Instagram/WhatsApp/...
+
+> [!NOTE] These bots explore your website by navigating the HTML of your pages. It isn't clear what bots do when they encounter an HTML stream ([contribution welcome to research](https://github.com/brillout/react-streaming/issues/39)); it's therefore safer to provide bots with a fully rendered HTML at once that contains all the content of your page (i.e. disable HTML streaming) instead of hoping that bots will await the HTML stream to end.
+
+For `react-streaming` to be able to determine whether a request comes from a bot or a real user, you need to provide [`options.userAgent`](https://github.com/brillout/react-streaming#:~:text=disable%20%7D)-,options.userAgent,-%3F%3A%20string%3A%20The%20HTTP) (or [`renderPage({ headersOriginal })`](https://vike.dev/renderPage#:~:text=the%20HTTP%20Headers-,headersOriginal,-%3A%20req.headers%2C) if you use [`vike-react`](https://github.com/vikejs/vike-react)).
+
+You can change strategy for the Google Bot, see [`options.seoStrategy`](https://github.com/brillout/react-streaming#:~:text=%3CSupsense%3E.)-,options.seoStrategy,-%3F%3A%20%27conservative%27%20%7C%20%27google%2Dspeed).
+
 
 ### Error Handling
 
@@ -226,15 +245,17 @@ See [`useAsync()` (Library Authors)](#useasync-library-authors) for more informa
 <br/>
 
 
-## Get Started (Library Authors)
+## Usage (Library Authors)
 
-`react-streaming` enables you to suspend React rendering and await something to happen. (Usually data fetching.)
+### Overview
+
+`react-streaming` enables you to suspend the React rendering and await for something to happen. (Usually data fetching.)
 The novelty here is that it's isomorphic:
 
-- It works on the client-side, as well as on the server-side (while Serve-Side Rendering).
+- It works on the client-side as well as on the server-side (while Serve-Side Rendering).
 - For hydration, data is passed from the server to the client. (So that data isn't loaded twice.)
 
-You have the choice between three methods:
+You have the choice between:
 
 - `useAsync()`: High-level and easy.
 - `injectToStream()`: Low-level and highly flexible (`useAsync()` is based on it). Easy & recommended for injecting script and style tags. Complex for data fetching (if possible, use `useAsync()` instead).
