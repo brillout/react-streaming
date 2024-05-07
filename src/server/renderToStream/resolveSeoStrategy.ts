@@ -29,22 +29,17 @@ function resolveSeoStrategy(options: { seoStrategy?: SeoStrategy; userAgent?: st
 }
 
 function showWarning() {
-  const isVike = isVikeReactApp()
-  const link = isVike ? 'https://vike.dev/streaming' : 'https://github.com/brillout/react-streaming'
-  const help = isVike
-    ? [
-        pc.code('pageContext.userAgent'),
-        ' (typically with ',
-        pc.code("renderPage({ userAgent: req.headers['user-agent'] })"),
-        ', see https://vike.dev/renderPage)',
-      ].join('')
+  const isVikeReact = isVikeReactApp()
+  const link = isVikeReact ? 'https://vike.dev/streaming' : 'https://github.com/brillout/react-streaming'
+  const help = isVikeReact
+    ? (`the HTTP request headers with ${pc.code('renderPage({ headersOriginal })')}` as const)
     : pc.code('options.userAgent')
   const errMsg = [
-    `HTML streaming (${link}) disabled because User Agent is unknown: make sure to provide`,
-    help,
-    '(so that HTML streaming can be disabled for bots such as Google Bot).',
+    `HTML streaming (${link}) disabled because the User-Agent request header is unknown: make sure to provide`,
+    `${help}.`,
+    'The HTTP User-Agent request header is needed so that HTML streaming can automatically be disabled for bots and crawlers, see https://github.com/brillout/react-streaming#Bots for more information.',
   ]
-  if (!isVike) {
+  if (!isVikeReact) {
     errMsg.push(`Or set ${pc.code('options.disable')} to ${pc.code('true')} to suppress this warning.`)
   }
   assertWarning(false, errMsg.join(' '), { onlyOnce: true })
