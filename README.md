@@ -51,7 +51,7 @@ Follow: [Twitter > @brillout](https://twitter.com/brillout)
 import { renderToStream } from 'react-streaming/server'
 const {
   pipe, // Node.js (Vercel, AWS EC2, ...)
-  readable // Edge (Coudflare Workers, Deno Deploy, Netlify Edge, Vercel Edge, ...)
+  readable // Edge (Cloudflare Workers, Deno Deploy, Netlify Edge, Vercel Edge, ...)
 } = await renderToStream(<Page />)
 ```
 
@@ -91,7 +91,7 @@ Solution: `react-streaming`.
    import { renderToStream } from 'react-streaming/server'
    const {
      pipe, // Defined if running in Node.js, otherwise `null`
-     readable // Defined if running on the Edge (.e.g. Coudflare Workers), otherwise `null`
+     readable // Defined if running on Edge (e.g. Cloudflare Workers), otherwise `null`
    } = await renderToStream(<Page />)
    ```
 
@@ -156,11 +156,12 @@ By default, `react-streaming` disables streaming for bots and crawlers, such as:
 - The [Google Bot](https://developers.google.com/search/docs/crawling-indexing/googlebot), which crawls the HTML of your pages to be able to show a preview of your website on Google's result pages.
 - The bot of social sites (Twitter/Instagram/WhatsApp...), which crawl the HTML of your pages to be able to show a preview of your website when it is shared on Twitter/Instagram/WhatsApp/...
 
-> [!NOTE] These bots explore your website by navigating the HTML of your pages. It isn't clear what bots do when they encounter an HTML stream ([contribution welcome to research](https://github.com/brillout/react-streaming/issues/39)); it's therefore safer to provide bots with a fully rendered HTML at once that contains all the content of your page (i.e. disable HTML streaming) instead of hoping that bots will await the HTML stream to end.
+> [!NOTE]  
+> These bots explore your website by navigating the HTML of your pages. It isn't clear what bots do when they encounter an HTML stream ([contribution welcome to research](https://github.com/brillout/react-streaming/issues/39)); it's therefore safer to provide bots with a fully rendered HTML at once that contains all the content of your page (i.e. disable HTML streaming) instead of hoping that bots will await the HTML stream.
 
-For `react-streaming` to be able to determine whether a request comes from a bot or a real user, you need to provide [`options.userAgent`](https://github.com/brillout/react-streaming#:~:text=disable%20%7D)-,options.userAgent,-%3F%3A%20string%3A%20The%20HTTP) (or [`renderPage({ headersOriginal })`](https://vike.dev/renderPage#:~:text=the%20HTTP%20Headers-,headersOriginal,-%3A%20req.headers%2C) if you use [`vike-react`](https://github.com/vikejs/vike-react)).
+For `react-streaming` to be able to determine whether a request comes from a bot or a real user, you need to provide <a href="https://github.com/brillout/react-streaming#:~:text=disable%20%7D)-,options.userAgent,-%3F%3A%20string%3A%20The%20HTTP">`options.userAgent`</a> (or [`renderPage({ headersOriginal })`](https://vike.dev/renderPage#:~:text=the%20HTTP%20Headers-,headersOriginal,-%3A%20req.headers%2C) if you use [`vike-react`](https://github.com/vikejs/vike-react)).
 
-You can change strategy for the Google Bot, see [`options.seoStrategy`](https://github.com/brillout/react-streaming#:~:text=%3CSupsense%3E.)-,options.seoStrategy,-%3F%3A%20%27conservative%27%20%7C%20%27google%2Dspeed).
+You can change strategy for the Google Bot, see <a href="https://github.com/brillout/react-streaming#:~:text=%3CSupsense%3E.)-,options.seoStrategy,-%3F%3A%20%27conservative%27%20%7C%20%27google%2Dspeed">`options.seoStrategy`</a>.
 
 
 ### Error Handling
@@ -219,8 +220,8 @@ async function fetchMovie(id) {
   return response.json()
 }
 
-// This component is isomorphic: it works on both the client-side and server-side.
-// The data fetched while SSR is automatically passed and re-used on the client for hydration.
+// This component is isomorphic: it works on both the client-side and server-side. The
+// data fetched during SSR is automatically passed and re-used on the client-side.
 function Movie({ id }) {
   const key = [
     'star-wars-movies',
@@ -274,7 +275,7 @@ function SomeComponent() {
     return value
   }
   const key = ['some', 'invalidating', 'values']
-  // `useAsync()` suspends rendering until the promise returned by `someAsyncFunc()` resolves.
+  // useAsync() suspends rendering until the promise returned by someAsyncFunc() resolves
   const value = useAsync(key, someAsyncFunc)
   assert(value === 'someData')
 }
