@@ -128,7 +128,7 @@ await renderToStream(<Page />, options)
     await renderToStream(<Page />, { disable })
     ```
 
-- `options.userAgent?: string`: The HTTP User-Agent request header. (Needed for `options.seoStrategy`.)
+- `options.userAgent?: string`: The HTTP [User-Agent request header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent). (Needed for `options.seoStrategy`.)
 - `options.webStream?: boolean`: In Node.js, use a Web Stream instead of a Node.js Stream. ([Node.js 18 released Web Streams support](https://nodejs.org/en/blog/announcements/v18-release-announce/#web-streams-api-experimental).)
 - `options.streamOptions`: Options passed to React's [`renderToReadableStream()`](https://react.dev/reference/react-dom/server/renderToReadableStream#parameters) and [`renderToPipeableStream()`](https://react.dev/reference/react-dom/server/renderToPipeableStream#parameters). Use this to pass `nonce`, bootstrap scripts, etc. It excludes error handling options, use [Error Handling](#error-handling) instead.
 - `options.timeout?: number | null` (seconds): Timeout after which the rendering stream is aborted, see [Abort](#abort). Defaults to 20 seconds. Set to `null` to disable automatic timeout (we recommend to then implement a manual timeout as explained at [Abort](#abort)).
@@ -159,7 +159,10 @@ By default, `react-streaming` disables streaming for bots and crawlers, such as:
 > [!NOTE]  
 > These bots explore your website by navigating the HTML of your pages. It isn't clear what bots do when they encounter an HTML stream ([contribution welcome to research](https://github.com/brillout/react-streaming/issues/39)); it's therefore safer to provide bots with a fully rendered HTML at once that contains all the content of your page (i.e. disable HTML streaming) instead of hoping that bots will await the HTML stream.
 
-For `react-streaming` to be able to determine whether a request comes from a bot or a real user, you need to provide <a href="https://github.com/brillout/react-streaming#:~:text=disable%20%7D)-,options.userAgent,-%3F%3A%20string%3A%20The%20HTTP">`options.userAgent`</a> (or [`renderPage({ headersOriginal })`](https://vike.dev/renderPage#:~:text=the%20HTTP%20Headers-,headersOriginal,-%3A%20req.headers%2C) if you use [`vike-react`](https://github.com/vikejs/vike-react)).
+For `react-streaming` to be able to determine whether a request comes from a bot or a real user, you need to provide <a href="https://github.com/brillout/react-streaming#:~:text=disable%20%7D)-,options.userAgent,-%3F%3A%20string%3A%20The%20HTTP">`options.userAgent`</a>.
+
+> [!NOTE]  
+> If you use [Vike](https://vike.dev) with [`vike-react`](https://github.com/vikejs/vike-react), you can simply set [`renderPage({ headersOriginal })`](https://vike.dev/renderPage#:~:text=the%20HTTP%20Headers-,headersOriginal,-%3A%20req.headers%2C) (`vike-react` will automatically pass `headers['user-agent']` to `react-streaming`).
 
 You can change strategy for the Google Bot, see <a href="https://github.com/brillout/react-streaming#:~:text=%3CSupsense%3E.)-,options.seoStrategy,-%3F%3A%20%27conservative%27%20%7C%20%27google%2Dspeed">`options.seoStrategy`</a>.
 
