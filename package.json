@@ -66,7 +66,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.7.0",
     "@brillout/part-regex": "^0.1.2",
-    "@brillout/release-me": "^0.3.4",
+    "@brillout/release-me": "^0.3.8",
     "@types/node": "^15.12.2",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.2.4",
