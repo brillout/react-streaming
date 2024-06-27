@@ -20,7 +20,13 @@ type Options = {
   }
 }
 
-function createDebugger(namespace: string, optionsGlobal?: Options) {
+type Namespace =
+  | 'react-streaming:createPipeWrapper'
+  | 'react-streaming:buffer'
+  //
+  | 'react-streaming:flow'
+
+function createDebugger(namespace: Namespace, optionsGlobal?: Options) {
   const debugWithOptions = (options: Options) => {
     return (msg: string, info?: unknown) => {
       if (!isDebugEnabled(namespace)) return
