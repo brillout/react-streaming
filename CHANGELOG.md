@@ -1,3 +1,12 @@
+## [0.3.29](https://github.com/brillout/react-streaming/compare/v0.3.28...v0.3.29) (2024-06-27)
+
+
+### Bug Fixes
+
+* update vike-react error message ([12b4001](https://github.com/brillout/react-streaming/commit/12b4001cd8db2651a521244089477192aeda4e09))
+
+
+
 ## [0.3.28](https://github.com/brillout/react-streaming/compare/v0.3.27...v0.3.28) (2024-04-19)
 
 
