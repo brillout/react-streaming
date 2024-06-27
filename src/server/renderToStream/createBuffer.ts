@@ -23,9 +23,11 @@ function createBuffer(streamOperations: StreamOperations): {
   return { injectToStream, onBeforeWrite, onBeforeEnd }
 
   function injectToStream(chunk: unknown, options?: { flush?: boolean }) {
-    assertUsage(state !== 'ENDED', `Cannot inject following chunk after stream has ended: \`${chunk}\``)
     if (debug.isEnabled) {
-      debug('injectToStream()', String(chunk))
+      debug('injectToStream()', getChunkAsString(chunk))
+    }
+    if (state === 'ENDED') {
+      assertUsage(state, `Cannot inject following chunk after stream has ended:\n${getChunkAsString(chunk)}`)
     }
     buffer.push({ chunk, flush: options?.flush })
     flushBuffer()
@@ -62,7 +64,7 @@ function createBuffer(streamOperations: StreamOperations): {
   function onBeforeWrite(chunk: unknown) {
     state === 'UNSTARTED' && debug('>>> START')
     if (debug.isEnabled) {
-      debug(`react write${!writePermission ? '' : ' (allowed)'}`, String(chunk))
+      debug(`react write${!writePermission ? '' : ' (allowed)'}`, getChunkAsString(chunk))
     }
     state = 'STREAMING'
     if (writePermission) {
@@ -87,5 +89,13 @@ function createBuffer(streamOperations: StreamOperations): {
     assert(buffer.length === 0)
     state = 'ENDED'
     debug('>>> END')
+  }
+}
+
+function getChunkAsString(chunk: unknown): string {
+  try {
+    return new TextDecoder().decode(chunk as any)
+  } catch (err) {
+    return String(chunk)
   }
 }
