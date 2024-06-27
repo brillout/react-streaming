@@ -1,3 +1,13 @@
+## [0.3.31](https://github.com/brillout/react-streaming/compare/v0.3.30...v0.3.31) (2024-06-27)
+
+
+### Bug Fixes
+
+* fix result type ([f33ed72](https://github.com/brillout/react-streaming/commit/f33ed72a043f38df90093288ceea687e5ecc9657))
+* improve error message ([71fee05](https://github.com/brillout/react-streaming/commit/71fee05592163c7648c09779551b0dd59629512a))
+
+
+
 ## [0.3.30](https://github.com/brillout/react-streaming/compare/v0.3.29...v0.3.30) (2024-06-27)
 
 
