@@ -1,3 +1,17 @@
+## [0.3.30](https://github.com/brillout/react-streaming/compare/v0.3.29...v0.3.30) (2024-06-27)
+
+
+### Bug Fixes
+
+* improve debug logs ([d6a973c](https://github.com/brillout/react-streaming/commit/d6a973c07ec99b0bd3253c160718ac1280465293))
+
+
+### Features
+
+* expectStreamEnd option ([7612e65](https://github.com/brillout/react-streaming/commit/7612e653a6c6d9921bee7049f17cff5894c2bfef))
+
+
+
 ## [0.3.29](https://github.com/brillout/react-streaming/compare/v0.3.28...v0.3.29) (2024-06-27)
 
 
