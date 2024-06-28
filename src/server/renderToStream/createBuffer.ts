@@ -34,7 +34,12 @@ function createBuffer(streamOperations: StreamOperations): {
     }
     if (hasStreamEnded()) {
       if (!options?.tolerateStreamEnded) {
-        assertUsage(state, `Cannot inject following chunk after stream has ended:\n${getChunkAsString(chunk)}`)
+        assertUsage(
+          state,
+          `Cannot inject the following chunk because the stream has already ended. Either 1) don't inject chunks after the stream ends, or 2) use the tolerateStreamEnded option, or 3) use the hasStreamEnded() function. The chunk:\n${getChunkAsString(
+            chunk,
+          )}`,
+        )
       }
       return false
     }
