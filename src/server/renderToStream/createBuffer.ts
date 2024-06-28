@@ -84,7 +84,7 @@ function createBuffer(streamOperations: StreamOperations): {
         writePermission = true
         debug('writePermission =', writePermission)
         flushBuffer()
-      })
+      }, 0)
     }
   }
 
