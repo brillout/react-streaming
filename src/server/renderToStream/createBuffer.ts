@@ -6,7 +6,11 @@ import { assert, assertUsage, createDebugger } from '../utils'
 
 const debug = createDebugger('react-streaming:buffer')
 
-type InjectToStreamOptions = { flush?: boolean; tolerateStreamEnded?: boolean }
+type InjectToStreamOptions = {
+  flush?: boolean
+  // The tolerateStreamEnded option isn't currently used, Vike uses hasStreamEnded() instead: https://github.com/vikejs/vike/pull/1722
+  tolerateStreamEnded?: boolean
+}
 type InjectToStream = (chunk: unknown, options?: InjectToStreamOptions) => boolean
 type StreamOperations = {
   operations: null | { writeChunk: (chunk: unknown) => void; flush: null | (() => void) }
