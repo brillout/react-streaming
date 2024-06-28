@@ -6,7 +6,7 @@ import { assert, assertUsage, createDebugger } from '../utils'
 
 const debug = createDebugger('react-streaming:buffer')
 
-type InjectToStreamOptions = { flush?: boolean; expectStreamEnd?: boolean }
+type InjectToStreamOptions = { flush?: boolean; tolerateStreamEnded?: boolean }
 type InjectToStream = (chunk: unknown, options?: InjectToStreamOptions) => boolean
 type StreamOperations = {
   operations: null | { writeChunk: (chunk: unknown) => void; flush: null | (() => void) }
@@ -29,7 +29,7 @@ function createBuffer(streamOperations: StreamOperations): {
       debug('injectToStream()', getChunkAsString(chunk))
     }
     if (hasStreamEnded()) {
-      if (!options?.expectStreamEnd) {
+      if (!options?.tolerateStreamEnded) {
         assertUsage(state, `Cannot inject following chunk after stream has ended:\n${getChunkAsString(chunk)}`)
       }
       return false
