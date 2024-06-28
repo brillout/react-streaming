@@ -52,12 +52,9 @@ function createReadableWrapper(readableFromReact: ReadableStream, { stopTimeout 
 
     stopTimeout?.()
 
-    // Collect `injectToStream()` calls stuck in an async call
-    setTimeout(() => {
-      onBeforeEnd()
-      controllerOfUserStream.close()
-      onEnded()
-    }, 0)
+    onBeforeEnd()
+    controllerOfUserStream.close()
+    onEnded()
   }
 }
 
