@@ -1,3 +1,17 @@
+## [0.3.32](https://github.com/brillout/react-streaming/compare/v0.3.31...v0.3.32) (2024-06-28)
+
+
+### Bug Fixes
+
+* rename expectStreamEnd => tolerateStreamEnded ([74e93df](https://github.com/brillout/react-streaming/commit/74e93df45fcd6417381e4b7370e7bc4a47dcadb6))
+
+
+### Features
+
+* hasStreamEnded() ([218917a](https://github.com/brillout/react-streaming/commit/218917ac5d0d232aba62a02392b1cfb58006a4f7))
+
+
+
 ## [0.3.31](https://github.com/brillout/react-streaming/compare/v0.3.30...v0.3.31) (2024-06-27)
 
 
