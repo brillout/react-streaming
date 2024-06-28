@@ -67,7 +67,7 @@ async function renderToNodeStream(
   })
   const stopTimeout = startTimeout(() => abort(), options)
   let promiseResolved = false
-  const { pipeForUser, injectToStream, streamEnd } = await createPipeWrapper(pipeOriginal, {
+  const { pipeForUser, injectToStream, streamEnd, hasStreamEnded } = await createPipeWrapper(pipeOriginal, {
     stopTimeout,
     onReactBug(err) {
       debugFlow('react bug')
@@ -91,5 +91,6 @@ async function renderToNodeStream(
     readable: null,
     streamEnd: wrapStreamEnd(streamEnd, didError),
     injectToStream,
+    hasStreamEnded,
   }
 }

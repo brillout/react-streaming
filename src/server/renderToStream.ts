@@ -58,6 +58,7 @@ type Result = (
     }
 ) & {
   streamEnd: Promise<boolean>
+  hasStreamEnded: () => boolean
   disabled: boolean
   injectToStream: InjectToStream
   abort: () => void

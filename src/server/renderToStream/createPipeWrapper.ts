@@ -23,8 +23,8 @@ async function createPipeWrapper(
   const streamOperations: StreamOperations = {
     operations: null,
   }
-  const { injectToStream, onBeforeWrite, onBeforeEnd } = createBuffer(streamOperations)
-  return { pipeForUser, streamEnd, injectToStream }
+  const { injectToStream, onBeforeWrite, onBeforeEnd, hasStreamEnded } = createBuffer(streamOperations)
+  return { pipeForUser, streamEnd, injectToStream, hasStreamEnded }
 
   function createPipeForUser(): { pipeForUser: Pipe; streamEnd: Promise<void> } {
     debug('createPipeForUser()')
