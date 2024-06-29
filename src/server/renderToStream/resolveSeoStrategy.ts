@@ -37,7 +37,7 @@ function showWarning() {
   const errMsg = [
     `HTML streaming (${link}) disabled because the User-Agent request header is unknown: make sure to provide`,
     `${help}.`,
-    'The HTTP User-Agent request header is needed so that HTML streaming can automatically be disabled for bots and crawlers, see https://github.com/brillout/react-streaming#Bots for more information.',
+    'The HTTP User-Agent request header is needed so that HTML streaming can automatically be disabled for bots and crawlers, see https://github.com/brillout/react-streaming#bots for more information.',
   ]
   if (!isVikeReact) {
     errMsg.push(`Or set ${pc.code('options.disable')} to ${pc.code('true')} to suppress this warning.`)
