@@ -2,6 +2,7 @@ export { renderToStream }
 export { disable }
 export { renderToNodeStream_set }
 export { renderToWebStream_set }
+export type { StreamUtils }
 
 import React from 'react'
 import ReactDOMServer, { version as reactDomVersion } from 'react-dom/server'
@@ -47,7 +48,7 @@ type Options = {
   renderToReadableStream?: typeof RenderToReadableStream
   renderToPipeableStream?: typeof RenderToPipeableStream
 }
-type Result = (
+type StreamReturn =
   | {
       pipe: Pipe
       readable: null
@@ -56,13 +57,16 @@ type Result = (
       pipe: null
       readable: ReadableStream
     }
-) & {
-  streamEnd: Promise<boolean>
-  hasStreamEnded: () => boolean
-  disabled: boolean
+type StreamUtils = {
   injectToStream: InjectToStream
-  abort: () => void
 }
+type Return = StreamReturn &
+  StreamUtils & {
+    streamEnd: Promise<boolean>
+    hasStreamEnded: () => boolean
+    disabled: boolean
+    abort: () => void
+  }
 
 const globalConfig: { disable: boolean } = ((globalThis as any).__react_streaming = (globalThis as any)
   .__react_streaming || {
@@ -72,7 +76,7 @@ function disable() {
   globalConfig.disable = true
 }
 
-async function renderToStream(element: React.ReactNode, options: Options = {}): Promise<Result> {
+async function renderToStream(element: React.ReactNode, options: Options = {}): Promise<Return> {
   // Let's see if a user complains
   assertUsage(!options.renderToPipeableStream && !options.renderToReadableStream, 'using deprecated options')
 
@@ -91,21 +95,21 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   const webStream = options.webStream ?? !globalObject.renderToNodeStream
   debugFlow(`disable === ${disable} && webStream === ${webStream}`)
 
-  let result: Result
-  const resultPartial: Pick<Result, 'disabled'> = { disabled: disable }
+  let ret: Return
+  const resultPartial: Pick<Return, 'disabled'> = { disabled: disable }
   if (!webStream) {
-    result = { ...resultPartial, ...(await globalObject.renderToNodeStream!(element, disable, options)) }
+    ret = { ...resultPartial, ...(await globalObject.renderToNodeStream!(element, disable, options)) }
   } else {
     assert(globalObject.renderToWebStream)
-    result = { ...resultPartial, ...(await globalObject.renderToWebStream(element, disable, options)) }
+    ret = { ...resultPartial, ...(await globalObject.renderToWebStream(element, disable, options)) }
   }
 
-  injectToStream = result.injectToStream
+  injectToStream = ret.injectToStream
   buffer.forEach((chunk) => injectToStream(chunk))
   buffer.length = 0
 
   debugFlow('promise `await renderToStream()` resolved')
-  return result
+  return ret
 }
 
 function renderToNodeStream_set(renderToNodeStream: typeof renderToNodeStream_) {
