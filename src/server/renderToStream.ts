@@ -59,11 +59,11 @@ type StreamReturn =
     }
 type StreamUtils = {
   injectToStream: InjectToStream
+  hasStreamEnded: () => boolean
 }
 type Return = StreamReturn &
   StreamUtils & {
     streamEnd: Promise<boolean>
-    hasStreamEnded: () => boolean
     disabled: boolean
     abort: () => void
   }
@@ -85,11 +85,13 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
     buffer.push(chunk)
   }
   const buffer: unknown[] = []
+  let hasStreamEnded = () => false
   element = React.createElement(
     StreamProvider,
     {
       value: {
         injectToStream: (chunk: unknown, options) => injectToStream(chunk, options),
+        hasStreamEnded: () => hasStreamEnded(),
       },
     },
     element,
@@ -111,6 +113,8 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   injectToStream = ret.injectToStream
   buffer.forEach((chunk) => injectToStream(chunk))
   buffer.length = 0
+
+  hasStreamEnded = ret.hasStreamEnded
 
   debugFlow('promise `await renderToStream()` resolved')
   return ret
