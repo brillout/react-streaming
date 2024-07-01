@@ -2,9 +2,9 @@ export { createReadableWrapper }
 
 import { createBuffer, StreamOperations } from './createBuffer'
 
-// `readableFromReact` is the readable stream provided by React
-// `readableForUser` is the readable stream we give to the user (the wrapper)
-// Essentially: what React writes to `readableFromReact` is forwarded to `readableForUser`
+// `readableFromReact` is the readable stream provided by React.
+// `readableForUser` is the readable stream we give to the user (the wrapper).
+// Essentially: what React writes to `readableFromReact` is forwarded to `readableForUser`.
 
 function createReadableWrapper(readableFromReact: ReadableStream, { stopTimeout }: { stopTimeout?: () => void }) {
   const streamOperations: StreamOperations = {

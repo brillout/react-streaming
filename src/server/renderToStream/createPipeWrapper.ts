@@ -7,11 +7,12 @@ import { createBuffer, StreamOperations } from './createBuffer'
 const debug = createDebugger('react-streaming:createPipeWrapper')
 import { Writable } from 'stream'
 
-// `pipeFromReact` is the pipe provided by React
-// `pipeForUser` is the pipe we give to the user will (the wrapper)
+// `pipeFromReact` is the pipe provided by React.
+// `pipeForUser` is the pipe we give to the user will (the wrapper).
 // `writableFromUser` is the writable provided by the user (i.e. `pipeForUser(writableFromUser)`), for example a Express.js's `res` writable stream.
-// `writableForReact` is the writable that React directly writes to.
-// Essentially: what React writes to `writableForReact` is piped to `writableFromUser`
+// `writableForReact` is the writable that React directly writes to (the wrapper).
+// Essentially: what React writes to `writableForReact` is forwarded to `writableFromUser`.
+// Note: with React, a Node.js stream is always a pipe.
 
 type Pipe = (writable: StreamNodeWritable) => void
 
