@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import React from 'react'
 import { Page } from './Page'
 import { render } from './render'
-import { partRegex } from '@brillout/part-regex'
 
 describe('renderToStream()', async () => {
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
@@ -44,9 +43,7 @@ describe('renderToStream()', async () => {
           injectToStream('someChunk')
           expect(1).toBe(2)
         } catch (err) {
-          expect(err.message).toMatch(
-            partRegex`[react-streaming@${/[0-9]+/}.${/[0-9]+/}.${/[0-9]+/}][Wrong Usage] Cannot inject following chunk after stream has ended: \`someChunk\``,
-          )
+          expect(err.message).include('Cannot inject the following chunk because the stream has already ended')
         }
 
         {
