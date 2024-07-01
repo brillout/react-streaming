@@ -31,12 +31,12 @@ function createBuffer(streamOperations: StreamOperations): {
       debug('injectToStream()', getChunkAsString(chunk))
     }
     if (hasStreamEnded()) {
-        assertUsage(
-          false,
-          `Cannot inject the following chunk because the stream has already ended. Either 1) don't inject chunks after the stream ends, or 2) use the hasStreamEnded() function. The chunk:\n${getChunkAsString(
-            chunk,
-          )}`,
-        )
+      assertUsage(
+        false,
+        `Cannot inject the following chunk because the stream has already ended. Either 1) don't inject chunks after the stream ends, or 2) use the hasStreamEnded() function. The chunk:\n${getChunkAsString(
+          chunk,
+        )}`,
+      )
     }
     buffer.push({ chunk, flush: options?.flush })
     flushBuffer()
