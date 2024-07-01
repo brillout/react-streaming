@@ -4,10 +4,11 @@ export type { StreamUtils }
 
 import pc from '@brillout/picocolors'
 import React, { useContext } from 'react'
+import type { InjectToStream } from './index.node-and-web'
 import { assertUsage, getGlobalObject, isVikeReactApp } from './utils'
 
 type StreamUtils = {
-  injectToStream: (htmlChunk: string) => void
+  injectToStream: InjectToStream
 }
 
 const globalObject = getGlobalObject('useStream.ts', {

@@ -29,7 +29,7 @@ function useAsync<T>(keyValue: unknown, asyncFn: () => T): Awaited<T> {
   return useSuspense({ suspenses, resolver, key, elementId, asyncFnName: asyncFn.name })
 }
 
-// See consumer `getInitData()`
+// See consumer getInitData()
 function provideInitData(streamUtils: StreamUtils, initData: InitData) {
   const initDataSerialized = stringify(initData)
   const initDataInjection = `<script class="${initDataHtmlClass}" type="application/json">${initDataSerialized}</script>`
