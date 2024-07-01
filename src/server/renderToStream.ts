@@ -79,8 +79,6 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   element = React.createElement(SuspenseData, null, element)
   let injectToStream: InjectToStream = (chunk) => {
     buffer.push(chunk)
-    // I guess it's safe to assume that the chunk will successfully be injected
-    return true
   }
   const buffer: unknown[] = []
   element = React.createElement(

@@ -8,10 +8,8 @@ const debug = createDebugger('react-streaming:buffer')
 
 type InjectToStreamOptions = {
   flush?: boolean
-  // The tolerateStreamEnded option isn't currently used, Vike uses hasStreamEnded() instead: https://github.com/vikejs/vike/pull/1722
-  tolerateStreamEnded?: boolean
 }
-type InjectToStream = (chunk: unknown, options?: InjectToStreamOptions) => boolean
+type InjectToStream = (chunk: unknown, options?: InjectToStreamOptions) => void
 type StreamOperations = {
   operations: null | { writeChunk: (chunk: unknown) => void; flush: null | (() => void) }
 }
@@ -28,24 +26,20 @@ function createBuffer(streamOperations: StreamOperations): {
 
   return { injectToStream, onBeforeWrite, onBeforeEnd, hasStreamEnded }
 
-  function injectToStream(chunk: unknown, options?: InjectToStreamOptions): boolean {
+  function injectToStream(chunk: unknown, options?: InjectToStreamOptions) {
     if (debug.isEnabled) {
       debug('injectToStream()', getChunkAsString(chunk))
     }
     if (hasStreamEnded()) {
-      if (!options?.tolerateStreamEnded) {
         assertUsage(
           false,
-          `Cannot inject the following chunk because the stream has already ended. Either 1) don't inject chunks after the stream ends, or 2) use the tolerateStreamEnded option, or 3) use the hasStreamEnded() function. The chunk:\n${getChunkAsString(
+          `Cannot inject the following chunk because the stream has already ended. Either 1) don't inject chunks after the stream ends, or 2) use the hasStreamEnded() function. The chunk:\n${getChunkAsString(
             chunk,
           )}`,
         )
-      }
-      return false
     }
     buffer.push({ chunk, flush: options?.flush })
     flushBuffer()
-    return true
   }
 
   function flushBuffer() {
