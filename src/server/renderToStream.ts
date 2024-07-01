@@ -87,7 +87,11 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   const buffer: unknown[] = []
   element = React.createElement(
     StreamProvider,
-    { value: { injectToStream: (chunk: unknown, options) => injectToStream(chunk, options) } },
+    {
+      value: {
+        injectToStream: (chunk: unknown, options) => injectToStream(chunk, options),
+      },
+    },
     element,
   )
 
