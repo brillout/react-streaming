@@ -8,6 +8,9 @@ const debug = createDebugger('react-streaming:buffer')
 
 type InjectToStreamOptions = {
   flush?: boolean
+  /* We used to have this option (https://github.com/brillout/react-streaming/commit/2f5bf270832a8a45f04af6821d709f590cc9cb7f) but it isn't needed anymore
+  tolerateStreamEnded?: boolean
+  */
 }
 type InjectToStream = (chunk: unknown, options?: InjectToStreamOptions) => void
 type StreamOperations = {
