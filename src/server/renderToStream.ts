@@ -77,17 +77,15 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   assertUsage(!options.renderToPipeableStream && !options.renderToReadableStream, 'using deprecated options')
 
   element = React.createElement(SuspenseData, null, element)
-  let injectToStream: (chunk: unknown) => void = (chunk) => buffer.push(chunk)
+  let injectToStream: InjectToStream = (chunk) => {
+    buffer.push(chunk)
+    // I guess it's safe to assume that the chunk will successfully be injected
+    return true
+  }
   const buffer: unknown[] = []
   element = React.createElement(
     StreamProvider,
-    {
-      value: {
-        injectToStream: (chunk: unknown) => {
-          injectToStream(chunk)
-        },
-      },
-    },
+    { value: { injectToStream: (chunk: unknown, options) => injectToStream(chunk, options) } },
     element,
   )
 
