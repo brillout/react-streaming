@@ -3,7 +3,7 @@ export type { InjectToStream }
 export type { StreamOperations }
 export type { Chunk }
 
-import { assert, assertUsage, createDebugger } from '../utils'
+import { assert, assertUsage, createDebugger, isPromise } from '../utils'
 
 const debug = createDebugger('react-streaming:buffer')
 
@@ -14,7 +14,10 @@ type InjectToStreamOptions = {
   */
 }
 // A chunk doesn't have to be a string: let's wait for users to complain and let's progressively add all expected types.
-type Chunk = string
+type Chunk = string | Promise<string>
+// Being able to pass a chunk promise to injectToStream() is required for Apollo integration, see:
+// - https://github.com/apollographql/apollo-client-nextjs/issues/325#issuecomment-2199664143
+// - https://github.com/brillout/react-streaming/issues/40
 type InjectToStream = (chunk: Chunk, options?: InjectToStreamOptions) => void
 type StreamOperations = {
   operations: null | { writeChunk: (chunk: unknown) => void; flush: null | (() => void) }
@@ -22,9 +25,9 @@ type StreamOperations = {
 
 function createBuffer(streamOperations: StreamOperations): {
   injectToStream: InjectToStream
-  onReactWriteBefore: (chunk: unknown) => void
-  onReactWriteAfter: () => void
-  onBeforeEnd: () => void
+  onReactWriteBefore: (chunk: unknown) => Promise<void>
+  onReactWriteAfter: () => Promise<void>
+  onBeforeEnd: () => Promise<void>
   hasStreamEnded: () => boolean
 } {
   const buffer: { chunk: Chunk; flush: undefined | boolean }[] = []
@@ -38,7 +41,7 @@ function createBuffer(streamOperations: StreamOperations): {
 
   return { injectToStream, onReactWriteBefore, onReactWriteAfter, onBeforeEnd, hasStreamEnded }
 
-  function injectToStream(chunk: Chunk, options?: InjectToStreamOptions) {
+  async function injectToStream(chunk: Chunk, options?: InjectToStreamOptions) {
     if (debug.isEnabled) {
       debug('injectToStream()', getChunkAsString(chunk))
     }
@@ -51,10 +54,10 @@ function createBuffer(streamOperations: StreamOperations): {
       )
     }
     buffer.push({ chunk, flush: options?.flush })
-    flushBuffer()
+    await flushBuffer()
   }
 
-  function flushBuffer() {
+  async function flushBuffer() {
     if (!writePermission) {
       return
     }
@@ -66,14 +69,15 @@ function createBuffer(streamOperations: StreamOperations): {
       return
     }
     let flushStream = false
-    buffer.forEach((bufferEntry) => {
-      assert(streamOperations.operations)
-      const { writeChunk } = streamOperations.operations
-      writeChunk(bufferEntry.chunk)
-      if (bufferEntry.flush) {
-        flushStream = true
-      }
-    })
+    await Promise.all(
+      buffer.map(async ({ chunk, flush }) => {
+        assert(streamOperations.operations)
+        const { writeChunk } = streamOperations.operations
+        if (isPromise(chunk)) chunk = await chunk
+        writeChunk(chunk)
+        if (flush) flushStream = true
+      }),
+    )
     buffer.length = 0
     assert(streamOperations.operations)
     if (flushStream && streamOperations.operations.flush !== null) {
@@ -82,23 +86,23 @@ function createBuffer(streamOperations: StreamOperations): {
     }
   }
 
-  function onReactWriteAfter() {
+  async function onReactWriteAfter() {
     const writeWasBlocked = !writePermission
     writePermission = true
-    if (writeWasBlocked) flushBuffer()
+    if (writeWasBlocked) await flushBuffer()
   }
-  function onReactWriteBefore(chunk: unknown) {
+  async function onReactWriteBefore(chunk: unknown) {
     state === 'UNSTARTED' && debug('>>> START')
     if (debug.isEnabled) {
       debug('react write', getChunkAsString(chunk))
     }
     state = 'STREAMING'
-    flushBuffer()
+    await flushBuffer()
   }
 
-  function onBeforeEnd() {
+  async function onBeforeEnd() {
     writePermission = true // in case React didn't write anything
-    flushBuffer()
+    await flushBuffer()
     assert(buffer.length === 0)
     state = 'ENDED'
     debug('>>> END')
