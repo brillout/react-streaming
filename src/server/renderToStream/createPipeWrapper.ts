@@ -46,6 +46,7 @@ async function createPipeWrapper(
             // Destroying twice is fine: https://github.com/brillout/react-streaming/pull/21#issuecomment-1554517163
             writableForReact.destroy()
           }
+          callback()
         },
         async final(callback) {
           debug('final')
