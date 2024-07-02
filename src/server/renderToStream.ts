@@ -90,7 +90,7 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
     StreamProvider,
     {
       value: {
-        injectToStream: (chunk: unknown, options) => injectToStream(chunk, options),
+        injectToStream: (chunk, options) => injectToStream(chunk, options),
         hasStreamEnded: () => hasStreamEnded(),
       },
     },
