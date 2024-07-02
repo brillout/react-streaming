@@ -69,15 +69,13 @@ function createBuffer(streamOperations: StreamOperations): {
       return
     }
     let flushStream = false
-    await Promise.all(
-      buffer.map(async ({ chunk, flush }) => {
-        assert(streamOperations.operations)
-        const { writeChunk } = streamOperations.operations
-        if (isPromise(chunk)) chunk = await chunk
-        writeChunk(chunk)
-        if (flush) flushStream = true
-      }),
-    )
+    for (let { chunk, flush } of buffer) {
+      assert(streamOperations.operations)
+      const { writeChunk } = streamOperations.operations
+      if (isPromise(chunk)) chunk = await chunk
+      writeChunk(chunk)
+      if (flush) flushStream = true
+    }
     buffer.length = 0
     assert(streamOperations.operations)
     if (flushStream && streamOperations.operations.flush !== null) {
