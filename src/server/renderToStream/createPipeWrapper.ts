@@ -36,9 +36,9 @@ async function createPipeWrapper(
     })
     const pipeForUser: Pipe = (writableFromUser: StreamNodeWritable) => {
       const writableForReact = new Writable({
-        write(chunk: unknown, encoding, callback) {
+        async write(chunk: unknown, encoding, callback) {
           debug('write')
-          onReactWriteBefore(chunk)
+          await onReactWriteBefore(chunk)
           if (!writableFromUser.destroyed) {
             writableFromUser.write(chunk, encoding, callback)
             onReactWriteAfter()
@@ -47,10 +47,10 @@ async function createPipeWrapper(
             writableForReact.destroy()
           }
         },
-        final(callback) {
+        async final(callback) {
           debug('final')
           stopTimeout?.()
-          onBeforeEnd()
+          await onBeforeEnd()
           writableFromUser.end()
           onEnded()
           callback()
