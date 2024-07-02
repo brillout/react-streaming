@@ -28,7 +28,12 @@ function createBuffer(streamOperations: StreamOperations): {
 } {
   const buffer: { chunk: Chunk; flush: undefined | boolean }[] = []
   let state: 'UNSTARTED' | 'STREAMING' | 'ENDED' = 'UNSTARTED'
-  let writePermission: null | boolean = null // Set to `null` because React fails to hydrate if something is injected before the first react write
+
+  // Needed to avoid React hydration mismatch.
+  //  - There seem to always(?) be a hydration mismatch whenever something is injected before the first react write.
+  //  - Reproduction: https://github.com/vikejs/vike/commit/45e4ffea06335ddbcf2826b0113be7f925617daa
+  //  - Thus, we delay any write to the stream until react wrote its first chunk.
+  let writePermission: null | boolean = null
 
   return { injectToStream, onBeforeWrite, onBeforeEnd, hasStreamEnded }
 
