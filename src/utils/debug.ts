@@ -42,6 +42,7 @@ function createDebugger(namespace: Namespace, optionsGlobal?: Options) {
 }
 
 function isDebugEnabled(namespace: string): boolean {
+  return true
   let DEBUG: undefined | string
   // - `process` can be undefined in edge workers
   // - We want bundlers to be able to statically replace `process.env.*`
