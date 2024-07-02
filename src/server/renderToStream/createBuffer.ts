@@ -28,7 +28,6 @@ function createBuffer(streamOperations: StreamOperations): {
 } {
   const buffer: { chunk: Chunk; flush: undefined | boolean }[] = []
   let state: 'UNSTARTED' | 'STREAMING' | 'ENDED' = 'UNSTARTED'
-  let writePermission: null | boolean = null // Set to `null` because React fails to hydrate if something is injected before the first react write
 
   return { injectToStream, onBeforeWrite, onBeforeEnd, hasStreamEnded }
 
@@ -49,9 +48,6 @@ function createBuffer(streamOperations: StreamOperations): {
   }
 
   function flushBuffer() {
-    if (!writePermission) {
-      return
-    }
     if (buffer.length === 0) {
       return
     }
@@ -79,27 +75,13 @@ function createBuffer(streamOperations: StreamOperations): {
   function onBeforeWrite(chunk: unknown) {
     state === 'UNSTARTED' && debug('>>> START')
     if (debug.isEnabled) {
-      debug(`react write${!writePermission ? '' : ' (allowed)'}`, getChunkAsString(chunk))
+      debug(`react write`, getChunkAsString(chunk))
     }
     state = 'STREAMING'
-    if (writePermission) {
-      flushBuffer()
-    }
-    if (writePermission === true || writePermission === null) {
-      writePermission = false
-      debug('writePermission =', writePermission)
-      setTimeout(() => {
-        debug('>>> setTimeout()')
-        writePermission = true
-        debug('writePermission =', writePermission)
-        flushBuffer()
-      }, 0)
-    }
+    flushBuffer()
   }
 
   function onBeforeEnd() {
-    writePermission = true
-    debug('writePermission =', writePermission)
     flushBuffer()
     assert(buffer.length === 0)
     state = 'ENDED'
