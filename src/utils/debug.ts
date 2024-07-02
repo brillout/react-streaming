@@ -77,13 +77,13 @@ function strInfo(info: unknown, options: Options): string | undefined {
 
 function pad(str: string): string {
   const PADDING = '     '
-  const WIDTH = process.stdout.columns as number | undefined
+  const terminalWidth = getTerminalWidth()
   const lines: string[] = []
   str.split('\n').forEach((line) => {
-    if (!WIDTH) {
+    if (!terminalWidth) {
       lines.push(line)
     } else {
-      chunk(line, WIDTH - PADDING.length).forEach((chunk) => {
+      chunk(line, terminalWidth - PADDING.length).forEach((chunk) => {
         lines.push(chunk)
       })
     }
@@ -110,4 +110,11 @@ function replaceFunctionSerializer(this: Record<string, unknown>, _key: string, 
     return value.toString().split(/\s+/).join(' ')
   }
   return value
+}
+
+function getTerminalWidth(): number | undefined {
+  // https://stackoverflow.com/questions/30335637/get-width-of-terminal-in-node-js/30335724#30335724
+  return (
+    (typeof process !== 'undefined' && typeof process.stdout !== 'undefined' && process.stdout.columns) || undefined
+  )
 }
