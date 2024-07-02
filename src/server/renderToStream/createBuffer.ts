@@ -85,9 +85,7 @@ function createBuffer(streamOperations: StreamOperations): {
   }
 
   async function onReactWriteAfter() {
-    const writeWasBlocked = !writePermission
-    writePermission = true
-    if (writeWasBlocked) await flushBuffer()
+    // TODO: clean
   }
   async function onReactWriteBefore(chunk: unknown) {
     state === 'UNSTARTED' && debug('>>> START')
@@ -95,6 +93,13 @@ function createBuffer(streamOperations: StreamOperations): {
       debug('react write', getChunkAsString(chunk))
     }
     state = 'STREAMING'
+    const bufferEntry = { chunk: chunk as string, flush: true }
+    if (!writePermission) {
+      buffer.unshift(bufferEntry)
+    } else {
+      buffer.push(bufferEntry)
+    }
+    writePermission = true
     await flushBuffer()
   }
 

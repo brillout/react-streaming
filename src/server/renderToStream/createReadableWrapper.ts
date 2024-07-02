@@ -48,8 +48,8 @@ function createReadableWrapper(readableFromReact: ReadableStream, { stopTimeout 
         break
       }
       await onReactWriteBefore(value)
-      streamOperations.operations.writeChunk(value)
-      await onReactWriteAfter()
+      //streamOperations.operations.writeChunk(value)
+      //await onReactWriteAfter()
     }
 
     stopTimeout?.()
