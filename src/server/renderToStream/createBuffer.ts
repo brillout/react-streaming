@@ -22,7 +22,7 @@ type StreamOperations = {
 
 function createBuffer(streamOperations: StreamOperations): {
   injectToStream: InjectToStream
-  onBeforeWrite: (chunk: unknown) => void
+  onReactWriteBefore: (chunk: unknown) => void
   onBeforeEnd: () => void
   hasStreamEnded: () => boolean
 } {
@@ -35,7 +35,7 @@ function createBuffer(streamOperations: StreamOperations): {
   //  - Thus, we delay any write to the stream until react wrote its first chunk.
   let writePermission: null | boolean = null
 
-  return { injectToStream, onBeforeWrite, onBeforeEnd, hasStreamEnded }
+  return { injectToStream, onReactWriteBefore, onBeforeEnd, hasStreamEnded }
 
   function injectToStream(chunk: Chunk, options?: InjectToStreamOptions) {
     if (debug.isEnabled) {
@@ -81,7 +81,7 @@ function createBuffer(streamOperations: StreamOperations): {
     }
   }
 
-  function onBeforeWrite(chunk: unknown) {
+  function onReactWriteBefore(chunk: unknown) {
     state === 'UNSTARTED' && debug('>>> START')
     if (debug.isEnabled) {
       debug(`react write${!writePermission ? '' : ' (allowed)'}`, getChunkAsString(chunk))

@@ -24,7 +24,7 @@ async function createPipeWrapper(
   const streamOperations: StreamOperations = {
     operations: null,
   }
-  const { injectToStream, onBeforeWrite, onBeforeEnd, hasStreamEnded } = createBuffer(streamOperations)
+  const { injectToStream, onReactWriteBefore, onBeforeEnd, hasStreamEnded } = createBuffer(streamOperations)
   return { pipeForUser, streamEnd, injectToStream, hasStreamEnded }
 
   function createPipeForUser(): { pipeForUser: Pipe; streamEnd: Promise<void> } {
@@ -37,7 +37,7 @@ async function createPipeWrapper(
       const writableForReact = new Writable({
         write(chunk: unknown, encoding, callback) {
           debug('write')
-          onBeforeWrite(chunk)
+          onReactWriteBefore(chunk)
           if (!writableFromUser.destroyed) {
             writableFromUser.write(chunk, encoding, callback)
           } else {
