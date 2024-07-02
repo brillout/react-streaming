@@ -85,7 +85,7 @@ function createBuffer(streamOperations: StreamOperations): {
     if (writePermission) {
       flushBuffer()
     }
-    if (writePermission == true || writePermission === null) {
+    if (writePermission === true || writePermission === null) {
       writePermission = false
       debug('writePermission =', writePermission)
       setTimeout(() => {
