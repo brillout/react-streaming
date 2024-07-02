@@ -23,6 +23,7 @@ type StreamOperations = {
 function createBuffer(streamOperations: StreamOperations): {
   injectToStream: InjectToStream
   onReactWriteBefore: (chunk: unknown) => void
+  onReactWriteAfter: () => void
   onBeforeEnd: () => void
   hasStreamEnded: () => boolean
 } {
@@ -33,9 +34,9 @@ function createBuffer(streamOperations: StreamOperations): {
   //  - There seem to always(?) be a hydration mismatch whenever something is injected before the first react write.
   //  - Reproduction: https://github.com/vikejs/vike/commit/45e4ffea06335ddbcf2826b0113be7f925617daa
   //  - Thus, we delay any write to the stream until react wrote its first chunk.
-  let writePermission: null | boolean = null
+  let writePermission = false
 
-  return { injectToStream, onReactWriteBefore, onBeforeEnd, hasStreamEnded }
+  return { injectToStream, onReactWriteBefore, onReactWriteAfter, onBeforeEnd, hasStreamEnded }
 
   function injectToStream(chunk: Chunk, options?: InjectToStreamOptions) {
     if (debug.isEnabled) {
@@ -81,30 +82,22 @@ function createBuffer(streamOperations: StreamOperations): {
     }
   }
 
+  function onReactWriteAfter() {
+    const writeWasBlocked = !writePermission
+    writePermission = true
+    if (writeWasBlocked) flushBuffer()
+  }
   function onReactWriteBefore(chunk: unknown) {
     state === 'UNSTARTED' && debug('>>> START')
     if (debug.isEnabled) {
-      debug(`react write${!writePermission ? '' : ' (allowed)'}`, getChunkAsString(chunk))
+      debug('react write', getChunkAsString(chunk))
     }
     state = 'STREAMING'
-    if (writePermission) {
-      flushBuffer()
-    }
-    if (writePermission === null) {
-      writePermission = false
-      debug('writePermission =', writePermission)
-      setTimeout(() => {
-        debug('>>> setTimeout()')
-        writePermission = true
-        debug('writePermission =', writePermission)
-        flushBuffer()
-      }, 0)
-    }
+    flushBuffer()
   }
 
   function onBeforeEnd() {
-    writePermission = true
-    debug('writePermission =', writePermission)
+    writePermission = true // in case React didn't write anything
     flushBuffer()
     assert(buffer.length === 0)
     state = 'ENDED'
