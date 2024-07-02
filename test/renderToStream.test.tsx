@@ -40,7 +40,7 @@ describe('renderToStream()', async () => {
         expect(timeoutResolved).toBe(true)
 
         try {
-          injectToStream('someChunk')
+          await injectToStream('someChunk')
           expect(1).toBe(2)
         } catch (err) {
           expect(err.message).include('Cannot inject the following chunk because the stream has already ended')

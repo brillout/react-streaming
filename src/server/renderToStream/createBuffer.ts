@@ -18,7 +18,7 @@ type Chunk = string | Promise<string>
 // Being able to pass a chunk promise to injectToStream() is required for Apollo integration, see:
 // - https://github.com/apollographql/apollo-client-nextjs/issues/325#issuecomment-2199664143
 // - https://github.com/brillout/react-streaming/issues/40
-type InjectToStream = (chunk: Chunk, options?: InjectToStreamOptions) => void
+type InjectToStream = (chunk: Chunk, options?: InjectToStreamOptions) => Promise<void>
 type StreamOperations = {
   operations: null | { writeChunk: (chunk: unknown) => void; flush: null | (() => void) }
 }
