@@ -1,6 +1,7 @@
 export { createBuffer }
 export type { InjectToStream }
 export type { StreamOperations }
+export type { Chunk }
 
 import { assert, assertUsage, createDebugger } from '../utils'
 
@@ -12,7 +13,9 @@ type InjectToStreamOptions = {
   tolerateStreamEnded?: boolean
   */
 }
-type InjectToStream = (chunk: unknown, options?: InjectToStreamOptions) => void
+// A chunk doesn't have to be a string: let's wait for users to complain and let's progressively add all expected types.
+type Chunk = string
+type InjectToStream = (chunk: Chunk, options?: InjectToStreamOptions) => void
 type StreamOperations = {
   operations: null | { writeChunk: (chunk: unknown) => void; flush: null | (() => void) }
 }
@@ -23,13 +26,13 @@ function createBuffer(streamOperations: StreamOperations): {
   onBeforeEnd: () => void
   hasStreamEnded: () => boolean
 } {
-  const buffer: { chunk: unknown; flush: undefined | boolean }[] = []
+  const buffer: { chunk: Chunk; flush: undefined | boolean }[] = []
   let state: 'UNSTARTED' | 'STREAMING' | 'ENDED' = 'UNSTARTED'
   let writePermission: null | boolean = null // Set to `null` because React fails to hydrate if something is injected before the first react write
 
   return { injectToStream, onBeforeWrite, onBeforeEnd, hasStreamEnded }
 
-  function injectToStream(chunk: unknown, options?: InjectToStreamOptions) {
+  function injectToStream(chunk: Chunk, options?: InjectToStreamOptions) {
     if (debug.isEnabled) {
       debug('injectToStream()', getChunkAsString(chunk))
     }

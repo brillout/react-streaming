@@ -21,6 +21,7 @@ import type { renderToNodeStream as renderToNodeStream_ } from './renderToStream
 import type { renderToWebStream as renderToWebStream_ } from './renderToStream/renderToWebStream'
 import { debugFlow } from './renderToStream/common'
 import type { InjectToStream } from './index.node-and-web'
+import type { Chunk } from './renderToStream/createBuffer'
 const globalObject = getGlobalObject('renderToStream.ts', {
   renderToNodeStream: null as null | typeof renderToNodeStream_,
   renderToWebStream: null as null | typeof renderToWebStream_,
@@ -84,7 +85,7 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   let injectToStream: InjectToStream = (chunk) => {
     buffer.push(chunk)
   }
-  const buffer: unknown[] = []
+  const buffer: Chunk[] = []
   let hasStreamEnded = () => false
   element = React.createElement(
     StreamProvider,
