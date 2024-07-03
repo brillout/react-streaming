@@ -56,7 +56,7 @@ function createBuffer(
     if (hasStreamEnded()) {
       assertUsage(
         false,
-        `Cannot inject the following chunk because the stream has already ended. Consider using the stream.doNotClose() and hasStreamEnded() utilities. The chunk:\n${getChunkAsString(
+        `Cannot inject the following chunk because the stream has already ended. Consider using the doNotClose() and hasStreamEnded() utilities. The chunk:\n${getChunkAsString(
           chunk,
         )}`,
       )

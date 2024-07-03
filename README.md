@@ -29,6 +29,8 @@ Follow: [Twitter > @brillout](https://twitter.com/brillout)
   - [Overview](#overview)
   - [`useAsync()` (Library Authors)](#useasync-library-authors)
   - [`injectToStream()`](#injecttostream)
+  - [`doNotClose()`](#donotclose)
+  - [`hasStreamEnded()`](#hasstreamended)
 
 ## Intro
 
@@ -298,16 +300,23 @@ Usually the key is set to `['name-of-the-function', ...functionArguments]`.
 
 ### `injectToStream()`
 
-`injectToStream(chunk: string | Buffer | unknown, options?: { flush?: boolean })` enables you to inject chunks to the current stream.
+```ts
+type Chunk = string | Buffer
+type Options = { flush?: boolean }
+injectToStream(chunk: Chunk  | Promise<Chunk>, options?: Options)`
+```
+
+The `injectToStream()` function enables you to inject chunks to the stream.
 
 There are two ways to access `injectToStream()`:
  1. With `renderToStream()`:
     ```jsx
     import { renderToStream } from 'react-streaming/server'
-    const { injectToStream } = await renderToStream(<Page />)
+    const stream = await renderToStream(<Page />)
+    const { injectToStream } = stream
     ```
  2. With `useStream()`:
-    ```jsx
+    ```js
     import { useStream } from 'react-streaming'
 
     function SomeComponent() {
@@ -338,3 +347,50 @@ injectToStream(`<script type="application/json">${JSON.stringify(someData)}</scr
 For a full example of using `injectToStream()`, have a look at `useAsync()`'s implementation.
 
 If setting `options.flush` to `true`, then the stream will be flushed after `chunk` has been written to the stream. This is only applicable for Node.js streams and only if you are using a compression library that makes a `flush()` method available. For example, [`compression` adds a `res.flush()` method](https://www.npmjs.com/package/compression#resflush). The option is ignored if there isn't a `flush()` method available.
+
+
+### `doNotClose()`
+
+Typical usage:
+
+```js
+const makeClosableAgain = stream.doNotClose()
+// Ensure chunk is injected before the stream ends
+injectToStream(chunk)
+makeClosableAgain()
+```
+
+Like [`injectToStream()`](#injecttostream), there are two ways to access it:
+
+```jsx
+import { renderToStream } from 'react-streaming/server'
+const stream = await renderToStream(<Page />)
+const { doNotClose } = stream
+```
+```js
+import { useStream } from 'react-streaming'
+function SomeComponent() {
+  const stream = useStream()
+  const { doNotClose } = stream
+}
+```
+
+
+### `hasStreamEnded()`
+
+Check whether the stream has ended.
+
+Like [`injectToStream()`](#injecttostream), there are two ways to access it:
+
+```jsx
+import { renderToStream } from 'react-streaming/server'
+const stream = await renderToStream(<Page />)
+const { hasStreamEnded } = stream
+```
+```js
+import { useStream } from 'react-streaming'
+function SomeComponent() {
+  const stream = useStream()
+  const { hasStreamEnded } = stream
+}
+```
