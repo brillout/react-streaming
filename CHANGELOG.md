@@ -1,3 +1,12 @@
+## [0.3.37](https://github.com/brillout/react-streaming/compare/v0.3.36...v0.3.37) (2024-07-03)
+
+
+### Bug Fixes
+
+* further avoid inject between two React synchronous writes ([c14483f](https://github.com/brillout/react-streaming/commit/c14483f8ab8b06290465cc13c1009796cf33ef80))
+
+
+
 ## [0.3.36](https://github.com/brillout/react-streaming/compare/v0.3.35...v0.3.36) (2024-07-03)
 
 
