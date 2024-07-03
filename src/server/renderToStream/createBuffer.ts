@@ -92,11 +92,11 @@ function createBuffer(streamOperations: StreamOperations): {
       debug('react write', getChunkAsString(chunk))
     }
     state = 'STREAMING'
-    const bufferEntry = { chunk: chunk as string, flush: true }
+    const bufferReactEntry = { chunk: chunk as any, flush: true }
     if (!writePermission) {
-      buffer.unshift(bufferEntry)
+      buffer.unshift(bufferReactEntry)
     } else {
-      buffer.push(bufferEntry)
+      buffer.push(bufferReactEntry)
     }
     writePermission = true
     await flushBuffer()
