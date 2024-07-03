@@ -12,7 +12,6 @@ async function renderToNodeStream(
   element: React.ReactNode,
   disable: boolean,
   options: {
-    debug?: boolean
     onBoundaryError?: (err: unknown) => void
     streamOptions?: StreamOptions
     timeout?: number | null
