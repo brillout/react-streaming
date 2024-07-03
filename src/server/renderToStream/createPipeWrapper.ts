@@ -24,8 +24,7 @@ async function createPipeWrapper(
   const streamOperations: StreamOperations = {
     operations: null,
   }
-  const { injectToStream, onReactWriteBefore, onReactWriteAfter, onBeforeEnd, hasStreamEnded } =
-    createBuffer(streamOperations)
+  const { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded } = createBuffer(streamOperations)
   return { pipeForUser, streamEnd, injectToStream, hasStreamEnded }
 
   function createPipeForUser(): { pipeForUser: Pipe; streamEnd: Promise<void> } {
@@ -36,21 +35,21 @@ async function createPipeWrapper(
     })
     const pipeForUser: Pipe = (writableFromUser: StreamNodeWritable) => {
       const writableForReact = new Writable({
-        write(chunk: unknown, encoding, callback) {
+        async write(chunk: unknown, encoding, callback) {
           debug('write')
-          onReactWriteBefore(chunk)
           if (!writableFromUser.destroyed) {
-            writableFromUser.write(chunk, encoding, callback)
-            onReactWriteAfter()
+            await onReactWrite(chunk)
           } else {
-            // Destroying twice is fine: https://github.com/brillout/react-streaming/pull/21#issuecomment-1554517163
+            // - E.g. when the server closes the connection.
+            // - Destroying twice is fine: https://github.com/brillout/react-streaming/pull/21#issuecomment-1554517163
             writableForReact.destroy()
           }
+          callback()
         },
-        final(callback) {
+        async final(callback) {
           debug('final')
           stopTimeout?.()
-          onBeforeEnd()
+          await onBeforeEnd()
           writableFromUser.end()
           onEnded()
           callback()

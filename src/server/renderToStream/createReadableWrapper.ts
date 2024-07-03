@@ -21,8 +21,7 @@ function createReadableWrapper(readableFromReact: ReadableStream, { stopTimeout 
       onReady(onEnded)
     },
   })
-  const { injectToStream, onReactWriteBefore, onReactWriteAfter, onBeforeEnd, hasStreamEnded } =
-    createBuffer(streamOperations)
+  const { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded } = createBuffer(streamOperations)
   return { readableForUser, streamEnd, injectToStream, hasStreamEnded }
 
   async function onReady(onEnded: () => void) {
@@ -47,9 +46,7 @@ function createReadableWrapper(readableFromReact: ReadableStream, { stopTimeout 
       if (done) {
         break
       }
-      onReactWriteBefore(value)
-      streamOperations.operations.writeChunk(value)
-      onReactWriteAfter()
+      await onReactWrite(value)
     }
 
     stopTimeout?.()
@@ -57,8 +54,8 @@ function createReadableWrapper(readableFromReact: ReadableStream, { stopTimeout 
     // Collect injectToStream() calls stuck in an async call.
     // Workaround for: https://github.com/brillout/react-streaming/issues/40#issuecomment-2199424650
     // We should probably remove this workaround once we have a proper solution.
-    setTimeout(() => {
-      onBeforeEnd()
+    setTimeout(async () => {
+      await onBeforeEnd()
       controllerOfUserStream.close()
       onEnded()
     }, 0)
