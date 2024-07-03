@@ -5,8 +5,9 @@ import React from 'react'
 import { renderToPipeableStream as renderToPipeableStream_ } from 'react-dom/server.node'
 import type { renderToPipeableStream as renderToPipeableStream__ } from 'react-dom/server'
 import { createPipeWrapper } from './createPipeWrapper'
-import { afterReactBugCatch, assertReactImport, debugFlow, startTimeout, wrapStreamEnd } from './common'
-import type { StreamOptions } from '../renderToStream'
+import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './common'
+import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream'
+import type { DoNotClosePromise } from './createBuffer'
 
 async function renderToNodeStream(
   element: React.ReactNode,
@@ -14,10 +15,11 @@ async function renderToNodeStream(
   options: {
     onBoundaryError?: (err: unknown) => void
     streamOptions?: StreamOptions
-    timeout?: number | null
-    onTimeout?: () => void
     renderToPipeableStream?: typeof renderToPipeableStream__
   },
+  doNotClosePromise: DoNotClosePromise,
+  setAbortFn: SetAbortFn,
+  clearTimeouts: ClearTimeouts,
 ) {
   debugFlow('creating Node.js Stream Pipe')
 
@@ -64,7 +66,9 @@ async function renderToNodeStream(
     onShellError: onError,
     onError,
   })
-  const stopTimeout = startTimeout(() => abort(), options)
+  setAbortFn(() => {
+    abort()
+  })
   let promiseResolved = false
   const onReactBug = (err: unknown) => {
     debugFlow('react bug')
@@ -79,7 +83,8 @@ async function renderToNodeStream(
   const { pipeForUser, injectToStream, streamEnd, hasStreamEnded } = await createPipeWrapper(
     pipeOriginal,
     onReactBug,
-    stopTimeout,
+    clearTimeouts,
+    doNotClosePromise,
   )
   await shellReady
   if (didError) throw firstErr

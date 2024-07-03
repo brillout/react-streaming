@@ -2,6 +2,7 @@ export { createBuffer }
 export type { InjectToStream }
 export type { StreamOperations }
 export type { Chunk }
+export type { DoNotClosePromise }
 
 import { assert, assertUsage, createDebugger, isPromise } from '../utils'
 
@@ -27,7 +28,11 @@ type InjectToStream = (chunk: Chunk, options?: InjectToStreamOptions) => Promise
 type StreamOperations = {
   operations: null | { writeChunk: (chunk: unknown) => void; flush: null | (() => void) }
 }
-function createBuffer(streamOperations: StreamOperations): {
+type DoNotClosePromise = { promise: null | Promise<void> }
+function createBuffer(
+  streamOperations: StreamOperations,
+  doNotClosePromise: DoNotClosePromise,
+): {
   injectToStream: InjectToStream
   onReactWrite: (chunk: unknown) => Promise<void>
   onBeforeEnd: () => Promise<void>
@@ -51,7 +56,7 @@ function createBuffer(streamOperations: StreamOperations): {
     if (hasStreamEnded()) {
       assertUsage(
         false,
-        `Cannot inject the following chunk because the stream has already ended. Either 1) don't inject chunks after the stream ends, or 2) use the hasStreamEnded() function. The chunk:\n${getChunkAsString(
+        `Cannot inject the following chunk because the stream has already ended. Consider using the doNotClose() and hasStreamEnded() utilities. The chunk:\n${getChunkAsString(
           chunk,
         )}`,
       )
@@ -107,6 +112,7 @@ function createBuffer(streamOperations: StreamOperations): {
     writePermission = true // in case React didn't write anything
     await flushBuffer()
     assert(buffer.length === 0)
+    await doNotClosePromise.promise
     state = 'ENDED'
     debug('>>> END')
   }

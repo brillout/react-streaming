@@ -3,6 +3,8 @@ export { disable }
 export { renderToNodeStream_set }
 export { renderToWebStream_set }
 export type { StreamUtils }
+export type { SetAbortFn }
+export type { ClearTimeouts }
 
 import React from 'react'
 import ReactDOMServer, { version as reactDomVersion } from 'react-dom/server'
@@ -21,7 +23,7 @@ import type { renderToNodeStream as renderToNodeStream_ } from './renderToStream
 import type { renderToWebStream as renderToWebStream_ } from './renderToStream/renderToWebStream'
 import { debugFlow } from './renderToStream/common'
 import type { InjectToStream } from './index.node-and-web'
-import type { Chunk } from './renderToStream/createBuffer'
+import type { Chunk, DoNotClosePromise } from './renderToStream/createBuffer'
 const globalObject = getGlobalObject('renderToStream.ts', {
   renderToNodeStream: null as null | typeof renderToNodeStream_,
   renderToWebStream: null as null | typeof renderToWebStream_,
@@ -61,6 +63,7 @@ type StreamReturn =
 type StreamUtils = {
   injectToStream: InjectToStream
   hasStreamEnded: () => boolean
+  doNotClose: () => () => void
 }
 type Return = StreamReturn &
   StreamUtils & {
@@ -68,6 +71,10 @@ type Return = StreamReturn &
     disabled: boolean
     abort: () => void
   }
+
+type AbortFn = () => void
+type SetAbortFn = (abortFn: AbortFn) => void
+type ClearTimeouts = () => void
 
 const globalConfig: { disable: boolean } = ((globalThis as any).__react_streaming = (globalThis as any)
   .__react_streaming || {
@@ -88,6 +95,48 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
     buffer.push(chunk)
   }
 
+  const doNotClosePromise: DoNotClosePromise = { promise: null }
+  let doNotCloseTimeout: NodeJS.Timeout | null = null
+  const doNotClose = () => {
+    let resolve: () => void
+    doNotClosePromise.promise = new Promise((r) => (resolve = r))
+
+    if (doNotCloseTimeout) clearTimeout(doNotCloseTimeout)
+    doNotCloseTimeout = setTimeout(() => {
+      assertUsage(
+        false,
+        'makeClosableAgain() not called after 10 seconds (`const makeClosableAgain = stream.doNotClose()`)',
+      )
+    }, 10 * 1000)
+
+    const makeClosableAgain = () => {
+      // TODO: add timeout to ensure makeClosableAgain() was called
+      resolve!()
+      clearTimeout(doNotCloseTimeout!)
+    }
+    return makeClosableAgain
+  }
+
+  let abortFn: AbortFn | undefined
+  const setAbortFn: SetAbortFn = (fn) => (abortFn = fn)
+  const streamTimeout = (() => {
+    // User explicity opting out of timeout (the default value is `undefined` not `null`)
+    if (options.timeout === null) return null
+    return setTimeout(
+      () => {
+        assert(abortFn)
+        abortFn()
+        options.onTimeout?.()
+      },
+      (options.timeout ?? 20) * 1000,
+    )
+  })()
+
+  const clearTimeouts: ClearTimeouts = () => {
+    if (streamTimeout !== null) clearTimeout(streamTimeout)
+    if (doNotCloseTimeout !== null) clearTimeout(doNotCloseTimeout)
+  }
+
   let hasStreamEnded = () => false
 
   element = React.createElement(
@@ -96,6 +145,7 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
       value: {
         injectToStream: (chunk, options) => injectToStream(chunk, options),
         hasStreamEnded: () => hasStreamEnded(),
+        doNotClose,
       },
     },
     element,
@@ -106,12 +156,32 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   debugFlow(`disable === ${disable} && webStream === ${webStream}`)
 
   let ret: Return
-  const resultPartial: Pick<Return, 'disabled'> = { disabled: disable }
+  const retCommon: Pick<Return, 'disabled' | 'doNotClose'> = { disabled: disable, doNotClose }
   if (!webStream) {
-    ret = { ...resultPartial, ...(await globalObject.renderToNodeStream!(element, disable, options)) }
+    ret = {
+      ...retCommon,
+      ...(await globalObject.renderToNodeStream!(
+        element,
+        disable,
+        options,
+        doNotClosePromise,
+        setAbortFn,
+        clearTimeouts,
+      )),
+    }
   } else {
     assert(globalObject.renderToWebStream)
-    ret = { ...resultPartial, ...(await globalObject.renderToWebStream(element, disable, options)) }
+    ret = {
+      ...retCommon,
+      ...(await globalObject.renderToWebStream(
+        element,
+        disable,
+        options,
+        doNotClosePromise,
+        setAbortFn,
+        clearTimeouts,
+      )),
+    }
   }
 
   injectToStream = ret.injectToStream

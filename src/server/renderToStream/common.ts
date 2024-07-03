@@ -22,24 +22,3 @@ export function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Prom
       .then(() => !didError)
   )
 }
-
-export type StopTimeout = undefined | (() => void)
-export function startTimeout(
-  abortFn: () => void,
-  options: { timeout?: number | null; onTimeout?: () => void },
-): StopTimeout {
-  let stopTimeout: StopTimeout
-  if (options.timeout !== null) {
-    const t = setTimeout(
-      () => {
-        abortFn()
-        options.onTimeout?.()
-      },
-      (options.timeout ?? 20) * 1000,
-    )
-    stopTimeout = () => {
-      clearTimeout(t)
-    }
-  }
-  return stopTimeout
-}

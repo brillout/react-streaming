@@ -3,10 +3,10 @@ export type { Pipe }
 
 import type { Writable as StreamNodeWritable } from 'stream'
 import { createDebugger } from '../utils'
-import { createBuffer, StreamOperations } from './createBuffer'
+import { type DoNotClosePromise, createBuffer, StreamOperations } from './createBuffer'
 const debug = createDebugger('react-streaming:createPipeWrapper')
 import { Writable } from 'stream'
-import type { StopTimeout } from './common'
+import type { ClearTimeouts } from '../renderToStream'
 
 // `pipeFromReact` is the pipe provided by React.
 // `pipeForUser` is the pipe we give to the user will (the wrapper).
@@ -17,12 +17,20 @@ import type { StopTimeout } from './common'
 
 type Pipe = (writable: StreamNodeWritable) => void
 
-async function createPipeWrapper(pipeFromReact: Pipe, onReactBug: (err: unknown) => void, stopTimeout: StopTimeout) {
+async function createPipeWrapper(
+  pipeFromReact: Pipe,
+  onReactBug: (err: unknown) => void,
+  clearTimeouts: ClearTimeouts,
+  doNotClosePromise: DoNotClosePromise,
+) {
   const { pipeForUser, streamEnd } = createPipeForUser()
   const streamOperations: StreamOperations = {
     operations: null,
   }
-  const { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded } = createBuffer(streamOperations)
+  const { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded } = createBuffer(
+    streamOperations,
+    doNotClosePromise,
+  )
   return { pipeForUser, streamEnd, injectToStream, hasStreamEnded }
 
   function createPipeForUser(): { pipeForUser: Pipe; streamEnd: Promise<void> } {
@@ -46,7 +54,7 @@ async function createPipeWrapper(pipeFromReact: Pipe, onReactBug: (err: unknown)
         },
         async final(callback) {
           debug('final')
-          stopTimeout?.()
+          clearTimeouts()
           await onBeforeEnd()
           writableFromUser.end()
           onEnded()
@@ -54,7 +62,7 @@ async function createPipeWrapper(pipeFromReact: Pipe, onReactBug: (err: unknown)
         },
         destroy(err) {
           debug(`destroy (\`!!err === ${!!err}\`)`)
-          stopTimeout?.()
+          clearTimeouts()
           // Upon React internal errors (i.e. React bugs), React destroys the stream.
           if (err) onReactBug(err)
           writableFromUser.destroy(err ?? undefined)

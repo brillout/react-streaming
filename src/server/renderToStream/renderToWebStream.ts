@@ -5,8 +5,9 @@ import React from 'react'
 import { renderToReadableStream as renderToReadableStream_ } from 'react-dom/server.browser'
 import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
 import { createReadableWrapper } from './createReadableWrapper'
-import { afterReactBugCatch, assertReactImport, debugFlow, startTimeout, wrapStreamEnd } from './common'
-import type { StreamOptions } from '../renderToStream'
+import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './common'
+import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream'
+import type { DoNotClosePromise } from './createBuffer'
 
 async function renderToWebStream(
   element: React.ReactNode,
@@ -14,15 +15,18 @@ async function renderToWebStream(
   options: {
     onBoundaryError?: (err: unknown) => void
     streamOptions?: StreamOptions
-    timeout?: number | null
-    onTimeout?: () => void
     renderToReadableStream?: typeof renderToReadableStream__
   },
+  doNotClosePromise: DoNotClosePromise,
+  setAbortFn: SetAbortFn,
+  clearTimeouts: ClearTimeouts,
 ) {
   debugFlow('creating Web Stream Pipe')
 
   const controller: AbortController = new AbortController()
-  const stopTimeout = startTimeout(() => controller.abort(), options)
+  setAbortFn(() => {
+    controller.abort()
+  })
 
   let didError = false
   let firstErr: unknown = null
@@ -66,7 +70,8 @@ async function renderToWebStream(
   if (didError) throw firstErr
   const { readableForUser, streamEnd, injectToStream, hasStreamEnded } = createReadableWrapper(
     readableOriginal,
-    stopTimeout,
+    clearTimeouts,
+    doNotClosePromise,
   )
   promiseResolved = true
   return {
