@@ -1,3 +1,12 @@
+## [0.3.35](https://github.com/brillout/react-streaming/compare/v0.3.34...v0.3.35) (2024-07-03)
+
+
+### Features
+
+* support chunk promises for injectToStream() (closes [#40](https://github.com/brillout/react-streaming/issues/40)) ([#42](https://github.com/brillout/react-streaming/issues/42)) ([300308e](https://github.com/brillout/react-streaming/commit/300308e94077e661771c43af91e931ae0ed74ec6))
+
+
+
 ## [0.3.34](https://github.com/brillout/react-streaming/compare/v0.3.33...v0.3.34) (2024-07-03)
 
 
