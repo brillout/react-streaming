@@ -1,7 +1,7 @@
 export { createReadableWrapper }
 
 import { createBuffer, type DoNotClosePromise, StreamOperations } from './createBuffer'
-import type { StopTimeout } from './common'
+import type { ClearTimeouts } from '../renderToStream'
 
 // `readableFromReact` is the readable stream provided by React.
 // `readableForUser` is the readable stream we give to the user (the wrapper).
@@ -9,7 +9,7 @@ import type { StopTimeout } from './common'
 
 function createReadableWrapper(
   readableFromReact: ReadableStream,
-  stopTimeout: StopTimeout,
+  clearTimeouts: ClearTimeouts,
   doNotClosePromise: DoNotClosePromise,
 ) {
   const streamOperations: StreamOperations = {
@@ -57,7 +57,7 @@ function createReadableWrapper(
       await onReactWrite(value)
     }
 
-    stopTimeout?.()
+    clearTimeouts()
 
     // Collect injectToStream() calls stuck in an async call.
     // Workaround for: https://github.com/brillout/react-streaming/issues/40#issuecomment-2199424650

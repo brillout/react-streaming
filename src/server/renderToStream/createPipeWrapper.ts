@@ -6,7 +6,7 @@ import { createDebugger } from '../utils'
 import { type DoNotClosePromise, createBuffer, StreamOperations } from './createBuffer'
 const debug = createDebugger('react-streaming:createPipeWrapper')
 import { Writable } from 'stream'
-import type { StopTimeout } from './common'
+import type { ClearTimeouts } from '../renderToStream'
 
 // `pipeFromReact` is the pipe provided by React.
 // `pipeForUser` is the pipe we give to the user will (the wrapper).
@@ -20,7 +20,7 @@ type Pipe = (writable: StreamNodeWritable) => void
 async function createPipeWrapper(
   pipeFromReact: Pipe,
   onReactBug: (err: unknown) => void,
-  stopTimeout: StopTimeout,
+  clearTimeouts: ClearTimeouts,
   doNotClosePromise: DoNotClosePromise,
 ) {
   const { pipeForUser, streamEnd } = createPipeForUser()
@@ -54,7 +54,7 @@ async function createPipeWrapper(
         },
         async final(callback) {
           debug('final')
-          stopTimeout?.()
+          clearTimeouts()
           await onBeforeEnd()
           writableFromUser.end()
           onEnded()
@@ -62,7 +62,7 @@ async function createPipeWrapper(
         },
         destroy(err) {
           debug(`destroy (\`!!err === ${!!err}\`)`)
-          stopTimeout?.()
+          clearTimeouts()
           // Upon React internal errors (i.e. React bugs), React destroys the stream.
           if (err) onReactBug(err)
           writableFromUser.destroy(err ?? undefined)

@@ -3,6 +3,8 @@ export { disable }
 export { renderToNodeStream_set }
 export { renderToWebStream_set }
 export type { StreamUtils }
+export type { SetAbortFn }
+export type { ClearTimeouts }
 
 import React from 'react'
 import ReactDOMServer, { version as reactDomVersion } from 'react-dom/server'
@@ -70,6 +72,10 @@ type Return = StreamReturn &
     abort: () => void
   }
 
+type AbortFn = () => void
+type SetAbortFn = (abortFn: AbortFn) => void
+type ClearTimeouts = () => void
+
 const globalConfig: { disable: boolean } = ((globalThis as any).__react_streaming = (globalThis as any)
   .__react_streaming || {
   disable: false,
@@ -100,6 +106,24 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
     return makeClosableAgain
   }
 
+  let abortFn: AbortFn | undefined
+  const setAbortFn: SetAbortFn = (fn) => (abortFn = fn)
+  const streamTimeout = (() => {
+    if (options.timeout === null) return null
+    return setTimeout(
+      () => {
+        assert(abortFn)
+        abortFn()
+        options.onTimeout?.()
+      },
+      (options.timeout ?? 20) * 1000,
+    )
+  })()
+
+  const clearTimeouts: ClearTimeouts = () => {
+    if (streamTimeout !== null) clearTimeout(streamTimeout)
+  }
+
   let hasStreamEnded = () => false
 
   element = React.createElement(
@@ -123,11 +147,28 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   if (!webStream) {
     ret = {
       ...retCommon,
-      ...(await globalObject.renderToNodeStream!(element, disable, options, doNotClosePromise)),
+      ...(await globalObject.renderToNodeStream!(
+        element,
+        disable,
+        options,
+        doNotClosePromise,
+        setAbortFn,
+        clearTimeouts,
+      )),
     }
   } else {
     assert(globalObject.renderToWebStream)
-    ret = { ...retCommon, ...(await globalObject.renderToWebStream(element, disable, options, doNotClosePromise)) }
+    ret = {
+      ...retCommon,
+      ...(await globalObject.renderToWebStream(
+        element,
+        disable,
+        options,
+        doNotClosePromise,
+        setAbortFn,
+        clearTimeouts,
+      )),
+    }
   }
 
   injectToStream = ret.injectToStream
