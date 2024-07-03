@@ -11,7 +11,8 @@ const debug = createDebugger('react-streaming:buffer')
 //   - https://github.com/reactwg/react-18/discussions/114#:~:text=Injecting%20Into%20the%20SSR%20Stream
 //   - Indeed, chunks cannot be arbitrary injected between React chunks.
 //   - It isn't clear what "before React writes" means. I interpret it like this: nothing should be injected between two React synchronous writes. My interpreted rule seems to be working so far.
-// - Being able to pass a chunk promise to injectToStream() is required for Apollo integration, see:
+//     - It's also the interpretation of the Apollo GraphQL team: https://github.com/apollographql/apollo-client-nextjs/issues/325#issuecomment-2205375796
+// - Being able to pass a chunk promise to injectToStream() is required for integrating Apollo GraphQL, see:
 //   - https://github.com/apollographql/apollo-client-nextjs/issues/325#issuecomment-2199664143
 //   - https://github.com/brillout/react-streaming/issues/40
 type InjectToStreamOptions = {
