@@ -1,13 +1,17 @@
 export { createReadableWrapper }
 
-import { createBuffer, StreamOperations } from './createBuffer'
+import { createBuffer, type DoNotClosePromise, StreamOperations } from './createBuffer'
 import type { StopTimeout } from './common'
 
 // `readableFromReact` is the readable stream provided by React.
 // `readableForUser` is the readable stream we give to the user (the wrapper).
 // Essentially: what React writes to `readableFromReact` is forwarded to `readableForUser`.
 
-function createReadableWrapper(readableFromReact: ReadableStream, stopTimeout: StopTimeout) {
+function createReadableWrapper(
+  readableFromReact: ReadableStream,
+  stopTimeout: StopTimeout,
+  doNotClosePromise: DoNotClosePromise,
+) {
   const streamOperations: StreamOperations = {
     operations: null,
   }
@@ -22,7 +26,10 @@ function createReadableWrapper(readableFromReact: ReadableStream, stopTimeout: S
       onReady(onEnded)
     },
   })
-  const { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded } = createBuffer(streamOperations)
+  const { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded } = createBuffer(
+    streamOperations,
+    doNotClosePromise,
+  )
   return { readableForUser, streamEnd, injectToStream, hasStreamEnded }
 
   async function onReady(onEnded: () => void) {

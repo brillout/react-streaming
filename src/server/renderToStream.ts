@@ -21,7 +21,7 @@ import type { renderToNodeStream as renderToNodeStream_ } from './renderToStream
 import type { renderToWebStream as renderToWebStream_ } from './renderToStream/renderToWebStream'
 import { debugFlow } from './renderToStream/common'
 import type { InjectToStream } from './index.node-and-web'
-import type { Chunk } from './renderToStream/createBuffer'
+import type { Chunk, DoNotClosePromise } from './renderToStream/createBuffer'
 const globalObject = getGlobalObject('renderToStream.ts', {
   renderToNodeStream: null as null | typeof renderToNodeStream_,
   renderToWebStream: null as null | typeof renderToWebStream_,
@@ -61,6 +61,7 @@ type StreamReturn =
 type StreamUtils = {
   injectToStream: InjectToStream
   hasStreamEnded: () => boolean
+  doNotClose: () => () => void
 }
 type Return = StreamReturn &
   StreamUtils & {
@@ -88,6 +89,17 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
     buffer.push(chunk)
   }
 
+  const doNotClosePromise: DoNotClosePromise = { promise: null }
+  const doNotClose = () => {
+    let resolve: () => void
+    doNotClosePromise.promise = new Promise((r) => (resolve = r))
+    const makeClosableAgain = () => {
+      // TODO: add timeout to ensure makeClosableAgain() was called
+      resolve!()
+    }
+    return makeClosableAgain
+  }
+
   let hasStreamEnded = () => false
 
   element = React.createElement(
@@ -96,6 +108,7 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
       value: {
         injectToStream: (chunk, options) => injectToStream(chunk, options),
         hasStreamEnded: () => hasStreamEnded(),
+        doNotClose,
       },
     },
     element,
@@ -106,12 +119,15 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   debugFlow(`disable === ${disable} && webStream === ${webStream}`)
 
   let ret: Return
-  const resultPartial: Pick<Return, 'disabled'> = { disabled: disable }
+  const retCommon: Pick<Return, 'disabled' | 'doNotClose'> = { disabled: disable, doNotClose }
   if (!webStream) {
-    ret = { ...resultPartial, ...(await globalObject.renderToNodeStream!(element, disable, options)) }
+    ret = {
+      ...retCommon,
+      ...(await globalObject.renderToNodeStream!(element, disable, options, doNotClosePromise)),
+    }
   } else {
     assert(globalObject.renderToWebStream)
-    ret = { ...resultPartial, ...(await globalObject.renderToWebStream(element, disable, options)) }
+    ret = { ...retCommon, ...(await globalObject.renderToWebStream(element, disable, options, doNotClosePromise)) }
   }
 
   injectToStream = ret.injectToStream

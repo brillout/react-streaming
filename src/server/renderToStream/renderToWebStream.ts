@@ -7,6 +7,7 @@ import type { renderToReadableStream as renderToReadableStream__ } from 'react-d
 import { createReadableWrapper } from './createReadableWrapper'
 import { afterReactBugCatch, assertReactImport, debugFlow, startTimeout, wrapStreamEnd } from './common'
 import type { StreamOptions } from '../renderToStream'
+import type { DoNotClosePromise } from './createBuffer'
 
 async function renderToWebStream(
   element: React.ReactNode,
@@ -18,6 +19,7 @@ async function renderToWebStream(
     onTimeout?: () => void
     renderToReadableStream?: typeof renderToReadableStream__
   },
+  doNotClosePromise: DoNotClosePromise,
 ) {
   debugFlow('creating Web Stream Pipe')
 
@@ -67,6 +69,7 @@ async function renderToWebStream(
   const { readableForUser, streamEnd, injectToStream, hasStreamEnded } = createReadableWrapper(
     readableOriginal,
     stopTimeout,
+    doNotClosePromise,
   )
   promiseResolved = true
   return {
