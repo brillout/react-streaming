@@ -1,3 +1,12 @@
+## [0.3.36](https://github.com/brillout/react-streaming/compare/v0.3.35...v0.3.36) (2024-07-03)
+
+
+### Features
+
+* stream.doNotClose() ([#40](https://github.com/brillout/react-streaming/issues/40)) ([#43](https://github.com/brillout/react-streaming/issues/43)) ([375b9d3](https://github.com/brillout/react-streaming/commit/375b9d3dcf3815d3e72d0f30b10e3f1153b6aa59))
+
+
+
 ## [0.3.35](https://github.com/brillout/react-streaming/compare/v0.3.34...v0.3.35) (2024-07-03)
 
 
