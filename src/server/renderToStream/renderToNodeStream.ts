@@ -67,19 +67,21 @@ async function renderToNodeStream(
   })
   const stopTimeout = startTimeout(() => abort(), options)
   let promiseResolved = false
-  const { pipeForUser, injectToStream, streamEnd, hasStreamEnded } = await createPipeWrapper(pipeOriginal, {
+  const onReactBug = (err: unknown) => {
+    debugFlow('react bug')
+    didError = true
+    firstErr ??= err
+    reactBug = err
+    // Only log if it wasn't used as rejection for `await renderToStream()`
+    if (reactBug !== firstErr || promiseResolved) {
+      console.error(reactBug)
+    }
+  }
+  const { pipeForUser, injectToStream, streamEnd, hasStreamEnded } = await createPipeWrapper(
+    pipeOriginal,
+    onReactBug,
     stopTimeout,
-    onReactBug(err) {
-      debugFlow('react bug')
-      didError = true
-      firstErr ??= err
-      reactBug = err
-      // Only log if it wasn't used as rejection for `await renderToStream()`
-      if (reactBug !== firstErr || promiseResolved) {
-        console.error(reactBug)
-      }
-    },
-  })
+  )
   await shellReady
   if (didError) throw firstErr
   if (disable) await allReady

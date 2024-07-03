@@ -65,9 +65,10 @@ async function renderToWebStream(
   if (didError) throw firstErr
   if (disable) await allReady
   if (didError) throw firstErr
-  const { readableForUser, streamEnd, injectToStream, hasStreamEnded } = createReadableWrapper(readableOriginal, {
+  const { readableForUser, streamEnd, injectToStream, hasStreamEnded } = createReadableWrapper(
+    readableOriginal,
     stopTimeout,
-  })
+  )
   promiseResolved = true
   return {
     readable: readableForUser,

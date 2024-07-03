@@ -23,11 +23,12 @@ export function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Prom
   )
 }
 
+export type StopTimeout = undefined | (() => void)
 export function startTimeout(
   abortFn: () => void,
   options: { timeout?: number | null; onTimeout?: () => void },
-): undefined | (() => void) {
-  let stopTimeout: undefined | (() => void)
+): StopTimeout {
+  let stopTimeout: StopTimeout
   if (options.timeout !== null) {
     const t = setTimeout(
       () => {

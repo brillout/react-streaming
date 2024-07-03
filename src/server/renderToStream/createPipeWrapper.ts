@@ -6,6 +6,7 @@ import { createDebugger } from '../utils'
 import { createBuffer, StreamOperations } from './createBuffer'
 const debug = createDebugger('react-streaming:createPipeWrapper')
 import { Writable } from 'stream'
+import type { StopTimeout } from './common'
 
 // `pipeFromReact` is the pipe provided by React.
 // `pipeForUser` is the pipe we give to the user will (the wrapper).
@@ -16,10 +17,7 @@ import { Writable } from 'stream'
 
 type Pipe = (writable: StreamNodeWritable) => void
 
-async function createPipeWrapper(
-  pipeFromReact: Pipe,
-  { onReactBug, stopTimeout }: { onReactBug: (err: unknown) => void; stopTimeout?: () => void },
-) {
+async function createPipeWrapper(pipeFromReact: Pipe, onReactBug: (err: unknown) => void, stopTimeout: StopTimeout) {
   const { pipeForUser, streamEnd } = createPipeForUser()
   const streamOperations: StreamOperations = {
     operations: null,
