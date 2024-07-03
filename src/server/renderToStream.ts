@@ -96,12 +96,23 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   }
 
   const doNotClosePromise: DoNotClosePromise = { promise: null }
+  let doNotCloseTimeout: NodeJS.Timeout | null = null
   const doNotClose = () => {
     let resolve: () => void
     doNotClosePromise.promise = new Promise((r) => (resolve = r))
+
+    if (doNotCloseTimeout) clearTimeout(doNotCloseTimeout)
+    doNotCloseTimeout = setTimeout(() => {
+      assertUsage(
+        false,
+        'makeClosableAgain() not called after 10 seconds (`const makeClosableAgain = stream.doNotClose()`)',
+      )
+    }, 10 * 1000)
+
     const makeClosableAgain = () => {
       // TODO: add timeout to ensure makeClosableAgain() was called
       resolve!()
+      clearTimeout(doNotCloseTimeout!)
     }
     return makeClosableAgain
   }
@@ -123,6 +134,7 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
 
   const clearTimeouts: ClearTimeouts = () => {
     if (streamTimeout !== null) clearTimeout(streamTimeout)
+    if (doNotCloseTimeout !== null) clearTimeout(doNotCloseTimeout)
   }
 
   let hasStreamEnded = () => false
