@@ -8,14 +8,6 @@ import { assert, assertUsage, createDebugger, isPromise } from '../utils'
 
 const debug = createDebugger('react-streaming:buffer')
 
-// - According to sebmarkbage chunks should be injected "before React writes".
-//   - https://github.com/reactwg/react-18/discussions/114#:~:text=Injecting%20Into%20the%20SSR%20Stream
-//   - Indeed, chunks cannot be arbitrary injected between React chunks.
-//   - It isn't clear what "before React writes" means. I interpret it like this: nothing should be injected between two React synchronous writes. My interpreted rule seems to be working so far.
-//     - It's also the interpretation of the Apollo GraphQL team: https://github.com/apollographql/apollo-client-nextjs/issues/325#issuecomment-2205375796
-// - Being able to pass a chunk promise to injectToStream() is required for integrating Apollo GraphQL, see:
-//   - https://github.com/apollographql/apollo-client-nextjs/issues/325#issuecomment-2199664143
-//   - https://github.com/brillout/react-streaming/issues/40
 type InjectToStreamOptions = {
   flush?: boolean
   /* We used to have this option (https://github.com/brillout/react-streaming/commit/2f5bf270832a8a45f04af6821d709f590cc9cb7f) but it isn't needed anymore.
@@ -23,6 +15,7 @@ type InjectToStreamOptions = {
   */
 }
 type Chunk = string | Promise<string> // A chunk doesn't have to be a string. Let's progressively add all expected types as users complain.
+// General notes about how to inject to the stream: https://github.com/brillout/react-streaming/tree/main/src#readme
 type InjectToStream = (chunk: Chunk, options?: InjectToStreamOptions) => Promise<void>
 
 type StreamOperations = {
@@ -41,10 +34,7 @@ function createBuffer(
   const buffer: { chunk: Chunk; flush: undefined | boolean }[] = []
   let state: 'UNSTARTED' | 'STREAMING' | 'ENDED' = 'UNSTARTED'
 
-  // Needed to avoid React hydration mismatch.
-  //  - There seem to always(?) be a hydration mismatch whenever something is injected before the first react write.
-  //  - Reproduction: https://github.com/vikejs/vike/commit/45e4ffea06335ddbcf2826b0113be7f925617daa
-  //  - Thus, we delay any write to the stream until react wrote its first chunk.
+  // See Rule 2: https://github.com/brillout/react-streaming/tree/main/src#rule-2
   let writePermission = false
 
   return { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded }
@@ -105,7 +95,12 @@ function createBuffer(
       buffer.push(bufferReactEntry)
     }
     writePermission = true
-    await flushBuffer()
+    await new Promise((resolve) => {
+      // We delay flushing because of Rule 1: https://github.com/brillout/react-streaming/tree/main/src#rule-1
+      setTimeout(() => {
+        resolve(flushBuffer())
+      }, 0)
+    })
   }
 
   async function onBeforeEnd() {
