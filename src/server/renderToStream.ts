@@ -109,6 +109,7 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   let abortFn: AbortFn | undefined
   const setAbortFn: SetAbortFn = (fn) => (abortFn = fn)
   const streamTimeout = (() => {
+    // User explicity opting out of timeout (the default value is `undefined` not `null`)
     if (options.timeout === null) return null
     return setTimeout(
       () => {
