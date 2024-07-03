@@ -7,22 +7,25 @@ import { assert, assertUsage, createDebugger, isPromise } from '../utils'
 
 const debug = createDebugger('react-streaming:buffer')
 
+// - According to sebmarkbage chunks should be injected "before React writes".
+//   - https://github.com/reactwg/react-18/discussions/114#:~:text=Injecting%20Into%20the%20SSR%20Stream
+//   - Indeed, chunks cannot be arbitrary injected between React chunks.
+//   - It isn't clear what "before React writes" means. I interpret it like this: nothing should be injected between two React synchronous writes. My interpreted rule seems to be working so far.
+// - Being able to pass a chunk promise to injectToStream() is required for Apollo integration, see:
+//   - https://github.com/apollographql/apollo-client-nextjs/issues/325#issuecomment-2199664143
+//   - https://github.com/brillout/react-streaming/issues/40
 type InjectToStreamOptions = {
   flush?: boolean
-  /* We used to have this option (https://github.com/brillout/react-streaming/commit/2f5bf270832a8a45f04af6821d709f590cc9cb7f) but it isn't needed anymore
+  /* We used to have this option (https://github.com/brillout/react-streaming/commit/2f5bf270832a8a45f04af6821d709f590cc9cb7f) but it isn't needed anymore.
   tolerateStreamEnded?: boolean
   */
 }
-// A chunk doesn't have to be a string: let's wait for users to complain and let's progressively add all expected types.
-type Chunk = string | Promise<string>
-// Being able to pass a chunk promise to injectToStream() is required for Apollo integration, see:
-// - https://github.com/apollographql/apollo-client-nextjs/issues/325#issuecomment-2199664143
-// - https://github.com/brillout/react-streaming/issues/40
+type Chunk = string | Promise<string> // A chunk doesn't have to be a string. Let's progressively add all expected types as users complain.
 type InjectToStream = (chunk: Chunk, options?: InjectToStreamOptions) => Promise<void>
+
 type StreamOperations = {
   operations: null | { writeChunk: (chunk: unknown) => void; flush: null | (() => void) }
 }
-
 function createBuffer(streamOperations: StreamOperations): {
   injectToStream: InjectToStream
   onReactWriteBefore: (chunk: unknown) => Promise<void>
