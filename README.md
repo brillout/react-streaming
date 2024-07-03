@@ -6,11 +6,11 @@
 
 # `react-streaming`
 
-React 18 Streaming. Full-fledged & Easy.
+React Streaming. Full-fledged & Easy.
 
 Follow: [Twitter > @brillout](https://twitter.com/brillout)  
 
-> Unfamiliar with React 18 Streaming? Check out [Dan's article about SSR and Streaming](https://github.com/reactwg/react-18/discussions/37).
+> Unfamiliar with React Streaming? Check out [Dan's article about SSR and Streaming](https://github.com/reactwg/react-18/discussions/37).
 
 > ⚠️
 > While `react-streaming` is stable in itself (it's used in production and has good CI test coverage), note that React's SSR streaming support is still early and that the React team is working on high-level APIs that will make parts of `react-streaming` obsolete, see [@sebmarkbage comment at "RFC: injectToStream"](https://github.com/reactjs/rfcs/pull/219#issuecomment-1115398084).
@@ -67,7 +67,7 @@ React 18's new SSR streaming architecture unlocks many capabilities:
 - Fundamentally improved mobile performance. (Mobile users can progressively load the page as data is fetched, before even a single line of JavaScript is loaded. Especially important for users with a low-end device and poor internet connection.)
 - Progressive Hydration. (Page is interactive before even the page has finished loading.)
 
-Problem: the current React 18 Streaming architecture is low-level and difficult to use.
+Problem: the current React Streaming architecture is low-level and difficult to use.
 
 Solution: `react-streaming`.
 
