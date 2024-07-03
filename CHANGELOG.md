@@ -1,3 +1,19 @@
+## [0.3.34](https://github.com/brillout/react-streaming/compare/v0.3.33...v0.3.34) (2024-07-03)
+
+
+### Bug Fixes
+
+* also expose hasStreamEnded() to useStream() hook ([9add5f6](https://github.com/brillout/react-streaming/commit/9add5f6c4b6ba685910652554843a74a90fed125))
+* assume chunk to be a string for now ([1853660](https://github.com/brillout/react-streaming/commit/1853660fea079916bf468a784483493c9d4fbd9e))
+* fix injectToStream before stream start ([d7ba375](https://github.com/brillout/react-streaming/commit/d7ba37562b3e7c7b2b5e75e808f8c37dea0d0b94))
+* fix wrong usage error upon inject after stream ended ([460581c](https://github.com/brillout/react-streaming/commit/460581c1a2af2e4493108c0b3daa213dafb5f62c))
+* prevent debug flags to crash cloudflare workers ([7a28e94](https://github.com/brillout/react-streaming/commit/7a28e948e26a632a7250d9c14beec329ebf38dd0))
+* re-apply workaround for injectToStream() at stream end race condition ([#40](https://github.com/brillout/react-streaming/issues/40)) ([f43bd9b](https://github.com/brillout/react-streaming/commit/f43bd9b79a4081b6b1085d9ff7727a4cf8099105))
+* refactor writePermission logic ([485ed46](https://github.com/brillout/react-streaming/commit/485ed46c87f7a0fcbb1c6e3e2d1b43767b851beb))
+* remove unused tolerateStreamEnded option ([2f5bf27](https://github.com/brillout/react-streaming/commit/2f5bf270832a8a45f04af6821d709f590cc9cb7f))
+
+
+
 ## [0.3.33](https://github.com/brillout/react-streaming/compare/v0.3.32...v0.3.33) (2024-06-28)
 
 
