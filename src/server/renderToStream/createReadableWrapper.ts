@@ -21,8 +21,7 @@ function createReadableWrapper(readableFromReact: ReadableStream, { stopTimeout 
       onReady(onEnded)
     },
   })
-  const { injectToStream, onReactWriteBefore, onReactWriteAfter, onBeforeEnd, hasStreamEnded } =
-    createBuffer(streamOperations)
+  const { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded } = createBuffer(streamOperations)
   return { readableForUser, streamEnd, injectToStream, hasStreamEnded }
 
   async function onReady(onEnded: () => void) {
@@ -47,9 +46,7 @@ function createReadableWrapper(readableFromReact: ReadableStream, { stopTimeout 
       if (done) {
         break
       }
-      await onReactWriteBefore(value)
-      //streamOperations.operations.writeChunk(value)
-      //await onReactWriteAfter()
+      await onReactWrite(value)
     }
 
     stopTimeout?.()

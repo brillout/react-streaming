@@ -24,8 +24,7 @@ async function createPipeWrapper(
   const streamOperations: StreamOperations = {
     operations: null,
   }
-  const { injectToStream, onReactWriteBefore, onReactWriteAfter, onBeforeEnd, hasStreamEnded } =
-    createBuffer(streamOperations)
+  const { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded } = createBuffer(streamOperations)
   return { pipeForUser, streamEnd, injectToStream, hasStreamEnded }
 
   function createPipeForUser(): { pipeForUser: Pipe; streamEnd: Promise<void> } {
@@ -38,11 +37,8 @@ async function createPipeWrapper(
       const writableForReact = new Writable({
         async write(chunk: unknown, encoding, callback) {
           debug('write')
-          await onReactWriteBefore(chunk)
-          if (!writableFromUser.destroyed) {
-            //writableFromUser.write(chunk, encoding, callback)
-            //onReactWriteAfter()
-          } else {
+          await onReactWrite(chunk)
+          if (writableFromUser.destroyed) {
             // Destroying twice is fine: https://github.com/brillout/react-streaming/pull/21#issuecomment-1554517163
             writableForReact.destroy()
           }
