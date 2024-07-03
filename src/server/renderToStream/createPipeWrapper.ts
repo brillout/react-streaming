@@ -37,9 +37,11 @@ async function createPipeWrapper(
       const writableForReact = new Writable({
         async write(chunk: unknown, encoding, callback) {
           debug('write')
-          await onReactWrite(chunk)
-          if (writableFromUser.destroyed) {
-            // Destroying twice is fine: https://github.com/brillout/react-streaming/pull/21#issuecomment-1554517163
+          if (!writableFromUser.destroyed) {
+            await onReactWrite(chunk)
+          } else {
+            // - E.g. when the server closes the connection.
+            // - Destroying twice is fine: https://github.com/brillout/react-streaming/pull/21#issuecomment-1554517163
             writableForReact.destroy()
           }
           callback()
