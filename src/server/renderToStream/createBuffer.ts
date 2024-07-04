@@ -8,6 +8,12 @@ import { assert, assertUsage, createDebugger, isPromise } from '../utils'
 
 const debug = createDebugger('react-streaming:buffer')
 
+// =================================
+// =================================
+// Potentially much simpler implementation: https://gist.github.com/nitedani/b057ff380fd494dfbd088719925ac077
+// =================================
+// =================================
+
 type InjectToStreamOptions = {
   flush?: boolean
   /* We used to have this option (https://github.com/brillout/react-streaming/commit/2f5bf270832a8a45f04af6821d709f590cc9cb7f) but it isn't needed anymore.
