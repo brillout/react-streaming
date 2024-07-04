@@ -1,3 +1,12 @@
+## [0.3.40](https://github.com/brillout/react-streaming/compare/v0.3.39...v0.3.40) (2024-07-04)
+
+
+### Bug Fixes
+
+* fix flushBuffer() ([45646a2](https://github.com/brillout/react-streaming/commit/45646a26b72b08931fe912a3f1c979bdfc17a5d8))
+
+
+
 ## [0.3.39](https://github.com/brillout/react-streaming/compare/v0.3.38...v0.3.39) (2024-07-04)
 
 
