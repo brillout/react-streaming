@@ -27,7 +27,7 @@ function createBuffer(
   doNotClosePromise: DoNotClosePromise,
 ): {
   injectToStream: InjectToStream
-  onReactWrite: (chunk: unknown) => Promise<void>
+  onReactWrite: (chunk: unknown) => void
   onBeforeEnd: () => Promise<void>
   hasStreamEnded: () => boolean
 } {
@@ -82,7 +82,7 @@ function createBuffer(
     }
   }
 
-  async function onReactWrite(chunk: unknown) {
+  function onReactWrite(chunk: unknown) {
     state === 'UNSTARTED' && debug('>>> START')
     if (debug.isEnabled) {
       debug('react write', getChunkAsString(chunk))
@@ -95,12 +95,10 @@ function createBuffer(
       buffer.push(bufferReactEntry)
     }
     writePermission = true
-    await new Promise((resolve) => {
-      // We delay flushing because of Rule 1: https://github.com/brillout/react-streaming/tree/main/src#rule-1
-      setTimeout(() => {
-        resolve(flushBuffer())
-      }, 0)
-    })
+    // We delay flushing because of Rule 1: https://github.com/brillout/react-streaming/tree/main/src#rule-1
+    setTimeout(() => {
+      flushBuffer()
+    }, 0)
   }
 
   async function onBeforeEnd() {

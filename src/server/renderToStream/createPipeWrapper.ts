@@ -41,10 +41,11 @@ async function createPipeWrapper(
     })
     const pipeForUser: Pipe = (writableFromUser: StreamNodeWritable) => {
       const writableForReact = new Writable({
-        async write(chunk: unknown, encoding, callback) {
+        write(chunk: unknown, _encoding, callback) {
           debug('write')
           if (!writableFromUser.destroyed) {
-            await onReactWrite(chunk)
+            // We cannot await inside write() as we cannot make write() async because of Rule 1: https://github.com/brillout/react-streaming/tree/main/src#rule-1
+            onReactWrite(chunk)
           } else {
             // - E.g. when the server closes the connection.
             // - Destroying twice is fine: https://github.com/brillout/react-streaming/pull/21#issuecomment-1554517163

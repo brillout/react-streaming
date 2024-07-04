@@ -54,7 +54,8 @@ function createReadableWrapper(
       if (done) {
         break
       }
-      await onReactWrite(value)
+      // We cannot await inside this while-loop because of Rule 1: https://github.com/brillout/react-streaming/tree/main/src#rule-1
+      onReactWrite(value)
     }
 
     clearTimeouts()
