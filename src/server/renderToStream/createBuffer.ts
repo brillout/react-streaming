@@ -32,6 +32,7 @@ function createBuffer(
   hasStreamEnded: () => boolean
 } {
   const buffer: { chunk: Chunk; flush: undefined | boolean }[] = []
+  let bufferIsFlushing = false
   let state: 'UNSTARTED' | 'STREAMING' | 'ENDED' = 'UNSTARTED'
 
   // See Rule 2: https://github.com/brillout/react-streaming/tree/main/src#rule-2
@@ -62,19 +63,25 @@ function createBuffer(
     if (buffer.length === 0) {
       return
     }
+    if (bufferIsFlushing) {
+      return
+    }
     if (state !== 'STREAMING') {
       assert(state === 'UNSTARTED')
       return
     }
     let flushStream = false
-    for (let { chunk, flush } of buffer) {
+    bufferIsFlushing = true
+    while (buffer.length > 0) {
+      let { chunk, flush } = buffer.shift()!
       assert(streamOperations.operations)
       const { writeChunk } = streamOperations.operations
       if (isPromise(chunk)) chunk = await chunk
       writeChunk(chunk)
       if (flush) flushStream = true
     }
-    buffer.length = 0
+    bufferIsFlushing = false
+    assert(buffer.length === 0)
     assert(streamOperations.operations)
     if (flushStream && streamOperations.operations.flush !== null) {
       streamOperations.operations.flush()
