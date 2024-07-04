@@ -1,7 +1,7 @@
 {
   "name": "react-streaming",
   "description": "React 18 Streaming. Full-fledged & Easy.",
-  "version": "0.3.38",
+  "version": "0.3.39",
   "peerDependencies": {
     "react": ">=18",
     "react-dom": ">=18"

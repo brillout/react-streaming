@@ -1,3 +1,12 @@
+## [0.3.39](https://github.com/brillout/react-streaming/compare/v0.3.38...v0.3.39) (2024-07-04)
+
+
+### Bug Fixes
+
+* avoid double flushing ([6780640](https://github.com/brillout/react-streaming/commit/6780640bd60aa0ee6727318763427401dd8cba5e))
+
+
+
 ## [0.3.38](https://github.com/brillout/react-streaming/compare/v0.3.37...v0.3.38) (2024-07-04)
 
 

@@ -2,7 +2,7 @@ export { projectInfo }
 
 import { getGlobalObject } from './getGlobalObject'
 
-const PROJECT_VERSION = '0.3.38'
+const PROJECT_VERSION = '0.3.39'
 
 const projectInfo = {
   projectName: 'react-streaming' as const,
