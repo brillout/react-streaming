@@ -1,3 +1,13 @@
+## [0.3.38](https://github.com/brillout/react-streaming/compare/v0.3.37...v0.3.38) (2024-07-04)
+
+
+### Bug Fixes
+
+* further make sure to respect injection rule 1 ([099dd8a](https://github.com/brillout/react-streaming/commit/099dd8a5d1814fe64cbf39be457ebeb9818302f4))
+* remove superflous write delay ([167ee59](https://github.com/brillout/react-streaming/commit/167ee598f1109c90fc276a255addfd8651b2ecc7))
+
+
+
 ## [0.3.37](https://github.com/brillout/react-streaming/compare/v0.3.36...v0.3.37) (2024-07-03)
 
 
