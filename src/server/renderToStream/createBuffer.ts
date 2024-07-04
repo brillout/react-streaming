@@ -82,7 +82,7 @@ function createBuffer(
     }
   }
 
-  function onReactWrite(chunk: unknown) {
+  async function onReactWrite(chunk: unknown) {
     state === 'UNSTARTED' && debug('>>> START')
     if (debug.isEnabled) {
       debug('react write', getChunkAsString(chunk))
@@ -95,10 +95,7 @@ function createBuffer(
       buffer.push(bufferReactEntry)
     }
     writePermission = true
-    // We delay flushing because of Rule 1: https://github.com/brillout/react-streaming/tree/main/src#rule-1
-    setTimeout(() => {
-      flushBuffer()
-    }, 0)
+    await flushBuffer()
   }
 
   async function onBeforeEnd() {
