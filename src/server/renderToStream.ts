@@ -23,7 +23,7 @@ import type { renderToNodeStream as renderToNodeStream_ } from './renderToStream
 import type { renderToWebStream as renderToWebStream_ } from './renderToStream/renderToWebStream'
 import { debugFlow } from './renderToStream/common'
 import type { InjectToStream } from './index.node-and-web'
-import type { Chunk, DoNotClosePromise } from './renderToStream/createBuffer'
+import type { Chunk, DoNotClosePromise } from './renderToStream/orchestrateWrites'
 const globalObject = getGlobalObject('renderToStream.ts', {
   renderToNodeStream: null as null | typeof renderToNodeStream_,
   renderToWebStream: null as null | typeof renderToWebStream_,
