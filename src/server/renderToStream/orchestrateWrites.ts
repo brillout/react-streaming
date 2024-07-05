@@ -6,7 +6,7 @@ export type { DoNotClosePromise }
 
 import { assert, assertUsage, createDebugger, isPromise } from '../utils'
 
-const debug = createDebugger('react-streaming:writes')
+const debug = createDebugger('react-streaming:chunks')
 
 type InjectToStreamOptions = {
   flush?: boolean
