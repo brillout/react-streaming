@@ -7,7 +7,7 @@ import type { renderToReadableStream as renderToReadableStream__ } from 'react-d
 import { createReadableWrapper } from './createReadableWrapper'
 import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './common'
 import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream'
-import type { DoNotClosePromise } from './createBuffer'
+import type { DoNotClosePromise } from './orchestrateChunks'
 
 async function renderToWebStream(
   element: React.ReactNode,

@@ -22,7 +22,7 @@ type Options = {
 
 type Namespace =
   | 'react-streaming:createPipeWrapper'
-  | 'react-streaming:buffer'
+  | 'react-streaming:chunks'
   //
   | 'react-streaming:flow'
 

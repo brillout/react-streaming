@@ -10,4 +10,4 @@ assertUsage(
 )
 
 import { renderToStream, disable } from './renderToStream'
-import type { InjectToStream } from './renderToStream/createBuffer'
+import type { InjectToStream } from './renderToStream/orchestrateChunks'

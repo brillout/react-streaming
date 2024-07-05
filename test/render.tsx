@@ -39,19 +39,19 @@ async function render(
 ) {
   const options = { userAgent, onBoundaryError, disable }
   if (streamType === 'node') {
-    const { pipe, injectToStream, streamEnd } = await renderToStream(element, options)
+    const { pipe, injectToStream, streamEnd, doNotClose } = await renderToStream(element, options)
     const { writable, data } = createWritable()
     pipe(writable)
-    return { data, injectToStream, streamEnd }
+    return { data, injectToStream, streamEnd, doNotClose }
   }
   if (streamType === 'web') {
-    const { readable, injectToStream, streamEnd } = await renderToStream(element, {
+    const { readable, injectToStream, streamEnd, doNotClose } = await renderToStream(element, {
       webStream: true,
       ...options,
     })
     const { writable, data } = createWebWritable()
     readable.pipeTo(writable)
-    return { data, injectToStream, streamEnd }
+    return { data, injectToStream, streamEnd, doNotClose }
   }
 }
 

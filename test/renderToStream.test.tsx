@@ -16,8 +16,10 @@ describe('renderToStream()', async () => {
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     ;[true, false].forEach((disable) => {
       it(`injectToStream - basic - ${streamType} stream${disable ? ' - disabled' : ''}`, async () => {
-        const { data, streamEnd, injectToStream } = await render(<>hi</>, { streamType, disable })
+        const { data, streamEnd, injectToStream, doNotClose } = await render(<>hi</>, { streamType, disable })
+        const makeClosableAgain = doNotClose()
         injectToStream('<script type="module" src="/main.js"></script>')
+        makeClosableAgain()
         await streamEnd
         expect(data.content).toBe('hi<script type="module" src="/main.js"></script>')
       })
