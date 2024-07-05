@@ -102,7 +102,10 @@ function orchestrateWrites(
   }
 
   async function onBeforeEnd() {
-    firstReactWritePromise_resolve() // in case React didn't write anything
+    // In case React didn't write anything
+    firstReactWritePromise_resolve()
+    // Ensure user is able to use doNotClose() because, otherwise, stream may alreayd be ended after `const { doNotClose } = await renderToStream()`
+    await new Promise<void>((r) => setTimeout(r, 0))
     await doNotClosePromise.promise
     hasEnded = true
     await lastWritePromise
