@@ -13,7 +13,7 @@ type InjectToStreamOptions = {
 }
 type Chunk = string | Promise<string> // A chunk doesn't have to be a string. Let's progressively add all expected types as users complain.
 // General notes about how to inject to the stream: https://github.com/brillout/react-streaming/tree/main/src#readme
-type InjectToStream = (chunk: Chunk, options?: InjectToStreamOptions) => void
+type InjectToStream = (chunk: Chunk, options?: InjectToStreamOptions) => Promise<void>
 
 type StreamOperations = {
   operations: null | { writeChunk: (chunk: unknown) => void; flush: null | (() => void) }
@@ -44,7 +44,7 @@ function createBuffer(
 
   return { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded }
 
-  function injectToStream(chunk: Chunk, options?: InjectToStreamOptions) {
+  async function injectToStream(chunk: Chunk, options?: InjectToStreamOptions) {
     if (debug.isEnabled) {
       debug('injectToStream()', getChunkAsString(chunk))
     }
@@ -56,19 +56,29 @@ function createBuffer(
         )}`,
       )
     }
-    const lastWritePromiseCurrent = lastWritePromise
-    lastWritePromise = (async () => {
-      if (lastWritePromiseCurrent) await lastWritePromiseCurrent
-      if (firstReactWritePromise !== null) await firstReactWritePromise
-      if (isPromise(chunk)) chunk = await chunk
-      writeChunk(chunk, options?.flush)
-    })()
+    await writeChunkInSequence(chunk, options?.flush)
   }
 
-  function writeChunk(chunk: unknown, flush?: boolean) {
+  // Except of the first React chunk, all chunks are guaranteed to be written in the
+  // order of the injectToStream() and onReactWrite() calls.
+  async function writeChunkInSequence(chunk: unknown, flush?: boolean) {
+    const lastWritePromiseCurrent = lastWritePromise
+    lastWritePromise = (async () => {
+      if (firstReactWritePromise) await firstReactWritePromise
+      if (lastWritePromiseCurrent) await lastWritePromiseCurrent
+      if (isPromise(chunk)) chunk = await chunk
+      writeChunkNow(chunk, flush)
+    })()
+    await lastWritePromise
+  }
+  function writeChunkNow(chunk: unknown, flush?: boolean) {
     assert(!hasEnded)
     assert(streamOperations.operations)
+
+    // Write
     streamOperations.operations.writeChunk(chunk)
+
+    // Flush
     if (flush && streamOperations.operations.flush !== null) {
       streamOperations.operations.flush()
       debug('stream flushed')
@@ -80,17 +90,16 @@ function createBuffer(
       debug('react write', getChunkAsString(chunk))
     }
     assert(!hasEnded)
-
-    const write = () => writeChunk(chunk, true)
-
+    const flush = true
     if (isFirstReactWrite) {
       debug('>>> START')
       isFirstReactWrite = false
-      write()
+      // The first React chunk is always the very first chunk written, see Rule 2:
+      // https://github.com/brillout/react-streaming/tree/main/src#rule-2
+      writeChunkNow(chunk, flush)
       onFirstReactWrite()
     } else {
-      await lastWritePromise
-      write()
+      await writeChunkInSequence(chunk, flush)
     }
   }
 
