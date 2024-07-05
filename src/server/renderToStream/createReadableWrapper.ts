@@ -1,6 +1,6 @@
 export { createReadableWrapper }
 
-import { orchestrateWrites, type DoNotClosePromise, StreamOperations } from './orchestrateWrites'
+import { createBuffer, type DoNotClosePromise, StreamOperations } from './createBuffer'
 import type { ClearTimeouts } from '../renderToStream'
 
 // `readableFromReact` is the readable stream provided by React.
@@ -26,7 +26,7 @@ function createReadableWrapper(
       onReady(onEnded)
     },
   })
-  const { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded } = orchestrateWrites(
+  const { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded } = createBuffer(
     streamOperations,
     doNotClosePromise,
   )

@@ -3,7 +3,7 @@ export type { Pipe }
 
 import type { Writable as StreamNodeWritable } from 'stream'
 import { createDebugger } from '../utils'
-import { type DoNotClosePromise, orchestrateWrites, StreamOperations } from './orchestrateWrites'
+import { type DoNotClosePromise, createBuffer, StreamOperations } from './createBuffer'
 const debug = createDebugger('react-streaming:createPipeWrapper')
 import { Writable } from 'stream'
 import type { ClearTimeouts } from '../renderToStream'
@@ -27,7 +27,7 @@ async function createPipeWrapper(
   const streamOperations: StreamOperations = {
     operations: null,
   }
-  const { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded } = orchestrateWrites(
+  const { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded } = createBuffer(
     streamOperations,
     doNotClosePromise,
   )

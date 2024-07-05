@@ -7,7 +7,7 @@ import type { renderToPipeableStream as renderToPipeableStream__ } from 'react-d
 import { createPipeWrapper } from './createPipeWrapper'
 import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './common'
 import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream'
-import type { DoNotClosePromise } from './orchestrateWrites'
+import type { DoNotClosePromise } from './createBuffer'
 
 async function renderToNodeStream(
   element: React.ReactNode,
