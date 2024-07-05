@@ -59,16 +59,14 @@ function orchestrateWrites(
 
   // Except of the first React chunk, all chunks are guaranteed to be written in the
   // order of the injectToStream() and onReactWrite() calls.
-  async function writeChunkInSequence(chunk: unknown, flush?: boolean) {
-    const lastWritePromisePrev = lastWritePromise
-    const lastWritePromiseNext = (async () => {
+  function writeChunkInSequence(chunk: unknown, flush?: boolean) {
+    const lastWritePromisePrevious = lastWritePromise
+    lastWritePromise = (async () => {
       if (firstReactWritePromise) await firstReactWritePromise
-      if (lastWritePromisePrev) await lastWritePromisePrev
+      if (lastWritePromisePrevious) await lastWritePromisePrevious
       if (isPromise(chunk)) chunk = await chunk
       writeChunkNow(chunk, flush)
     })()
-    lastWritePromise = lastWritePromiseNext
-    await lastWritePromiseNext
   }
   function writeChunkNow(chunk: unknown, flush?: boolean) {
     assert(!hasEnded)
