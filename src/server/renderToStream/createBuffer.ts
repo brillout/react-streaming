@@ -48,7 +48,7 @@ function createBuffer(
     if (debug.isEnabled) {
       debug('injectToStream()', getChunkAsString(chunk))
     }
-    if (hasStreamEnded()) {
+    if (hasEnded) {
       assertUsage(
         false,
         `Cannot inject the following chunk because the stream has already ended. Consider using the doNotClose() and hasStreamEnded() utilities. The chunk:\n${getChunkAsString(
@@ -79,6 +79,7 @@ function createBuffer(
     if (debug.isEnabled) {
       debug('react write', getChunkAsString(chunk))
     }
+    assert(!hasEnded)
 
     const write = () => writeChunk(chunk, true)
 
