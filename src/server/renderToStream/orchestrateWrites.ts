@@ -104,8 +104,8 @@ function orchestrateWrites(
   async function onBeforeEnd() {
     firstReactWritePromise_resolve() // in case React didn't write anything
     await doNotClosePromise.promise
-    await lastWritePromise
     hasEnded = true
+    await lastWritePromise
     debug('>>> END')
   }
 }
