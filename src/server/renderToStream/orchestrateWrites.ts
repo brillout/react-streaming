@@ -13,7 +13,7 @@ type InjectToStreamOptions = {
 }
 type Chunk = string | Promise<string> // A chunk doesn't have to be a string. Let's progressively add all expected types as users complain.
 // General notes about how to inject to the stream: https://github.com/brillout/react-streaming/tree/main/src#readme
-type InjectToStream = (chunk: Chunk, options?: InjectToStreamOptions) => Promise<void>
+type InjectToStream = (chunk: Chunk, options?: InjectToStreamOptions) => void
 
 type StreamOperations = {
   operations: null | { writeChunk: (chunk: unknown) => void; flush: null | (() => void) }
@@ -44,7 +44,7 @@ function orchestrateWrites(
 
   return { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded: () => hasEnded }
 
-  async function injectToStream(chunk: Chunk, options?: InjectToStreamOptions) {
+  function injectToStream(chunk: Chunk, options?: InjectToStreamOptions) {
     if (debug.isEnabled) debug('injectToStream()', getChunkAsString(chunk))
     if (hasEnded) {
       assertUsage(
@@ -54,7 +54,7 @@ function orchestrateWrites(
         )}`,
       )
     }
-    await writeChunkInSequence(chunk, options?.flush)
+    writeChunkInSequence(chunk, options?.flush)
   }
 
   // Except of the first React chunk, all chunks are guaranteed to be written in the
@@ -85,7 +85,7 @@ function orchestrateWrites(
     }
   }
 
-  async function onReactWrite(chunk: unknown) {
+  function onReactWrite(chunk: unknown) {
     if (debug.isEnabled) debug('onReactWrite()', getChunkAsString(chunk))
     assert(!hasEnded)
     const flush = true
@@ -97,7 +97,7 @@ function orchestrateWrites(
       writeChunkNow(chunk, flush)
       firstReactWritePromise_resolve()
     } else {
-      await writeChunkInSequence(chunk, flush)
+      writeChunkInSequence(chunk, flush)
     }
   }
 
