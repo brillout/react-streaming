@@ -16,9 +16,6 @@ const debug = createDebugger('react-streaming:buffer')
 
 type InjectToStreamOptions = {
   flush?: boolean
-  /* We used to have this option (https://github.com/brillout/react-streaming/commit/2f5bf270832a8a45f04af6821d709f590cc9cb7f) but it isn't needed anymore.
-  tolerateStreamEnded?: boolean
-  */
 }
 type Chunk = string | Promise<string> // A chunk doesn't have to be a string. Let's progressively add all expected types as users complain.
 // General notes about how to inject to the stream: https://github.com/brillout/react-streaming/tree/main/src#readme
