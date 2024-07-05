@@ -101,8 +101,8 @@ function createBuffer(
 
   async function onBeforeEnd() {
     firstReactWritePromise_resolve() // in case React didn't write anything
-    await lastWritePromise
     await doNotClosePromise.promise
+    await lastWritePromise
     hasEnded = true
     debug('<<< END')
   }
