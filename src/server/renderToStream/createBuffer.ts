@@ -28,8 +28,7 @@ function createBuffer(
   onBeforeEnd: () => Promise<void>
   hasStreamEnded: () => boolean
 } {
-  let state: 'UNSTARTED' | 'STREAMING' | 'ENDED' = 'UNSTARTED'
-
+  let hasEnded = false
   let userChunkPromise: null | Promise<void> = null
 
   // See Rule 2: https://github.com/brillout/react-streaming/tree/main/src#rule-2
@@ -67,10 +66,7 @@ function createBuffer(
   }
 
   function writeChunk(chunk: unknown, flush?: boolean) {
-    if (state !== 'STREAMING') {
-      assert(state === 'UNSTARTED')
-      return
-    }
+    assert(!hasEnded)
     assert(streamOperations.operations)
     streamOperations.operations.writeChunk(chunk)
     if (flush && streamOperations.operations.flush !== null) {
@@ -87,31 +83,28 @@ function createBuffer(
     const write = () => writeChunk(chunk, true)
 
     if (isFirstReactWrite) {
+      debug('>>> START')
       isFirstReactWrite = false
-      state = 'STREAMING'
       write()
       onFirstReactWrite()
     } else {
-      assert(state === 'STREAMING')
       await userChunkPromise
       write()
     }
   }
 
   async function onBeforeEnd() {
-    assert(state === 'UNSTARTED' || 'STREAMING')
     // In case React didn't write anything
     onFirstReactWrite()
-    state = 'STREAMING'
 
     await userChunkPromise
     await doNotClosePromise.promise
-    state = 'ENDED'
-    debug('>>> END')
+    hasEnded = true
+    debug('<<< END')
   }
 
   function hasStreamEnded() {
-    return state === 'ENDED'
+    return hasEnded
   }
 }
 
