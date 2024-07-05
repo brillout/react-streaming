@@ -29,8 +29,19 @@ function createBuffer(
   hasStreamEnded: () => boolean
 } {
   let state: 'UNSTARTED' | 'STREAMING' | 'ENDED' = 'UNSTARTED'
+
   let userChunkPromise: null | Promise<void> = null
-  let onHead = () => {}
+
+  // See Rule 2: https://github.com/brillout/react-streaming/tree/main/src#rule-2
+  let onFirstReactWrite: () => void
+  let firstReactWritePromise: Promise<void> | null = new Promise<void>((resolve) => {
+    onFirstReactWrite = () => {
+      if (firstReactWritePromise === null) return
+      firstReactWritePromise = null
+      resolve()
+    }
+  })
+  let isFirstReactWrite = true
 
   return { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded }
 
@@ -49,10 +60,7 @@ function createBuffer(
     const userChunkPromisePrevious = userChunkPromise
     userChunkPromise = (async () => {
       if (userChunkPromisePrevious) await userChunkPromisePrevious
-      if (state !== 'STREAMING')
-        await new Promise<void>((resolve) => {
-          onHead = resolve
-        })
+      if (firstReactWritePromise !== null) await firstReactWritePromise
       if (isPromise(chunk)) chunk = await chunk
       writeChunk(chunk, options?.flush)
     })()
@@ -72,29 +80,30 @@ function createBuffer(
   }
 
   async function onReactWrite(chunk: unknown) {
-    const firstWrite = state === 'UNSTARTED'
-    firstWrite && debug('>>> START')
     if (debug.isEnabled) {
       debug('react write', getChunkAsString(chunk))
     }
 
-    // See Rule 2: https://github.com/brillout/react-streaming/tree/main/src#rule-2
-    if (firstWrite) {
-      state = 'STREAMING'
-      onHead()
-    } else {
-      await userChunkPromise
-    }
+    const write = () => writeChunk(chunk, true)
 
-    writeChunk(chunk, true)
+    if (isFirstReactWrite) {
+      isFirstReactWrite = false
+      state = 'STREAMING'
+      write()
+      onFirstReactWrite()
+    } else {
+      assert(state === 'STREAMING')
+      await userChunkPromise
+      write()
+    }
   }
 
   async function onBeforeEnd() {
-    {
-      // in case React didn't write anything
-      state = 'STREAMING'
-      onHead()
-    }
+    assert(state === 'UNSTARTED' || 'STREAMING')
+    // In case React didn't write anything
+    onFirstReactWrite()
+    state = 'STREAMING'
+
     await userChunkPromise
     await doNotClosePromise.promise
     state = 'ENDED'
