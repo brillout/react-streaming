@@ -32,9 +32,9 @@ function createBuffer(
   let lastWritePromise: null | Promise<void> = null
 
   // See Rule 2: https://github.com/brillout/react-streaming/tree/main/src#rule-2
-  let onFirstReactWrite: () => void
+  let firstReactWritePromise_resolve: () => void
   let firstReactWritePromise: Promise<void> | null = new Promise<void>((resolve) => {
-    onFirstReactWrite = () => {
+    firstReactWritePromise_resolve = () => {
       if (firstReactWritePromise === null) return
       firstReactWritePromise = null
       resolve()
@@ -42,12 +42,10 @@ function createBuffer(
   })
   let isFirstReactWrite = true
 
-  return { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded }
+  return { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded: () => hasEnded }
 
   async function injectToStream(chunk: Chunk, options?: InjectToStreamOptions) {
-    if (debug.isEnabled) {
-      debug('injectToStream()', getChunkAsString(chunk))
-    }
+    if (debug.isEnabled) debug('injectToStream()', getChunkAsString(chunk))
     if (hasEnded) {
       assertUsage(
         false,
@@ -86,35 +84,27 @@ function createBuffer(
   }
 
   async function onReactWrite(chunk: unknown) {
-    if (debug.isEnabled) {
-      debug('react write', getChunkAsString(chunk))
-    }
+    if (debug.isEnabled) debug('react write', getChunkAsString(chunk))
     assert(!hasEnded)
     const flush = true
     if (isFirstReactWrite) {
-      debug('>>> START')
       isFirstReactWrite = false
+      debug('>>> START')
       // The first React chunk is always the very first chunk written, see Rule 2:
       // https://github.com/brillout/react-streaming/tree/main/src#rule-2
       writeChunkNow(chunk, flush)
-      onFirstReactWrite()
+      firstReactWritePromise_resolve()
     } else {
       await writeChunkInSequence(chunk, flush)
     }
   }
 
   async function onBeforeEnd() {
-    // In case React didn't write anything
-    onFirstReactWrite()
-
+    firstReactWritePromise_resolve() // in case React didn't write anything
     await lastWritePromise
     await doNotClosePromise.promise
     hasEnded = true
     debug('<<< END')
-  }
-
-  function hasStreamEnded() {
-    return hasEnded
   }
 }
 
