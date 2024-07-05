@@ -29,7 +29,7 @@ function createBuffer(
   hasStreamEnded: () => boolean
 } {
   let hasEnded = false
-  let userChunkPromise: null | Promise<void> = null
+  let lastWritePromise: null | Promise<void> = null
 
   // See Rule 2: https://github.com/brillout/react-streaming/tree/main/src#rule-2
   let onFirstReactWrite: () => void
@@ -56,9 +56,9 @@ function createBuffer(
         )}`,
       )
     }
-    const userChunkPromisePrevious = userChunkPromise
-    userChunkPromise = (async () => {
-      if (userChunkPromisePrevious) await userChunkPromisePrevious
+    const lastWritePromiseCurrent = lastWritePromise
+    lastWritePromise = (async () => {
+      if (lastWritePromiseCurrent) await lastWritePromiseCurrent
       if (firstReactWritePromise !== null) await firstReactWritePromise
       if (isPromise(chunk)) chunk = await chunk
       writeChunk(chunk, options?.flush)
@@ -89,7 +89,7 @@ function createBuffer(
       write()
       onFirstReactWrite()
     } else {
-      await userChunkPromise
+      await lastWritePromise
       write()
     }
   }
@@ -98,7 +98,7 @@ function createBuffer(
     // In case React didn't write anything
     onFirstReactWrite()
 
-    await userChunkPromise
+    await lastWritePromise
     await doNotClosePromise.promise
     hasEnded = true
     debug('<<< END')
