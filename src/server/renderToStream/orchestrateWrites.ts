@@ -1,4 +1,4 @@
-export { orchestrateWrites }
+export { orchestrateChunks }
 export type { InjectToStream }
 export type { StreamOperations }
 export type { Chunk }
@@ -19,7 +19,7 @@ type StreamOperations = {
   operations: null | { writeChunk: (chunk: unknown) => void; flush: null | (() => void) }
 }
 type DoNotClosePromise = { promise: null | Promise<void> }
-function orchestrateWrites(
+function orchestrateChunks(
   streamOperations: StreamOperations,
   doNotClosePromise: DoNotClosePromise,
 ): {
