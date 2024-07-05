@@ -75,16 +75,17 @@ function orchestrateWrites(
 
     // Write
     streamOperations.operations.writeChunk(chunk)
+    if (debug.isEnabled) debug('>>> WRITE', getChunkAsString(chunk))
 
     // Flush
     if (flush && streamOperations.operations.flush !== null) {
       streamOperations.operations.flush()
-      debug('stream flushed')
+      debug('>>> FLUSH')
     }
   }
 
   async function onReactWrite(chunk: unknown) {
-    if (debug.isEnabled) debug('react write', getChunkAsString(chunk))
+    if (debug.isEnabled) debug('onReactWrite()', getChunkAsString(chunk))
     assert(!hasEnded)
     const flush = true
     if (isFirstReactWrite) {
@@ -104,7 +105,7 @@ function orchestrateWrites(
     await doNotClosePromise.promise
     await lastWritePromise
     hasEnded = true
-    debug('<<< END')
+    debug('>>> END')
   }
 }
 
