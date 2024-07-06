@@ -1,3 +1,12 @@
+## [0.3.41](https://github.com/brillout/react-streaming/compare/v0.3.40...v0.3.41) (2024-07-06)
+
+
+### Bug Fixes
+
+* refactor chunk orchestration ([#44](https://github.com/brillout/react-streaming/issues/44)) ([c052e72](https://github.com/brillout/react-streaming/commit/c052e72f33254fd6deb474cd784fa4cee07b6e92))
+
+
+
 ## [0.3.40](https://github.com/brillout/react-streaming/compare/v0.3.39...v0.3.40) (2024-07-04)
 
 
