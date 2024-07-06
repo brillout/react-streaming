@@ -85,7 +85,7 @@ function orchestrateChunks(
 
   function onReactWrite(chunk: unknown) {
     if (debug.isEnabled) debug('onReactWrite()', getChunkAsString(chunk))
-    assert(!hasEnded)
+    assert(!hasEnded) // all onReactWrite() calls happen before onBeforeEnd()
     const flush = true
     if (isFirstReactWrite) {
       isFirstReactWrite = false
