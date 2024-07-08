@@ -1,3 +1,12 @@
+## [0.3.42](https://github.com/brillout/react-streaming/compare/v0.3.41...v0.3.42) (2024-07-08)
+
+
+### Bug Fixes
+
+* delay user writes until after first react writes ([1559c69](https://github.com/brillout/react-streaming/commit/1559c6917fb37cfe81ad82f43665d88826b17ed5))
+
+
+
 ## [0.3.41](https://github.com/brillout/react-streaming/compare/v0.3.40...v0.3.41) (2024-07-06)
 
 
