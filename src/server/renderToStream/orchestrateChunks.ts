@@ -88,12 +88,14 @@ function orchestrateChunks(
     assert(!hasEnded) // all onReactWrite() calls happen before onBeforeEnd()
     const flush = true
     if (isFirstReactWrite) {
-      isFirstReactWrite = false
       debug('>>> START')
       // The first React chunk is always the very first written chunk, see Rule 2:
       // https://github.com/brillout/react-streaming/tree/main/src#rule-2
+      setTimeout(() => {
+        isFirstReactWrite = false
+        firstReactWritePromise_resolve()
+      }, 0)
       writeChunkNow(chunk, flush)
-      firstReactWritePromise_resolve()
     } else {
       writeChunkInSequence(chunk, flush)
     }
@@ -105,8 +107,8 @@ function orchestrateChunks(
     // Ensure user is able to use doNotClose() because, otherwise, stream may already have ended after `const { doNotClose } = await renderToStream()`
     await new Promise<void>((r) => setTimeout(r, 0))
     await doNotClosePromise.promise
-    hasEnded = true
     await lastWritePromise
+    hasEnded = true
     debug('>>> END')
   }
 }
