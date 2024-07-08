@@ -89,13 +89,15 @@ function orchestrateChunks(
     const flush = true
     if (isFirstReactWrite) {
       debug('>>> START')
-      // The first React chunk is always the very first written chunk, see Rule 2:
-      // https://github.com/brillout/react-streaming/tree/main/src#rule-2
+      // The first React chunk should always be the very first written chunk.
+      // See Rule 2: https://github.com/brillout/react-streaming/tree/main/src#rule-2
+      writeChunkNow(chunk, flush)
+      // Because of Rule 1, all subsequent synchronous React write after the first one also need to be injected first.
+      // See Rule 1: https://github.com/brillout/react-streaming/tree/main/src#rule-1
       setTimeout(() => {
         isFirstReactWrite = false
         firstReactWritePromise_resolve()
       }, 0)
-      writeChunkNow(chunk, flush)
     } else {
       writeChunkInSequence(chunk, flush)
     }

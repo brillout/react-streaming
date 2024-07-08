@@ -18,6 +18,7 @@ Nothing should be injected before the first React write.
 - But, in practice, there seems to (always?) be a hydration mismatch if anything is injected before the first React write.
 - Reproduction: https://github.com/vikejs/vike/commit/45e4ffea06335ddbcf2826b0113be7f925617daa
 - Thus, we delay any write to the stream until React writes its first chunk.
+- Because of Rule 1, all subsequent synchronous React write after the first one also need to be injected first.
 
 
 ### Chunk promises
