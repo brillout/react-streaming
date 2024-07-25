@@ -28,8 +28,8 @@ importers:
         specifier: ^0.1.2
         version: 0.1.2
       '@brillout/release-me':
-        specifier: ^0.3.8
-        version: 0.3.8
+        specifier: ^0.4.0
+        version: 0.4.0
       '@types/node':
         specifier: ^15.12.2
         version: 15.14.9
@@ -137,8 +137,8 @@ packages:
   '@brillout/picocolors@1.0.12':
     resolution: {integrity: sha512-2gowgbpAqEQz4U1D/dh3tU2fKcRm+yt724d8YTbCsVHxnLTHWP2J5RMO1iTWcoViX7rTmLvPkHHlYtEiKP4gLA==}
 
-  '@brillout/release-me@0.3.8':
-    resolution: {integrity: sha512-feo4CLWpMT0LS5l/fI37vv9pbOOEste6/AO9qLT5WtupqDkgK9k6iBuZmzLlef4AthIA2BY20tXlX/VcFWKuSw==}
+  '@brillout/release-me@0.4.0':
+    resolution: {integrity: sha512-V4YwITguHK3zOy9B4606lc9PQiFDp3p3Ifeq4KF7V8o9fs7OmcrfTWBE0EWFtiLhG2JeKb2RzM0t6Y4tLgXd6w==}
     hasBin: true
 
   '@hutson/parse-repository-url@5.0.0':
@@ -859,7 +859,7 @@ snapshots:
 
   '@brillout/picocolors@1.0.12': {}
 
-  '@brillout/release-me@0.3.8':
+  '@brillout/release-me@0.4.0':
     dependencies:
       '@brillout/picocolors': 1.0.12
       commander: 11.1.0
