@@ -51,7 +51,7 @@ type Options = {
   renderToReadableStream?: typeof RenderToReadableStream
   renderToPipeableStream?: typeof RenderToPipeableStream
 }
-type StreamReturn =
+type StreamReturnMain =
   | {
       pipe: Pipe
       readable: null
@@ -65,7 +65,7 @@ type StreamReturnUtils = {
   hasStreamEnded: () => boolean
   doNotClose: () => () => void
 }
-type Return = StreamReturn &
+type StreamReturn = StreamReturnMain &
   StreamReturnUtils & {
     streamEnd: Promise<boolean>
     disabled: boolean
@@ -84,7 +84,7 @@ function disable() {
   globalConfig.disable = true
 }
 
-async function renderToStream(element: React.ReactNode, options: Options = {}): Promise<Return> {
+async function renderToStream(element: React.ReactNode, options: Options = {}): Promise<StreamReturn> {
   // Let's see if a user complains
   assertUsage(!options.renderToPipeableStream && !options.renderToReadableStream, 'using deprecated options')
 
@@ -155,8 +155,8 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   const webStream = options.webStream ?? !globalObject.renderToNodeStream
   debugFlow(`disable === ${disable} && webStream === ${webStream}`)
 
-  let ret: Return
-  const retCommon: Pick<Return, 'disabled' | 'doNotClose'> = { disabled: disable, doNotClose }
+  let ret: StreamReturn
+  const retCommon: Pick<StreamReturn, 'disabled' | 'doNotClose'> = { disabled: disable, doNotClose }
   if (!webStream) {
     ret = {
       ...retCommon,
