@@ -2,7 +2,7 @@ export { renderToStream }
 export { disable }
 export { renderToNodeStream_set }
 export { renderToWebStream_set }
-export type { StreamUtils }
+export type { StreamReturnUtils }
 export type { SetAbortFn }
 export type { ClearTimeouts }
 
@@ -60,13 +60,13 @@ type StreamReturn =
       pipe: null
       readable: ReadableStream
     }
-type StreamUtils = {
+type StreamReturnUtils = {
   injectToStream: InjectToStream
   hasStreamEnded: () => boolean
   doNotClose: () => () => void
 }
 type Return = StreamReturn &
-  StreamUtils & {
+  StreamReturnUtils & {
     streamEnd: Promise<boolean>
     disabled: boolean
     abort: () => void

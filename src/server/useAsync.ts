@@ -8,7 +8,7 @@ import { InitData, initDataHtmlClass } from '../shared/initData'
 import { useSuspense } from '../shared/useSuspense'
 import { assertKey, stringifyKey } from '../shared/key'
 import { useSuspenseData } from './useAsync/useSuspenseData'
-import type { StreamUtils } from './renderToStream'
+import type { StreamReturnUtils } from './renderToStream'
 
 function useAsync<T>(keyValue: unknown, asyncFn: () => T): Awaited<T> {
   assertKey(keyValue)
@@ -31,7 +31,7 @@ function useAsync<T>(keyValue: unknown, asyncFn: () => T): Awaited<T> {
 }
 
 // See consumer getInitData()
-function provideInitData(streamUtils: StreamUtils, initData: InitData) {
+function provideInitData(streamUtils: StreamReturnUtils, initData: InitData) {
   const initDataSerialized = stringify(initData)
   const initDataInjection = `<script class="${initDataHtmlClass}" type="application/json">${initDataSerialized}</script>`
   streamUtils.injectToStream(initDataInjection)
