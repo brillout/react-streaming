@@ -1,3 +1,12 @@
+## [0.3.43](https://github.com/brillout/react-streaming/compare/v0.3.42...v0.3.43) (2024-08-02)
+
+
+### Bug Fixes
+
+* improve name of return type ([08e7452](https://github.com/brillout/react-streaming/commit/08e7452ace859ce9d0f4cba9f1420ba24445ee7c))
+
+
+
 ## [0.3.42](https://github.com/brillout/react-streaming/compare/v0.3.41...v0.3.42) (2024-07-08)
 
 
