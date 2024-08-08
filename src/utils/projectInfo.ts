@@ -18,5 +18,5 @@ if (versions.size >= 2) {
   const versionsStr = Array.from(versions)
     .map((v) => `${projectInfo.projectName}@${v}`)
     .join(' and ')
-  throw new Error(`${versionsStr} are loaded but using different versions is forbidden`)
+  throw new Error(`${versionsStr} loaded but loading different versions is forbidden`)
 }
