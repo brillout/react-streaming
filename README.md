@@ -22,6 +22,7 @@ React Streaming. Full-fledged & Easy.
   - [Options](#options)
   - [Bots](#bots)
   - [Error Handling](#error-handling)
+  - [SSR](#ssr)
   - [`useAsync()`](#useasync)
 - Usage (Library Authors)
   - [Overview](#overview)
@@ -204,6 +205,16 @@ You can also manually abort:
 const { abort } = await renderToStream(<Page />, { timeout: null })
 abort()
 ```
+
+
+### SSR
+
+In general, with React Streaming, all the content of your page is included in the HTML stream. This means you get all the benefits of SSR. However, it isn't clear whether crawlers fully wait the HTML stream to complete. It's therefore safer to disable HTML Streaming for crawlers and fall back to "classical SSR", see [Bots](#bots).
+
+> [!NOTE]
+> The order in which the content of your page is included in the HTML stream depends on which data comes first. For example, if you use a loading fallback component, the content of the loading component appears first, followed by the content of the main component after the `<Suspense>` boundary resolves.
+
+
 
 ### `useAsync()`
 
