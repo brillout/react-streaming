@@ -167,6 +167,18 @@ For `react-streaming` to be able to determine whether a request comes from a bot
 
 You can implement a custom strategy, see <a href="https://github.com/brillout/react-streaming#:~:text=%3CSupsense%3E.)-,options.seoStrategy,-%3F%3A%20%27conservative%27%20%7C%20%27google%2Dspeed">`options.seoStrategy`</a>.
 
+You can use [`$ curl`](https://curl.se) to see the HTML response that bots and crawlers receive:
+
+```bash
+# What bots and crawls get: no HTML Streaming, just "classic SSR"
+$ curl http://localhost:3000/star-wars
+# What regular users get: HTML Streaming
+$ curl http://localhost:3000/star-wars -N -H "User-Agent: chrome"
+```
+
+> [!NOTE]
+> By default `curl` sets `User-Agent: curl/8.5.0`, which `react-streaming` interprets as bot.
+
 
 ### Error Handling
 
