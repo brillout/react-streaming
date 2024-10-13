@@ -8,12 +8,10 @@
 
 React Streaming. Full-fledged & Easy.
 
-Follow: [Twitter > @brillout](https://twitter.com/brillout)  
-
 > Unfamiliar with React Streaming? Check out [Dan's article about SSR and Streaming](https://github.com/reactwg/react-18/discussions/37).
 
 > ⚠️
-> While `react-streaming` is stable in itself (it's used in production and has good CI test coverage), note that React's SSR streaming support is still early and that the React team is working on high-level APIs that will make parts of `react-streaming` obsolete, see [@sebmarkbage comment at "RFC: injectToStream"](https://github.com/reactjs/rfcs/pull/219#issuecomment-1115398084).
+> While `react-streaming` in itself is stable and used in production, note that React's SSR streaming support is still early and that the React team is working on high-level APIs that will make parts of `react-streaming` obsolete, see [@sebmarkbage comment at "RFC: injectToStream"](https://github.com/reactjs/rfcs/pull/219#issuecomment-1115398084).
 
 <b>Contents</b>
 
@@ -158,12 +156,12 @@ By default, `react-streaming` disables streaming for bots and crawlers, such as:
 - The [Google Bot](https://developers.google.com/search/docs/crawling-indexing/googlebot), which crawls the HTML of your pages to be able to show a preview of your website on Google's result pages.
 - The bot of social sites (Twitter/Instagram/WhatsApp...), which crawl the HTML of your pages to be able to show a preview of your website when it's shared on Twitter/Instagram/WhatsApp/...
 
-> [!NOTE]  
+> [!NOTE]
 > These bots explore your website by navigating the HTML of your pages. It isn't clear what bots do when they encounter an HTML stream ([to be researched](https://github.com/brillout/react-streaming/issues/39)); it's therefore safer to provide bots with a fully rendered HTML at once that contains all the content of your page (i.e. disable HTML streaming) instead of hoping that bots will await the HTML stream.
 
 For `react-streaming` to be able to determine whether a request comes from a bot or a real user, you need to provide <a href="https://github.com/brillout/react-streaming#:~:text=disable%20%7D)-,options.userAgent,-%3F%3A%20string%3A%20The%20HTTP">`options.userAgent`</a>.
 
-> [!NOTE]  
+> [!NOTE]
 > If you use [Vike](https://vike.dev) with [`vike-react`](https://github.com/vikejs/vike-react), you can simply set [`renderPage({ headersOriginal })`](https://vike.dev/renderPage#:~:text=the%20HTTP%20Headers-,headersOriginal,-%3A%20req.headers%2C) instead. (The [User-Agent request header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent) will then automatically be passed to `react-streaming`).
 
 You can implement a custom strategy, see <a href="https://github.com/brillout/react-streaming#:~:text=%3CSupsense%3E.)-,options.seoStrategy,-%3F%3A%20%27conservative%27%20%7C%20%27google%2Dspeed">`options.seoStrategy`</a>.
