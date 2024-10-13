@@ -22,7 +22,7 @@ Follow: [Twitter > @brillout](https://twitter.com/brillout)
 - Usage
   - [Get Started](#get-started)
   - [Options](#options)
-  - [Bots](#Bots)
+  - [Bots](#bots)
   - [Error Handling](#error-handling)
   - [`useAsync()`](#useasync)
 - Usage (Library Authors)
