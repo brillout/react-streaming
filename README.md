@@ -6,12 +6,13 @@
 
 # `react-streaming`
 
-React Streaming. Full-fledged & Easy.
+HTML Streaming with React. Batteries-included & easy.
 
-> Unfamiliar with React Streaming? Check out [Dan's article about SSR and Streaming](https://github.com/reactwg/react-18/discussions/37).
+> [!NOTE]
+> Unfamiliar with HTML Streaming? Check out [Dan's article about SSR and Streaming](https://github.com/reactwg/react-18/discussions/37).
 
-> ⚠️
-> While `react-streaming` in itself is stable and used in production, note that React's SSR streaming support is still early and that the React team is working on high-level APIs that will make parts of `react-streaming` obsolete, see [@sebmarkbage comment at "RFC: injectToStream"](https://github.com/reactjs/rfcs/pull/219#issuecomment-1115398084).
+> [!NOTE]
+> The React team is working on high-level APIs that will eventually make parts of `react-streaming` obsolete, see [@sebmarkbage comment at "RFC: injectToStream"](https://github.com/reactjs/rfcs/pull/219#issuecomment-1115398084).
 
 <b>Contents</b>
 
