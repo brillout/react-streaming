@@ -13,32 +13,32 @@
     "isbot-fast": "1.2.0"
   },
   "main": "./dist/cjs/server/hooks.js",
+  "// See https://gist.github.com/brillout/553253e27a43ccfc01ec6c38880d1360": "",
   "exports": {
     ".": {
-      "node": "./dist/cjs/server/hooks.js",
-      "worker": "./dist/esm/server/hooks.js",
-      "deno": "./dist/esm/server/hooks.js",
       "browser": "./dist/esm/client/hooks.js",
-      "types": "./dist/cjs/server/hooks.d.ts"
+      "node": "./dist/cjs/server/hooks.js",
+      "types": "./dist/esm/server/hooks.d.ts",
+      "default": "./dist/esm/server/hooks.js"
     },
     "./server": {
-      "node": "./dist/cjs/server/index.node-and-web.js",
-      "worker": "./dist/esm/server/index.web-only.js",
-      "deno": "./dist/esm/server/index.web-only.js",
       "browser": "./dist/esm/server/client-poison-pill.js",
-      "types": "./dist/cjs/server/index.d.ts"
+      "worker": "./dist/esm/server/index.web-only.js",
+      "node": "./dist/cjs/server/index.node-and-web.js",
+      "types": "./dist/esm/server/index.d.ts",
+      "default": "./dist/esm/server/index.node-and-web.js"
     },
     "./server.web": {
-      "node": "./dist/cjs/server/index.web-only.js",
-      "worker": "./dist/esm/server/index.web-only.js",
-      "deno": "./dist/esm/server/index.web-only.js",
       "browser": "./dist/esm/server/client-poison-pill.js",
-      "types": "./dist/cjs/server/index.d.ts"
+      "node": "./dist/cjs/server/index.web-only.js",
+      "types": "./dist/esm/server/index.d.ts",
+      "default": "./dist/esm/server/index.web-only.js"
     },
     "./server.node": {
-      "node": "./dist/cjs/server/index.node-only.js",
       "browser": "./dist/esm/server/client-poison-pill.js",
-      "types": "./dist/cjs/server/index.d.ts"
+      "node": "./dist/cjs/server/index.node-only.js",
+      "types": "./dist/esm/server/index.d.ts",
+      "default": "./dist/esm/server/index.node-only.js"
     }
   },
   "scripts": {
