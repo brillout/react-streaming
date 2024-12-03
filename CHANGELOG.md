@@ -1,3 +1,16 @@
+## [0.3.44](https://github.com/brillout/react-streaming/compare/v0.3.43...v0.3.44) (2024-12-03)
+
+
+### Bug Fixes
+
+* [revert] make default condition last again ([a2ab5f7](https://github.com/brillout/react-streaming/commit/a2ab5f7cead95c87cde1b6f2344abc92a34e2d02))
+* always add worker condition and as first condition ([98e3731](https://github.com/brillout/react-streaming/commit/98e373131a13d1e70441601f5d6733984c2556aa))
+* improve different versions error message ([528b11a](https://github.com/brillout/react-streaming/commit/528b11a1cab638600d6684f1d8e7e60f86e5ba8f))
+* improve exports (fix [#46](https://github.com/brillout/react-streaming/issues/46)) ([af1be3b](https://github.com/brillout/react-streaming/commit/af1be3ba1f4732f555a3d710863831b1b15eaedb))
+* make condition `types` last ([c6665d4](https://github.com/brillout/react-streaming/commit/c6665d4d289298a7dcf9754d46c207688ccdb513))
+
+
+
 ## [0.3.43](https://github.com/brillout/react-streaming/compare/v0.3.42...v0.3.43) (2024-08-02)
 
 
