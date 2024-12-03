@@ -13,7 +13,7 @@
     "isbot-fast": "1.2.0"
   },
   "main": "./dist/cjs/server/hooks.js",
-  "// See https://gist.github.com/brillout/553253e27a43ccfc01ec6c38880d1360": "",
+  "// Explanation: https://gist.github.com/brillout/553253e27a43ccfc01ec6c38880d1360": "",
   "exports": {
     ".": {
       "worker": "./dist/esm/server/hooks.js",
