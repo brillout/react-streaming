@@ -66,6 +66,8 @@
     "reset": "git clean -Xdf && pnpm install && pnpm run build",
     "========= Release": "",
     "release": "release-me patch",
+    "release:minor": "release-me minor",
+    "release:major": "release-me major",
     "release:commit": "release-me commit"
   },
   "devDependencies": {
