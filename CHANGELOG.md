@@ -1,3 +1,12 @@
+## [0.3.46](https://github.com/brillout/react-streaming/compare/v0.3.45...v0.3.46) (2024-12-26)
+
+
+### Bug Fixes
+
+* fix regression introduce in last version ([68a1f5c](https://github.com/brillout/react-streaming/commit/68a1f5ca4a7c38abde8dd23b7579f957939d7d4d))
+
+
+
 ## [0.3.45](https://github.com/brillout/react-streaming/compare/v0.3.44...v0.3.45) (2024-12-26)
 
 
