@@ -1,17 +1,20 @@
 export { useSuspenseData }
 export { SuspenseData }
 
-import React, { createContext, useContext } from 'react'
+import React, { useContext } from 'react'
 import { Suspenses } from '../../shared/useSuspense'
+import { getGlobalObject } from '../utils'
 
-const ctxSuspenses = createContext<Suspenses>(undefined as never)
+const globalObject = getGlobalObject('useStream.ts', {
+  ctxSuspenses: React.createContext<Suspenses>(undefined as never),
+})
 
 function SuspenseData({ children }: { children: React.ReactNode }) {
   const suspenses: Suspenses = {}
-  return React.createElement(ctxSuspenses.Provider, { value: suspenses }, children)
+  return React.createElement(globalObject.ctxSuspenses.Provider, { value: suspenses }, children)
 }
 
 function useSuspenseData() {
-  const suspenses = useContext(ctxSuspenses)
+  const suspenses = useContext(globalObject.ctxSuspenses)
   return suspenses
 }
