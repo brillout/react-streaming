@@ -1,3 +1,12 @@
+## [0.3.45](https://github.com/brillout/react-streaming/compare/v0.3.44...v0.3.45) (2024-12-26)
+
+
+### Bug Fixes
+
+* further support multiple react-streaming instances ([2bef3bd](https://github.com/brillout/react-streaming/commit/2bef3bd67fdeaf83beffa6e299c092582ec54e78))
+
+
+
 ## [0.3.44](https://github.com/brillout/react-streaming/compare/v0.3.43...v0.3.44) (2024-12-03)
 
 
