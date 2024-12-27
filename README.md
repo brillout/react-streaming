@@ -61,7 +61,7 @@ const {
 
 ## Why Streaming
 
-React 18's new SSR streaming architecture unlocks many capabilities:
+React's SSR streaming architecture unlocks many capabilities:
 
 - Easily fetch data for SSR apps.
 - Fundamentally improved mobile performance. (Mobile users can progressively load the page as data is fetched, before even a single line of JavaScript is loaded. Especially important for users with a low-end device and poor internet connection.)
@@ -109,7 +109,7 @@ await renderToStream(<Page />, options)
 ```
 
 - `options.disable?: boolean`: Disable streaming.
-  > `<Page>` is still rendered to a stream, but the promise `const promise = renderToStream()` resolves only after the stream has finished. (This effectively disables streaming from a user perspective, while unlocking React 18 Streaming capabilities such as SSR `<Supsense>`.)
+  > `<Page>` is still rendered to a stream, but the promise `const promise = renderToStream()` resolves only after the stream has finished. (This effectively disables streaming from a user perspective, while unlocking capabilities such as server-side `<Supsense>`.)
 - `options.seoStrategy?: 'conservative' | 'google-speed'`
 
   - `conservative` (default): Disable streaming if the HTTP request originates from a bot. (Ensuring bots to always see the whole HTML.)
