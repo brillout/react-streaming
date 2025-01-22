@@ -1,8 +1,6 @@
 export { renderToWebStream }
 
 import React from 'react'
-// @ts-expect-error types export missing
-import { renderToReadableStream as renderToReadableStream_ } from 'react-dom/server.browser'
 import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
 import { createReadableWrapper } from './createReadableWrapper'
 import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './common'
@@ -22,6 +20,10 @@ async function renderToWebStream(
   clearTimeouts: ClearTimeouts,
 ) {
   debugFlow('creating Web Stream Pipe')
+
+  // We import 'react-dom/server.browser' only if needed, because merely importing it prevents Node.js from exiting (e.g. after running Vike's prerender() API).
+  // @ts-expect-error types export missing
+  const { renderToReadableStream: renderToReadableStream_ } = await import('react-dom/server.browser')
 
   const controller: AbortController = new AbortController()
   setAbortFn(() => {
