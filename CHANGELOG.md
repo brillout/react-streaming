@@ -1,3 +1,12 @@
+## [0.3.47](https://github.com/brillout/react-streaming/compare/v0.3.46...v0.3.47) (2025-01-22)
+
+
+### Bug Fixes
+
+* prevent Node.js exiting only if required ([ddd3c25](https://github.com/brillout/react-streaming/commit/ddd3c25ef6ba5d8b0a2e130205847b398851a1a8))
+
+
+
 ## [0.3.46](https://github.com/brillout/react-streaming/compare/v0.3.45...v0.3.46) (2024-12-26)
 
 
