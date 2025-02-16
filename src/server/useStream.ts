@@ -21,7 +21,7 @@ function getErrMsg() {
   if (isVikeReactApp()) {
     return `HTML streaming (https://vike.dev/streaming) disabled: set the setting ${pc.code(
       'stream',
-    )} (https://vike.dev/stream) to ${pc.code('true')}.'`
+    )} (https://vike.dev/stream) to ${pc.code('true')}.`
   } else {
     return `react-streaming (https://github.com/brillout/react-streaming) isn't installed: make sure to use ${pc.code(
       'renderToStream()',
