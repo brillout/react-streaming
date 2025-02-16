@@ -1,3 +1,17 @@
+## [0.3.48](https://github.com/brillout/react-streaming/compare/v0.3.47...v0.3.48) (2025-02-16)
+
+
+### Bug Fixes
+
+* typo ([2275efe](https://github.com/brillout/react-streaming/commit/2275efedb3457e3e161b667c2198e59540bcbdcd))
+
+
+### Features
+
+* useStreamOptional() ([b32cbe7](https://github.com/brillout/react-streaming/commit/b32cbe7debb91819ab389928553ae00ce6ebd160))
+
+
+
 ## [0.3.47](https://github.com/brillout/react-streaming/compare/v0.3.46...v0.3.47) (2025-01-22)
 
 
