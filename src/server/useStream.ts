@@ -1,4 +1,5 @@
 export { useStream }
+export { useStreamOptional }
 export { StreamProvider }
 
 import pc from '@brillout/picocolors'
@@ -17,6 +18,11 @@ function useStream():
   | null {
   const streamUtils = useContext(globalObject.StreamContext)
   assertUsage(streamUtils, getErrMsg())
+  return streamUtils
+}
+
+function useStreamOptional(): StreamReturnUtils | null {
+  const streamUtils = useContext(globalObject.StreamContext)
   return streamUtils
 }
 

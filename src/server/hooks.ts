@@ -1,5 +1,6 @@
 export { useAsync } from './useAsync'
 export { useStream } from './useStream'
+export { useStreamOptional } from './useStream'
 
 // We don't import from ./utils.ts because utils/debug.js contains a !isBrowser() assertion
 import { assertUsage } from '../utils/assert'
