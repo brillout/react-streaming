@@ -11,7 +11,10 @@ const globalObject = getGlobalObject('useStream.ts', {
 })
 const StreamProvider = globalObject.StreamContext.Provider
 
-function useStream(): StreamReturnUtils | null {
+function useStream():
+  | StreamReturnUtils
+  // useStream() return `null` on the client-side
+  | null {
   const streamUtils = useContext(globalObject.StreamContext)
   assertUsage(streamUtils, getErrMsg())
   return streamUtils
