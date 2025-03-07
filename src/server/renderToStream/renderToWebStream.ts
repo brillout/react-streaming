@@ -21,10 +21,10 @@ async function renderToWebStream(
 ) {
   debugFlow('creating Web Stream Pipe')
 
-  // We import 'react-dom/server.browser' only if needed, because merely importing it prevents Node.js from exiting (e.g. after running Vike's prerender() API).
+  // We import 'react-dom/server.edge' only if needed, because merely importing it prevents Node.js from exiting (e.g. after running Vike's prerender() API).
   // - Reproduction: https://github.com/vikejs/vike/blob/a0d6777c84aee4c2e5bd0a0a585b18f7a87c8cac/test/playground/scripts/prerender.js
   // @ts-expect-error types export missing
-  const { renderToReadableStream: renderToReadableStream_ } = await import('react-dom/server.browser')
+  const { renderToReadableStream: renderToReadableStream_ } = await import('react-dom/server.edge')
 
   const controller: AbortController = new AbortController()
   setAbortFn(() => {
