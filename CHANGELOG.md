@@ -1,3 +1,12 @@
+## [0.3.49](https://github.com/brillout/react-streaming/compare/v0.3.48...v0.3.49) (2025-03-11)
+
+
+### Bug Fixes
+
+* make multiple version mismatch a warning ([b889ad8](https://github.com/brillout/react-streaming/commit/b889ad8d23cc13d0aed468a7e9fec2fa9cb17c4e))
+
+
+
 ## [0.3.48](https://github.com/brillout/react-streaming/compare/v0.3.47...v0.3.48) (2025-02-16)
 
 
