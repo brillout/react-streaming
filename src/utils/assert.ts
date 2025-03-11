@@ -5,15 +5,17 @@ export { assertInfo }
 export { getProjectError }
 
 import { createErrorWithCleanStackTrace } from './createErrorWithCleanStackTrace'
+import { getGlobalObject } from './getGlobalObject'
 import { projectInfo } from './projectInfo'
-
+import pc from '@brillout/picocolors'
 const errorPrefix = `[${projectInfo.npmPackageName}@${projectInfo.projectVersion}]`
 const internalErrorPrefix = `${errorPrefix}[Bug]`
 const usageErrorPrefix = `${errorPrefix}[Wrong Usage]`
 const warningPrefix = `${errorPrefix}[Warning]`
 const infoPrefix = `${errorPrefix}[Info]`
-
 const numberOfStackTraceLinesToRemove = 2
+const { versions } = getGlobalObject('assert.ts', { versions: new Set<string>() })
+assertSingleVersion()
 
 function assert(condition: unknown, debugInfo?: unknown): asserts condition {
   if (condition) {
@@ -98,4 +100,20 @@ function assertInfo(condition: unknown, errorMessage: string, { onlyOnce }: { on
     }
   }
   console.log(msg)
+}
+
+function assertSingleVersion() {
+  versions.add(projectInfo.projectVersion)
+  if (versions.size >= 2) {
+    const versionsStr = Array.from(versions)
+      .map((v) => `${projectInfo.projectName}@${v}`)
+      .join(' and ')
+    assertWarning(
+      false,
+      `${versionsStr} loaded which is highly discouraged, see ${pc.underline(
+        'https://vike.dev/warning/version-mismatch',
+      )}`,
+      { onlyOnce: true },
+    )
+  }
 }

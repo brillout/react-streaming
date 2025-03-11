@@ -1,6 +1,5 @@
 export { projectInfo }
 
-import { getGlobalObject } from './getGlobalObject'
 import { PROJECT_VERSION } from './PROJECT_VERSION'
 
 const projectInfo = {
@@ -8,15 +7,4 @@ const projectInfo = {
   projectVersion: PROJECT_VERSION,
   npmPackageName: 'react-streaming' as const,
   githubRepository: 'https://github.com/brillout/react-streaming' as const,
-}
-
-const { versions } = getGlobalObject('projectInfo.ts', {
-  versions: new Set<string>(),
-})
-versions.add(projectInfo.projectVersion)
-if (versions.size >= 2) {
-  const versionsStr = Array.from(versions)
-    .map((v) => `${projectInfo.projectName}@${v}`)
-    .join(' and ')
-  throw new Error(`${versionsStr} loaded but loading different versions is forbidden`)
 }
