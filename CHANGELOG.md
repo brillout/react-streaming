@@ -1,3 +1,17 @@
+# [0.4.0](https://github.com/brillout/react-streaming/compare/v0.3.49...v0.4.0) (2025-03-11)
+
+
+### Bug Fixes
+
+* use `react-dom/server.edge` instead of `react-dom/server.browser` ([#48](https://github.com/brillout/react-streaming/issues/48)) ([44802d2](https://github.com/brillout/react-streaming/commit/44802d28507f3e2bb0f6a24daa54e4aca3e02514))
+
+
+### BREAKING CHANGES
+
+* update React to `19.0.0` or above.
+
+
+
 ## [0.3.49](https://github.com/brillout/react-streaming/compare/v0.3.48...v0.3.49) (2025-03-11)
 
 
