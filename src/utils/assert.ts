@@ -14,10 +14,16 @@ const usageErrorPrefix = `${errorPrefix}[Wrong Usage]`
 const warningPrefix = `${errorPrefix}[Warning]`
 const infoPrefix = `${errorPrefix}[Info]`
 const numberOfStackTraceLinesToRemove = 2
-const { versions, alreadyLogged } = getGlobalObject('assert.ts', {
+const globalObject = getGlobalObject('assert.ts', {
   versions: new Set<string>(),
   alreadyLogged: new Set<string>(),
 })
+const { versions } = globalObject
+const alreadyLogged =
+  globalObject.alreadyLogged ??
+  // TODO/eventually: remove
+  // We need to set the same default again because older react-streaming versions (published before 11.03.2025) don't set any default in their getGlobalObject() call
+  new Set()
 assertSingleVersion()
 
 function assert(condition: unknown, debugInfo?: unknown): asserts condition {
