@@ -6,6 +6,8 @@ import { createReadableWrapper } from './createReadableWrapper'
 import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './common'
 import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream'
 import type { DoNotClosePromise } from './orchestrateChunks'
+import { version } from 'react-dom/server'
+import { assertVersion } from '../utils'
 
 async function renderToWebStream(
   element: React.ReactNode,
@@ -21,6 +23,8 @@ async function renderToWebStream(
 ) {
   debugFlow('creating Web Stream Pipe')
 
+  // 'react-dom/server.edge' doesn't exist in React 18
+  assertVersion('React', version, '19.0.0')
   // We import 'react-dom/server.edge' only if needed, because merely importing it prevents Node.js from exiting (e.g. after running Vike's prerender() API).
   // - Reproduction: https://github.com/vikejs/vike/blob/a0d6777c84aee4c2e5bd0a0a585b18f7a87c8cac/test/playground/scripts/prerender.js
   // @ts-expect-error types export missing

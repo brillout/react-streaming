@@ -3,8 +3,8 @@
   "description": "React 18 Streaming. Full-fledged & Easy.",
   "version": "0.3.49",
   "peerDependencies": {
-    "react": ">=18",
-    "react-dom": ">=18"
+    "react": ">=19",
+    "react-dom": ">=19"
   },
   "dependencies": {
     "@brillout/import": "^0.2.3",
