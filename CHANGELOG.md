@@ -1,3 +1,12 @@
+## [0.4.1](https://github.com/brillout/react-streaming/compare/v0.4.0...v0.4.1) (2025-03-11)
+
+
+### Bug Fixes
+
+* fix multiple versions warning ([2bbf595](https://github.com/brillout/react-streaming/commit/2bbf59526a583c77a2b62bc848b48cb2037fb360))
+
+
+
 # [0.4.0](https://github.com/brillout/react-streaming/compare/v0.3.49...v0.4.0) (2025-03-11)
 
 
