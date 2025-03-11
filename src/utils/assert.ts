@@ -14,7 +14,10 @@ const usageErrorPrefix = `${errorPrefix}[Wrong Usage]`
 const warningPrefix = `${errorPrefix}[Warning]`
 const infoPrefix = `${errorPrefix}[Info]`
 const numberOfStackTraceLinesToRemove = 2
-const { versions } = getGlobalObject('assert.ts', { versions: new Set<string>() })
+const { versions, alreadyLogged } = getGlobalObject('assert.ts', {
+  versions: new Set<string>(),
+  alreadyLogged: new Set<string>(),
+})
 assertSingleVersion()
 
 function assert(condition: unknown, debugInfo?: unknown): asserts condition {
@@ -61,7 +64,6 @@ function getProjectError(errorMessage: string) {
   return pluginError
 }
 
-let alreadyLogged: Set<string> = new Set()
 function assertWarning(
   condition: unknown,
   errorMessage: string,
