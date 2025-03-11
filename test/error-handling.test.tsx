@@ -80,20 +80,25 @@ describe('error handling', async () => {
         const split = 'at Page'
         const [dataBegin, dataEnd, ...rest] = data.content.split(split)
         expect(rest.length).toBe(0)
-        const dataBeginExpected = [
-          // Page Shell
-          '<!--$?--><template id="B:0"></template><p>Loading...</p><!--/$-->',
-          // `useAsync()` script injection
-          '<script class="react-streaming_initData" type="application/json">{"key":"\\"lazy-component-key\\"","value":"Hello, I was lazy.","elementId":":R0:"}</script>',
-          `<script>function $RX(b,c,d,e){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data="$!",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),b._reactRetry&&b._reactRetry())};$RX("B:0","","some-error","\\n    `,
-        ].join('')
-        try {
-          expect(dataBegin).toMatch(dataBeginExpected)
-        } catch (err) {
-          console.log('=== expected ===\n', dataBeginExpected)
-          console.log('=== actual ===\n', dataBegin)
-          throw err
-        }
+
+        // Page Shell:
+        // ```html
+        // <!--$?--><template id="B:0"></template><p>Loading...</p><!--/$-->
+        // ```
+        //
+        // `useAsync()` script injection:
+        // ```html
+        // <script class="react-streaming_initData" type="application/json">{"key":"\\"lazy-component-key\\"","value":"Hello, I was lazy.","elementId":":R0:"}</script>
+        // ```
+        //
+        // Rest:
+        // ```html
+        // <script>function $RX(b,c,d,e){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data="$!",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),b._reactRetry&&b._reactRetry())};$RX("B:0","","some-error","\\n
+        // ```
+        expect(dataBegin).toMatchInlineSnapshot(
+          `"<!--$?--><template id="B:0"></template><p>Loading...</p><!--/$--><script class="react-streaming_initData" type="application/json">{"key":"\\"lazy-component-key\\"","value":"Hello, I was lazy.","elementId":":R0:"}</script><script>function $RX(b,c,d,e){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data="$!",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),b._reactRetry&&b._reactRetry())};$RX("B:0","","some-error","\\n    "`,
+        )
+
         // React handling the suspense boundary error
         {
           const content = split + dataEnd
