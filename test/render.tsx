@@ -15,7 +15,7 @@ onConsoleError((arg) => {
   if (
     typeof arg === 'string' &&
     arg.startsWith(
-      'Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.',
+      'Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported.',
     )
   ) {
     return { suppress: true }

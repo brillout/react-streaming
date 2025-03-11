@@ -10,12 +10,7 @@ describe('error handling', async () => {
     it(`renderToStream(Page) instead of renderToStream(<Page/>) - ${streamType} stream`, async () => {
       let warning = false
       onConsoleError((arg) => {
-        if (
-          typeof arg === 'string' &&
-          arg.startsWith(
-            'Warning: Functions are not valid as a React child. This may happen if you return a Component instead of <Component /> from render. Or maybe you meant to call this function rather than return it.',
-          )
-        ) {
+        if (typeof arg === 'string' && arg.startsWith('Functions are not valid as a React child.')) {
           warning = true
           return { suppress: true, removeListener: true }
         }
@@ -77,9 +72,9 @@ describe('error handling', async () => {
       const { data, streamEnd } = await render(<Page />, { streamType, onBoundaryError })
       await streamEnd
       {
-        const split = 'at Page'
-        const [dataBegin, dataEnd, ...rest] = data.content.split(split)
-        expect(rest.length).toBe(0)
+        const split = 'at LazyComponent'
+        const [dataBegin, ...rest] = data.content.split(split)
+        const dataEnd = rest.join(split)
 
         // Page Shell:
         // ```html
@@ -90,13 +85,8 @@ describe('error handling', async () => {
         // ```html
         // <script class="react-streaming_initData" type="application/json">{"key":"\\"lazy-component-key\\"","value":"Hello, I was lazy.","elementId":":R0:"}</script>
         // ```
-        //
-        // Rest:
-        // ```html
-        // <script>function $RX(b,c,d,e){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data="$!",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),b._reactRetry&&b._reactRetry())};$RX("B:0","","some-error","\\n
-        // ```
         expect(dataBegin).toMatchInlineSnapshot(
-          `"<!--$?--><template id="B:0"></template><p>Loading...</p><!--/$--><script class="react-streaming_initData" type="application/json">{"key":"\\"lazy-component-key\\"","value":"Hello, I was lazy.","elementId":":R0:"}</script><script>function $RX(b,c,d,e){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data="$!",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),b._reactRetry&&b._reactRetry())};$RX("B:0","","some-error","\\n    "`,
+          `"<!--$?--><template id="B:0"></template><p>Loading...</p><!--/$--><script class="react-streaming_initData" type="application/json">{"key":"\\"lazy-component-key\\"","value":"Hello, I was lazy.","elementId":":R0:"}</script><script>$RX=function(b,c,d,e,f){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data="$!",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),f&&(a.cstck=f),b._reactRetry&&b._reactRetry())};;$RX("B:0","","Switched to client rendering because the server rendering errored:\\n\\nsome-error","Switched to client rendering because the server rendering errored:\\n\\nError: some-error\\n    "`,
         )
 
         // React handling the suspense boundary error
