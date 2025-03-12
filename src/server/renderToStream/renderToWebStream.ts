@@ -25,7 +25,7 @@ async function renderToWebStream(
 
   // 'react-dom/server.edge' doesn't exist in React 18
   assertVersion('React', version, '19.0.0')
-  // We import 'react-dom/server.edge' only if needed, because merely importing it prevents Node.js from exiting (e.g. after running Vike's prerender() API).
+  // We import 'react-dom/server.edge' only if needed, because merely importing 'react-dom/server.browser' was preventing Node.js from exiting (e.g. after running Vike's prerender() API). But maybe that isn't the case with 'react-dom/server.edge' anymore?
   // - Reproduction: https://github.com/vikejs/vike/blob/a0d6777c84aee4c2e5bd0a0a585b18f7a87c8cac/test/playground/scripts/prerender.js
   // @ts-expect-error types export missing
   const { renderToReadableStream: renderToReadableStream_ } = await import('react-dom/server.edge')
