@@ -7,10 +7,7 @@ import { isCallable } from './isCallable'
 import { objectAssign } from './objectAssign'
 import { assert } from './assert'
 
-// Ensure that this is never loaded in the browser. (In order to avoid this file to be included in the client-side bundle.)
-// For isomorphic code: use `globalThis.createDebugger()` instead of `import { createDebugger } from './utils'`.
 assert(!isBrowser(), 'utils/debug.js loaded in browser')
-;(globalThis as any).__brillout_debug_createDebugger = createDebugger
 
 type Debug = ReturnType<typeof createDebugger>
 
