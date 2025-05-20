@@ -222,7 +222,10 @@ abort()
 
 ### SSR
 
-In general, with React Streaming, all the content of your page is included in the HTML stream. This means you get all the benefits of SSR. However, it isn't clear whether crawlers fully wait the HTML stream to complete. It's therefore safer to disable HTML Streaming for crawlers and fall back to "classical SSR", see [Bots](#bots).
+With `react-streaming`, all your page content is included in the HTML stream, giving you all the benefits of SSR.
+
+> [!NOTE]
+> It isn't entirely clear whether and how long crawlers (e.g. Googlebot) wait for the HTML stream to complete. That's why `react-streaming` automatically disables HTML Streaming for crawlers and falls back to "classic SSR" — see [Bots](#bots).
 
 > [!NOTE]
 > The order in which the content of your page is included in the HTML stream depends on which data comes first. For example, if you use a loading fallback component, the content of the loading component appears first, followed by the content of the main component after the `<Suspense>` boundary resolves.
