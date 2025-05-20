@@ -7,7 +7,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: '`$ pnpm run test` on Node.js 22 in Linux Ubuntu'
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
