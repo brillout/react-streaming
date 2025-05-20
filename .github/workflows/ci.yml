@@ -6,24 +6,17 @@ on:
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node_version: [18]
-      fail-fast: false
-    name: 'Test on node-${{ matrix.node_version }}, ${{ matrix.os }}'
+    runs-on: ubuntu-latest
+    name: '`$ pnpm run test` on Node.js 22 in Linux Ubuntu'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
           version: 9.1.3
-      - name: Set node version to ${{ matrix.node_version }}
-        uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node_version }}
+          node-version: 22
           cache: "pnpm"
-
       - run: pnpm install
       - run: pnpm run build
       - run: pnpm run test
