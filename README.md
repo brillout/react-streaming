@@ -173,7 +173,7 @@ You can use [`$ curl`](https://curl.se) to see the HTML response that bots and c
 ```bash
 # What bots and crawls get: no HTML Streaming, just "classic SSR"
 $ curl http://localhost:3000/star-wars
-# What regular users get: HTML Streaming
+# What human users get: HTML Streaming
 $ curl http://localhost:3000/star-wars -N -H "User-Agent: chrome"
 ```
 
