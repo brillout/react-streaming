@@ -1,3 +1,12 @@
+## [0.4.3](https://github.com/brillout/react-streaming/compare/v0.4.2...v0.4.3) (2025-07-18)
+
+
+### Bug Fixes
+
+* add workerd to package.json#exports ([c80ca2f](https://github.com/brillout/react-streaming/commit/c80ca2fbc76c47cb55807c5ac79d084eb3df1468))
+
+
+
 ## [0.4.2](https://github.com/brillout/react-streaming/compare/v0.4.1...v0.4.2) (2025-03-11)
 
 
