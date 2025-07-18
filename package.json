@@ -17,6 +17,7 @@
   "exports": {
     ".": {
       "worker": "./dist/esm/server/hooks.js",
+      "workerd": "./dist/esm/server/hooks.js",
       "browser": "./dist/esm/client/hooks.js",
       "node": "./dist/cjs/server/hooks.js",
       "types": "./dist/esm/server/hooks.d.ts",
@@ -24,6 +25,7 @@
     },
     "./server": {
       "worker": "./dist/esm/server/index.web-only.js",
+      "workerd": "./dist/esm/server/index.web-only.js",
       "browser": "./dist/esm/server/client-poison-pill.js",
       "node": "./dist/cjs/server/index.node-and-web.js",
       "types": "./dist/esm/server/index.d.ts",
@@ -31,6 +33,7 @@
     },
     "./server.web": {
       "worker": "./dist/esm/server/index.web-only.js",
+      "workerd": "./dist/esm/server/index.web-only.js",
       "browser": "./dist/esm/server/client-poison-pill.js",
       "node": "./dist/cjs/server/index.web-only.js",
       "types": "./dist/esm/server/index.d.ts",
@@ -38,6 +41,7 @@
     },
     "./server.node": {
       "worker": "./dist/esm/server/index.node-only.js",
+      "workerd": "./dist/esm/server/index.node-only.js",
       "browser": "./dist/esm/server/client-poison-pill.js",
       "node": "./dist/cjs/server/index.node-only.js",
       "types": "./dist/esm/server/index.d.ts",
