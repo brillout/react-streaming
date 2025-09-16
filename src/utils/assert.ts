@@ -21,7 +21,7 @@ const globalObject = getGlobalObject('assert.ts', {
 const { versions } = globalObject
 const alreadyLogged =
   globalObject.alreadyLogged ??
-  // TODO/eventually: remove
+  // TO-DO/eventually: remove
   // We need to set the same default again because older react-streaming versions (published before 11.03.2025) don't set any default in their getGlobalObject() call
   new Set()
 assertSingleVersion()

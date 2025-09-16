@@ -47,7 +47,7 @@ type Options = {
   // Are these two options still needed? I think we can now remove them.
   //  - options.renderToReadableStream used to be needed by https://github.com/brillout/react-streaming/blob/43941f65e84e88a05801a93723df0e38687df872/test/render.tsx#L51 but that isnt' the case anymore.
   //  - option.renderToPipeableStream was introduced by https://github.com/brillout/react-streaming/commit/9f0403d7b738e59ddc3dcaa27f0e3fd33a8f5895 but I don't remember why. Do we still it?
-  //  - TODO: the options are now deprecated (see assert() below) => remove if no user complains
+  //  - TO-DO/eventually: the options are now deprecated (see assert() below) => remove if no user complains
   renderToReadableStream?: typeof RenderToReadableStream
   renderToPipeableStream?: typeof RenderToPipeableStream
 }
@@ -110,7 +110,7 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
     }, 10 * 1000)
 
     const makeClosableAgain = () => {
-      // TODO: add timeout to ensure makeClosableAgain() was called
+      // TO-DO/eventually: add timeout to ensure makeClosableAgain() was called
       resolve!()
       clearTimeout(doNotCloseTimeout!)
     }
