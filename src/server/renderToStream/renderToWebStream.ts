@@ -3,7 +3,14 @@ export { renderToWebStream }
 import React from 'react'
 import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
 import { createReadableWrapper } from './createReadableWrapper'
-import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './common'
+import {
+  addPrettifyThisError,
+  type ErrorInfo,
+  afterReactBugCatch,
+  assertReactImport,
+  debugFlow,
+  wrapStreamEnd,
+} from './common'
 import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream'
 import type { DoNotClosePromise } from './orchestrateChunks'
 import { version } from 'react-dom/server'
@@ -38,7 +45,8 @@ async function renderToWebStream(
   let didError = false
   let firstErr: unknown = null
   let reactBug: unknown = null
-  const onError = (err: unknown) => {
+  const onError = (err: unknown, errorInfo?: ErrorInfo) => {
+    addPrettifyThisError(err, errorInfo)
     didError = true
     firstErr = firstErr || err
     afterReactBugCatch(() => {

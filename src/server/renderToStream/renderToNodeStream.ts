@@ -5,7 +5,14 @@ import React from 'react'
 import { renderToPipeableStream as renderToPipeableStream_ } from 'react-dom/server.node'
 import type { renderToPipeableStream as renderToPipeableStream__ } from 'react-dom/server'
 import { createPipeWrapper } from './createPipeWrapper'
-import { afterReactBugCatch, assertReactImport, debugFlow, wrapStreamEnd } from './common'
+import {
+  addPrettifyThisError,
+  type ErrorInfo,
+  afterReactBugCatch,
+  assertReactImport,
+  debugFlow,
+  wrapStreamEnd,
+} from './common'
 import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream'
 import type { DoNotClosePromise } from './orchestrateChunks'
 
@@ -35,8 +42,9 @@ async function renderToNodeStream(
   let didError = false
   let firstErr: unknown = null
   let reactBug: unknown = null
-  const onError = (err: unknown) => {
+  const onError = (err: unknown, errorInfo?: ErrorInfo) => {
     debugFlow('[react] onError() / onShellError()')
+    addPrettifyThisError(err, errorInfo)
     didError = true
     firstErr ??= err
     onShellReady()

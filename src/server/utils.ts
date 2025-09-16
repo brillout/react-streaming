@@ -1,5 +1,6 @@
 export * from '../utils/assert'
 export * from '../utils/debug'
+export * from '../utils/isObject'
 export * from '../utils/isPromise'
 export * from '../utils/isBrowser'
 export * from '../utils/getGlobalObject'

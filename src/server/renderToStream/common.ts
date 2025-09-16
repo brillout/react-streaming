@@ -1,4 +1,9 @@
-import { assert, assertUsage, createDebugger } from '../utils'
+export { addPrettifyThisError }
+export type { ErrorInfo }
+
+import { assert, assertUsage, createDebugger, isObject } from '../utils'
+
+// TODO/now move up exports
 
 export const debugFlow = createDebugger('react-streaming:flow')
 
@@ -21,4 +26,15 @@ export function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Prom
       .then(() => new Promise<void>((r) => setTimeout(r, 0)))
       .then(() => !didError)
   )
+}
+
+type ErrorInfo = { componentStack?: string }
+function addPrettifyThisError(err: unknown, errorInfo?: ErrorInfo) {
+  if (isObject(err) && errorInfo?.componentStack) {
+    Object.defineProperty(err, 'prettifyThisError', {
+      enumerable: false,
+      value: () => `${err.stack}\nThe above error occurred at:${errorInfo.componentStack}`,
+      writable: true,
+    })
+  }
 }
