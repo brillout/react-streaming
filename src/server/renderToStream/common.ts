@@ -33,6 +33,8 @@ function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Promise<boo
 type ErrorInfo = { componentStack?: string }
 function addPrettifyThisError(err: unknown, errorInfo?: ErrorInfo) {
   if (isObject(err) && errorInfo?.componentStack) {
+    // Consumed by Vike:
+    // https://github.com/vikejs/vike/blob/8ce2cbda756892f0ff083256291515b5a45fe319/packages/vike/node/runtime/logErrorServer.ts#L13
     Object.defineProperty(err, 'prettifyThisError', {
       enumerable: false,
       value: () => `${err.stack}\nThe above error occurred at:${errorInfo.componentStack}`,
