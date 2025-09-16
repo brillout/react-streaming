@@ -1,3 +1,12 @@
+## [0.4.4](https://github.com/brillout/react-streaming/compare/v0.4.3...v0.4.4) (2025-09-16)
+
+
+### Bug Fixes
+
+* add component trace over prettifyThisError ([51b3838](https://github.com/brillout/react-streaming/commit/51b383899da43da07f7a15350454273d769fc58e))
+
+
+
 ## [0.4.3](https://github.com/brillout/react-streaming/compare/v0.4.2...v0.4.3) (2025-07-18)
 
 
