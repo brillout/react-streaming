@@ -1,6 +1,6 @@
 export { wrapStreamEnd }
 export { assertReactImport }
-export { addPrettifyThisError }
+export { getErrorFixed }
 export { afterReactBugCatch }
 export { debugFlow }
 export type { ErrorInfo }
@@ -30,15 +30,38 @@ function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Promise<boo
   )
 }
 
+// Inject componentStack to the error's stack trace
 type ErrorInfo = { componentStack?: string }
-function addPrettifyThisError(err: unknown, errorInfo?: ErrorInfo) {
-  if (isObject(err) && errorInfo?.componentStack) {
-    // Consumed by Vike:
-    // https://github.com/vikejs/vike/blob/8ce2cbda756892f0ff083256291515b5a45fe319/packages/vike/node/runtime/logErrorServer.ts#L13
-    Object.defineProperty(err, 'prettifyThisError', {
-      enumerable: false,
-      value: () => `${err.stack}\nThe above error occurred at:${errorInfo.componentStack}`,
-      writable: true,
-    })
-  }
+function getErrorFixed(errorOriginal: unknown, errorInfo?: ErrorInfo) {
+  if (!errorInfo?.componentStack || !isObject(errorOriginal)) return errorOriginal
+  const errorOiginalStackLines = String(errorOriginal.stack).split('\n')
+  const cutoff = errorOiginalStackLines.findIndex((l) => l.includes('node_modules') && l.includes('react'))
+  if (cutoff === -1) return errorOriginal
+
+  const stackFixed = [
+    ...errorOiginalStackLines.slice(0, cutoff),
+    ...errorInfo.componentStack.split('\n').filter(Boolean),
+    ...errorOiginalStackLines.slice(cutoff),
+  ].join('\n')
+  const errorFixed = structuredClone(errorOriginal)
+  errorFixed.stack = stackFixed
+
+  // https://gist.github.com/brillout/066293a687ab7cf695e62ad867bc6a9c
+  Object.defineProperty(errorFixed, 'getOriginalError', {
+    value: () => errorOriginal,
+    enumerable: true,
+    configurable: false,
+    writable: false,
+  })
+
+  // Used by Vike
+  // - It doesn't seem to be needed? Can we remove this?
+  Object.defineProperty(errorOriginal, 'getEnhancedError', {
+    value: () => errorFixed,
+    enumerable: true,
+    configurable: false,
+    writable: false,
+  })
+
+  return errorFixed
 }
