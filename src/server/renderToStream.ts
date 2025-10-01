@@ -14,7 +14,7 @@ import type {
   renderToReadableStream as RenderToReadableStream,
   RenderToReadableStreamOptions,
 } from 'react-dom/server'
-import { SuspenseData } from './useAsync/useSuspenseData'
+import { ReactStreamingProviderSuspenseData } from './useAsync/useSuspenseData'
 import { StreamProvider } from './useStream'
 import type { Pipe } from './renderToStream/createPipeWrapper'
 import { resolveSeoStrategy, SeoStrategy } from './renderToStream/resolveSeoStrategy'
@@ -88,7 +88,7 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   // Let's see if a user complains
   assertUsage(!options.renderToPipeableStream && !options.renderToReadableStream, 'using deprecated options')
 
-  element = React.createElement(SuspenseData, null, element)
+  element = React.createElement(ReactStreamingProviderSuspenseData, null, element)
 
   const buffer: Chunk[] = []
   let injectToStream: InjectToStream = async (chunk) => {

@@ -95,7 +95,7 @@ describe('error handling', async () => {
           const filePointer = /[^\)]+/
           try {
             expect(content).toMatch(
-              partRegex`at Page (${filePointer})\\n    at SuspenseData (${filePointer})")</script>`,
+              partRegex`at Page (${filePointer})\\n    at ReactStreamingProviderSuspenseData (${filePointer})")</script>`,
             )
           } catch (err) {
             console.log('actual:', content)
