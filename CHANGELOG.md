@@ -1,3 +1,12 @@
+## [0.4.5](https://github.com/brillout/react-streaming/compare/v0.4.4...v0.4.5) (2025-10-01)
+
+
+### Bug Fixes
+
+* inject component stack to stack traces ([02f31a2](https://github.com/brillout/react-streaming/commit/02f31a24f58f181fd94354530d5395302dd72bc3))
+
+
+
 ## [0.4.4](https://github.com/brillout/react-streaming/compare/v0.4.3...v0.4.4) (2025-09-16)
 
 
