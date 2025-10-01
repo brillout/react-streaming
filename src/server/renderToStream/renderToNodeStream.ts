@@ -6,7 +6,7 @@ import { renderToPipeableStream as renderToPipeableStream_ } from 'react-dom/ser
 import type { renderToPipeableStream as renderToPipeableStream__ } from 'react-dom/server'
 import { createPipeWrapper } from './createPipeWrapper'
 import {
-  getErrorFixed,
+  getErrorEnhanced,
   type ErrorInfo,
   afterReactBugCatch,
   assertReactImport,
@@ -44,7 +44,7 @@ async function renderToNodeStream(
   let reactBug: unknown = null
   const onError = (err: unknown, errorInfo?: ErrorInfo) => {
     debugFlow('[react] onError() / onShellError()')
-    err = getErrorFixed(err, errorInfo)
+    err = getErrorEnhanced(err, errorInfo)
     didError = true
     firstErr ??= err
     onShellReady()

@@ -4,7 +4,7 @@ import React from 'react'
 import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
 import { createReadableWrapper } from './createReadableWrapper'
 import {
-  getErrorFixed,
+  getErrorEnhanced,
   type ErrorInfo,
   afterReactBugCatch,
   assertReactImport,
@@ -46,7 +46,7 @@ async function renderToWebStream(
   let firstErr: unknown = null
   let reactBug: unknown = null
   const onError = (err: unknown, errorInfo?: ErrorInfo) => {
-    err = getErrorFixed(err, errorInfo)
+    err = getErrorEnhanced(err, errorInfo)
     didError = true
     firstErr = firstErr || err
     afterReactBugCatch(() => {

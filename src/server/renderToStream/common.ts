@@ -1,6 +1,6 @@
 export { wrapStreamEnd }
 export { assertReactImport }
-export { getErrorFixed }
+export { getErrorEnhanced }
 export { afterReactBugCatch }
 export { debugFlow }
 export type { ErrorInfo }
@@ -32,22 +32,22 @@ function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Promise<boo
 
 // Inject componentStack to the error's stack trace
 type ErrorInfo = { componentStack?: string }
-function getErrorFixed(errorOriginal: unknown, errorInfo?: ErrorInfo) {
+function getErrorEnhanced(errorOriginal: unknown, errorInfo?: ErrorInfo) {
   if (!errorInfo?.componentStack || !isObject(errorOriginal)) return errorOriginal
   const errorOiginalStackLines = String(errorOriginal.stack).split('\n')
   const cutoff = errorOiginalStackLines.findIndex((l) => l.includes('node_modules') && l.includes('react'))
   if (cutoff === -1) return errorOriginal
 
-  const stackFixed = [
+  const stackEnhanced = [
     ...errorOiginalStackLines.slice(0, cutoff),
     ...errorInfo.componentStack.split('\n').filter(Boolean),
     ...errorOiginalStackLines.slice(cutoff),
   ].join('\n')
-  const errorFixed = structuredClone(errorOriginal)
-  errorFixed.stack = stackFixed
+  const errorEnhanced = structuredClone(errorOriginal)
+  errorEnhanced.stack = stackEnhanced
 
   // https://gist.github.com/brillout/066293a687ab7cf695e62ad867bc6a9c
-  Object.defineProperty(errorFixed, 'getOriginalError', {
+  Object.defineProperty(errorEnhanced, 'getOriginalError', {
     value: () => errorOriginal,
     enumerable: true,
     configurable: false,
@@ -58,11 +58,11 @@ function getErrorFixed(errorOriginal: unknown, errorInfo?: ErrorInfo) {
   // - https://github.com/vikejs/vike/blob/6d5ed71068a95e5a2a7c28647de460b833e4e185/packages/vike/node/runtime/logErrorServer.ts#L10-L14
   // - It doesn't seem to be needed? (The error Vike receives is already enhanced.) Should we remove this?
   Object.defineProperty(errorOriginal, 'getEnhancedError', {
-    value: () => errorFixed,
+    value: () => errorEnhanced,
     enumerable: true,
     configurable: false,
     writable: false,
   })
 
-  return errorFixed
+  return errorEnhanced
 }
