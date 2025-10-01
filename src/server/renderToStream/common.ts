@@ -50,8 +50,6 @@ function getErrorEnhanced(errorOriginal: unknown, errorInfo?: ErrorInfo) {
   Object.defineProperty(errorEnhanced, 'getOriginalError', {
     value: () => errorOriginal,
     enumerable: true,
-    configurable: false,
-    writable: false,
   })
 
   // Used by Vike
@@ -61,8 +59,6 @@ function getErrorEnhanced(errorOriginal: unknown, errorInfo?: ErrorInfo) {
   Object.defineProperty(errorOriginal, 'getEnhancedError', {
     value: () => errorEnhanced,
     enumerable: true,
-    configurable: false,
-    writable: false,
   })
 
   return errorEnhanced
