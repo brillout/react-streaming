@@ -56,6 +56,7 @@ function getErrorEnhanced(errorOriginal: unknown, errorInfo?: ErrorInfo) {
 
   // Used by Vike
   // - https://github.com/vikejs/vike/blob/6d5ed71068a95e5a2a7c28647de460b833e4e185/packages/vike/node/runtime/logErrorServer.ts#L10-L14
+  // - https://gist.github.com/brillout/066293a687ab7cf695e62ad867bc6a9c
   // - It doesn't seem to be needed? (The error Vike receives is already enhanced.) Should we remove this?
   Object.defineProperty(errorOriginal, 'getEnhancedError', {
     value: () => errorEnhanced,
