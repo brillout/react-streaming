@@ -55,7 +55,8 @@ function getErrorFixed(errorOriginal: unknown, errorInfo?: ErrorInfo) {
   })
 
   // Used by Vike
-  // - It doesn't seem to be needed? Can we remove this?
+  // - https://github.com/vikejs/vike/blob/6d5ed71068a95e5a2a7c28647de460b833e4e185/packages/vike/node/runtime/logErrorServer.ts#L10-L14
+  // - It doesn't seem to be needed? (The error Vike receives is already enhanced.) Should we remove this?
   Object.defineProperty(errorOriginal, 'getEnhancedError', {
     value: () => errorFixed,
     enumerable: true,
