@@ -51,7 +51,7 @@
   "scripts": {
     "========= Test": "",
     "// Make sure to run `pnpm run build` or `pnpm run dev` before running `pnpm run test`": "",
-    "test": "vitest",
+    "test": "vitest run",
     "========= Dev": "",
     "dev": "pnpm run dev:cjs & pnpm run dev:esm",
     "dev:cjs": "tsc --project ./tsconfig.cjs.json --incremental --watch",
