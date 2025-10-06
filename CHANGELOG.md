@@ -1,3 +1,12 @@
+## [0.4.6](https://github.com/brillout/react-streaming/compare/v0.4.5...v0.4.6) (2025-10-06)
+
+
+### Features
+
+* expose `streamEnd` to `useStream()` ([49aa208](https://github.com/brillout/react-streaming/commit/49aa2085b92e84e0553a230ce1a8639c09bf4c67))
+
+
+
 ## [0.4.5](https://github.com/brillout/react-streaming/compare/v0.4.4...v0.4.5) (2025-10-01)
 
 
