@@ -137,14 +137,13 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
     if (doNotCloseTimeout !== null) clearTimeout(doNotCloseTimeout)
   }
 
-  let hasStreamEnded = () => false
-
+  let hasStreamEnded: undefined | (() => boolean)
   element = React.createElement(
     StreamProvider,
     {
       value: {
         injectToStream: (chunk, options) => injectToStream(chunk, options),
-        hasStreamEnded: () => hasStreamEnded(),
+        hasStreamEnded: () => (!hasStreamEnded ? false : hasStreamEnded()),
         doNotClose,
       },
     },
