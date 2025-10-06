@@ -1,3 +1,12 @@
+## [0.4.7](https://github.com/brillout/react-streaming/compare/v0.4.6...v0.4.7) (2025-10-06)
+
+
+### Bug Fixes
+
+* minor promise chaining improvement ([0a92721](https://github.com/brillout/react-streaming/commit/0a92721071d792bab0d63e66df63dce4233266d8))
+
+
+
 ## [0.4.6](https://github.com/brillout/react-streaming/compare/v0.4.5...v0.4.6) (2025-10-06)
 
 
