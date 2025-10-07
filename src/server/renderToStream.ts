@@ -195,6 +195,8 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   buffer.length = 0
 
   hasStreamEnded = ret.hasStreamEnded
+  // This seems to be the proper way to forward promises
+  // https://gist.github.com/brillout/27684dec0686afa723b1ae0babe783f0
   ret.streamEnd.then(streamEndResolve, streamEndReject)
 
   debugFlow('promise `await renderToStream()` resolved')
