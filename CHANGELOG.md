@@ -1,3 +1,12 @@
+## [0.4.8](https://github.com/brillout/react-streaming/compare/v0.4.7...v0.4.8) (2025-10-07)
+
+
+### Bug Fixes
+
+* revert "minor promise chaining improvement" ([48b981f](https://github.com/brillout/react-streaming/commit/48b981f2aa32cded884590ee6ad48237cd3637db))
+
+
+
 ## [0.4.7](https://github.com/brillout/react-streaming/compare/v0.4.6...v0.4.7) (2025-10-06)
 
 
