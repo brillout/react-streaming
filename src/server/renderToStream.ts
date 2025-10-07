@@ -138,10 +138,8 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   }
 
   let streamEndResolve!: (value: boolean) => void
-  let streamEndReject!: (reason?: unknown) => void
-  const streamEnd = new Promise<boolean>((resolve, reject) => {
+  const streamEnd = new Promise<boolean>((resolve) => {
     streamEndResolve = resolve
-    streamEndReject = reject
   })
   let hasStreamEnded: undefined | (() => boolean)
   element = React.createElement(
@@ -195,9 +193,10 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   buffer.length = 0
 
   hasStreamEnded = ret.hasStreamEnded
-  // This seems to be the proper way to forward promises
-  // https://gist.github.com/brillout/27684dec0686afa723b1ae0babe783f0
-  ret.streamEnd.then(streamEndResolve, streamEndReject)
+  ret.streamEnd.then(streamEndResolve)
+  // Properly handling rejection is complex, but luckily streamEnd never rejects
+  // https://github.com/brillout/promise-forwarding
+  ret.streamEnd.catch(() => assert(false)) // streamEnd never rejects
 
   debugFlow('promise `await renderToStream()` resolved')
   return ret
