@@ -195,7 +195,7 @@ async function renderToStream(element: React.ReactNode, options: Options = {}): 
   buffer.length = 0
 
   hasStreamEnded = ret.hasStreamEnded
-  ret.streamEnd.then(streamEndResolve).catch(streamEndReject)
+  ret.streamEnd.then(streamEndResolve, streamEndReject)
 
   debugFlow('promise `await renderToStream()` resolved')
   return ret
