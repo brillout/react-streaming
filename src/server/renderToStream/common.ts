@@ -46,7 +46,7 @@ function getErrorEnhanced(errorOriginal: unknown, errorInfo?: ErrorInfo) {
 
   const errorStackLinesBegin = errorStackLines.slice(0, cutoff)
   const errorStackLinesEnd = errorStackLines.slice(cutoff)
-  let componentStackLines = errorInfo.componentStack.split('\n').filter(Boolean)
+  const componentStackLines = errorInfo.componentStack.split('\n').filter(Boolean)
   if (componentStackLines[0] === errorStackLinesBegin.at(-1)) componentStackLines.shift()
   const stackEnhanced = [
     //
