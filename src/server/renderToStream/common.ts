@@ -36,9 +36,10 @@ type ErrorInfo = { componentStack?: string }
 function getErrorEnhanced(errorOriginal: unknown, errorInfo?: ErrorInfo) {
   if (!errorInfo?.componentStack || !isObject(errorOriginal)) return errorOriginal
   const errorStackLines = String(errorOriginal.stack).split('\n')
+
+  // Inject the component stack right before the React stack trace (potentially *after* some vike-react or react-streaming strack trace, e.g. if react-streaming's useAsync() throws an error).
   const cutoff = errorStackLines.findIndex((l) => {
     l = toPosixPath(l)
-    // Inject the component stack right before the React stack trace (potentially *after* some vike-react or react-streaming strack trace, e.g. if react-streaming's useAsync() throws an error).
     return l.includes('node_modules/react-dom/') || l.includes('node_modules/react/')
   })
   if (cutoff === -1) return errorOriginal
