@@ -5,6 +5,7 @@ export { afterReactBugCatch }
 export { debugFlow }
 export type { ErrorInfo }
 
+import { toPosixPath } from '../../utils/path'
 import { assert, assertUsage, createDebugger, isObject } from '../utils'
 
 const debugFlow = createDebugger('react-streaming:flow')
@@ -35,7 +36,10 @@ type ErrorInfo = { componentStack?: string }
 function getErrorEnhanced(errorOriginal: unknown, errorInfo?: ErrorInfo) {
   if (!errorInfo?.componentStack || !isObject(errorOriginal)) return errorOriginal
   const errorOiginalStackLines = String(errorOriginal.stack).split('\n')
-  const cutoff = errorOiginalStackLines.findIndex((l) => l.includes('node_modules') && l.includes('react'))
+  const cutoff = errorOiginalStackLines.findIndex((l) => {
+    l = toPosixPath(l)
+    return l.includes('node_modules/react-dom/') || l.includes('node_modules/react/')
+  })
   if (cutoff === -1) return errorOriginal
 
   const stackEnhanced = [
