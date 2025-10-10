@@ -35,15 +35,15 @@ function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Promise<boo
 type ErrorInfo = { componentStack?: string }
 function getErrorEnhanced(errorOriginal: unknown, errorInfo?: ErrorInfo) {
   if (!errorInfo?.componentStack || !isObject(errorOriginal)) return errorOriginal
-  const errorOiginalStackLines = String(errorOriginal.stack).split('\n')
-  const cutoff = errorOiginalStackLines.findIndex((l) => {
+  const errorOriginalStackLines = String(errorOriginal.stack).split('\n')
+  const cutoff = errorOriginalStackLines.findIndex((l) => {
     l = toPosixPath(l)
     return l.includes('node_modules/react-dom/') || l.includes('node_modules/react/')
   })
   if (cutoff === -1) return errorOriginal
 
-  const errorOiginalStackLinesBegin = errorOiginalStackLines.slice(0, cutoff)
-  const errorOiginalStackLinesEnd = errorOiginalStackLines.slice(cutoff)
+  const errorOiginalStackLinesBegin = errorOriginalStackLines.slice(0, cutoff)
+  const errorOiginalStackLinesEnd = errorOriginalStackLines.slice(cutoff)
   const componentStackLines = errorInfo.componentStack.split('\n').filter(Boolean)
   const stackEnhanced = [...errorOiginalStackLinesBegin, ...componentStackLines, ...errorOiginalStackLinesEnd].join(
     '\n',
