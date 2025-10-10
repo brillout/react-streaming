@@ -184,7 +184,7 @@ function getSuspenseId(key: string, elementId: string) {
   // elementId is the value returned by React's useId()
   // - elementId can contain `_` and `:`
   // - https://github.com/facebook/react/pull/33422
-  const SEP = '-'
-  assert(!elementId.includes(SEP)) // ensure no collision
+  const SEP = '@'
+  assert(!elementId.includes(SEP), elementId) // ensure no collision
   return `${key}${SEP}${elementId}`
 }
