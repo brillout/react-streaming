@@ -45,9 +45,12 @@ function getErrorEnhanced(errorOriginal: unknown, errorInfo?: ErrorInfo) {
   const errorOiginalStackLinesBegin = errorOriginalStackLines.slice(0, cutoff)
   const errorOiginalStackLinesEnd = errorOriginalStackLines.slice(cutoff)
   const componentStackLines = errorInfo.componentStack.split('\n').filter(Boolean)
-  const stackEnhanced = [...errorOiginalStackLinesBegin, ...componentStackLines, ...errorOiginalStackLinesEnd].join(
-    '\n',
-  )
+  const stackEnhanced = [
+    //
+    ...errorOiginalStackLinesBegin,
+    ...componentStackLines,
+    ...errorOiginalStackLinesEnd,
+  ].join('\n')
   const errorEnhanced = structuredClone(errorOriginal)
   errorEnhanced.stack = stackEnhanced
 
