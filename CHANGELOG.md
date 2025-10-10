@@ -1,3 +1,14 @@
+## [0.4.9](https://github.com/brillout/react-streaming/compare/v0.4.8...v0.4.9) (2025-10-10)
+
+
+### Bug Fixes
+
+* improve compnent stack injection ([a6ef2f4](https://github.com/brillout/react-streaming/commit/a6ef2f40f09f10822aea4d43377c7528f47136ee))
+* improve component stack injection ([818c24a](https://github.com/brillout/react-streaming/commit/818c24a34de0227a98a5cf0a8e7c6c682f5954de))
+* try new key generation to support react@19.2.0 ([d29518f](https://github.com/brillout/react-streaming/commit/d29518fb2ea4c4193c31eb00ae18a76faf912718))
+
+
+
 ## [0.4.8](https://github.com/brillout/react-streaming/compare/v0.4.7...v0.4.8) (2025-10-07)
 
 
