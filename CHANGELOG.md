@@ -1,3 +1,12 @@
+## [0.4.10](https://github.com/brillout/react-streaming/compare/v0.4.9...v0.4.10) (2025-10-10)
+
+
+### Bug Fixes
+
+* further improve key generation ([b6a4f38](https://github.com/brillout/react-streaming/commit/b6a4f3840727b19ecdc79b17143a4bb6dde3b9e4))
+
+
+
 ## [0.4.9](https://github.com/brillout/react-streaming/compare/v0.4.8...v0.4.9) (2025-10-10)
 
 
