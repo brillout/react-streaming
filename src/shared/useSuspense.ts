@@ -181,6 +181,10 @@ function bugCatcher() {
 }
 
 function getSuspenseId(key: string, elementId: string) {
-  assert(!elementId.includes('_'))
-  return `${key}_${elementId}`
+  // elementId is the value returned by React's useId()
+  // - elementId can contain `_` and `:`
+  // - https://github.com/facebook/react/pull/33422
+  const SEP = '-'
+  assert(!elementId.includes(SEP)) // ensure no collision
+  return `${key}${SEP}${elementId}`
 }
