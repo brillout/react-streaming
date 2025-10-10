@@ -35,17 +35,21 @@ function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Promise<boo
 type ErrorInfo = { componentStack?: string }
 function getErrorEnhanced(errorOriginal: unknown, errorInfo?: ErrorInfo) {
   if (!errorInfo?.componentStack || !isObject(errorOriginal)) return errorOriginal
-  const errorOiginalStackLines = String(errorOriginal.stack).split('\n')
-  const cutoff = errorOiginalStackLines.findIndex((l) => {
+  const errorStackLines = String(errorOriginal.stack).split('\n')
+  const cutoff = errorStackLines.findIndex((l) => {
     l = toPosixPath(l)
     return l.includes('node_modules/react-dom/') || l.includes('node_modules/react/')
   })
   if (cutoff === -1) return errorOriginal
 
+  const errorStackLinesBegin = errorStackLines.slice(0, cutoff)
+  const errorStackLinesEnd = errorStackLines.slice(cutoff)
+  let componentStackLines = errorInfo.componentStack.split('\n').filter(Boolean)
   const stackEnhanced = [
-    ...errorOiginalStackLines.slice(0, cutoff),
-    ...errorInfo.componentStack.split('\n').filter(Boolean),
-    ...errorOiginalStackLines.slice(cutoff),
+    //
+    ...errorStackLinesBegin,
+    ...componentStackLines,
+    ...errorStackLinesEnd,
   ].join('\n')
   const errorEnhanced = structuredClone(errorOriginal)
   errorEnhanced.stack = stackEnhanced
