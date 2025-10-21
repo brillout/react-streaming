@@ -4,7 +4,7 @@ export type { StreamOperations }
 export type { Chunk }
 export type { DoNotClosePromise }
 
-import { assert, assertUsage, createDebugger, isPromise } from '../utils'
+import { assert, assertUsage, createDebugger, isPromise } from '../utils.js'
 
 const debug = createDebugger('react-streaming:chunks')
 

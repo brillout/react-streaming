@@ -1,11 +1,11 @@
 export { useAsync }
 
 import { useId } from 'react'
-import { assert, getGlobalObject } from './utils'
+import { assert, getGlobalObject } from './utils.js'
 import { parse } from '@brillout/json-serializer/parse'
-import { InitData, initDataHtmlClass } from '../shared/initData'
-import { useSuspense, Suspenses } from '../shared/useSuspense'
-import { assertKey, stringifyKey } from '../shared/key'
+import { InitData, initDataHtmlClass } from '../shared/initData.js'
+import { useSuspense, Suspenses } from '../shared/useSuspense.js'
+import { assertKey, stringifyKey } from '../shared/key.js'
 
 const globalObject = getGlobalObject<{ suspenses: Suspenses }>('useAsync.ts', { suspenses: {} })
 

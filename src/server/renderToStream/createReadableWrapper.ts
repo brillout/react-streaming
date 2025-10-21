@@ -1,7 +1,7 @@
 export { createReadableWrapper }
 
-import { orchestrateChunks, type DoNotClosePromise, StreamOperations } from './orchestrateChunks'
-import type { ClearTimeouts } from '../renderToStream'
+import { orchestrateChunks, type DoNotClosePromise, StreamOperations } from './orchestrateChunks.js'
+import type { ClearTimeouts } from '../renderToStream.js'
 
 // `readableFromReact` is the readable stream provided by React.
 // `readableForUser` is the readable stream we give to the user (the wrapper).

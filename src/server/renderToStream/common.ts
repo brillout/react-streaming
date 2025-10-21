@@ -5,8 +5,8 @@ export { afterReactBugCatch }
 export { debugFlow }
 export type { ErrorInfo }
 
-import { toPosixPath } from '../../utils/path'
-import { assert, assertUsage, createDebugger, isObject } from '../utils'
+import { toPosixPath } from '../../utils/path.js'
+import { assert, assertUsage, createDebugger, isObject } from '../utils.js'
 
 const debugFlow = createDebugger('react-streaming:flow')
 

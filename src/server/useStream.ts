@@ -4,8 +4,8 @@ export { StreamProvider }
 
 import pc from '@brillout/picocolors'
 import React, { useContext } from 'react'
-import type { StreamReturnUtils } from './renderToStream'
-import { assertUsage, getGlobalObject, isVikeReactApp } from './utils'
+import type { StreamReturnUtils } from './renderToStream.js'
+import { assertUsage, getGlobalObject, isVikeReactApp } from './utils.js'
 
 const globalObject = getGlobalObject('useStream.ts', {
   StreamContext: React.createContext<StreamReturnUtils | null>(null),

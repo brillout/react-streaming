@@ -4,7 +4,7 @@ import React from 'react'
 // @ts-expect-error types export missing
 import { renderToPipeableStream as renderToPipeableStream_ } from 'react-dom/server.node'
 import type { renderToPipeableStream as renderToPipeableStream__ } from 'react-dom/server'
-import { createPipeWrapper } from './createPipeWrapper'
+import { createPipeWrapper } from './createPipeWrapper.js'
 import {
   getErrorEnhanced,
   type ErrorInfo,
@@ -12,9 +12,9 @@ import {
   assertReactImport,
   debugFlow,
   wrapStreamEnd,
-} from './common'
-import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream'
-import type { DoNotClosePromise } from './orchestrateChunks'
+} from './common.js'
+import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream.js'
+import type { DoNotClosePromise } from './orchestrateChunks.js'
 
 async function renderToNodeStream(
   element: React.ReactNode,

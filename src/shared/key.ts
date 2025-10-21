@@ -2,8 +2,8 @@ export { stringifyKey }
 export { assertKey }
 
 import { stringify } from '@brillout/json-serializer/stringify'
-import { isCallable } from '../utils/isCallable'
-import { assertUsage } from './utils'
+import { isCallable } from '../utils/isCallable.js'
+import { assertUsage } from './utils.js'
 
 function stringifyKey(key: unknown): string {
   const keyString = stringify(key, { sortObjectKeys: true })

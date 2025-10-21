@@ -1,14 +1,14 @@
 export { useAsync }
 
 import { useId } from 'react'
-import { useStream } from './useStream'
-import { assert } from './utils'
+import { useStream } from './useStream.js'
+import { assert } from './utils.js'
 import { stringify } from '@brillout/json-serializer/stringify'
-import { InitData, initDataHtmlClass } from '../shared/initData'
-import { useSuspense } from '../shared/useSuspense'
-import { assertKey, stringifyKey } from '../shared/key'
-import { useSuspenseData } from './useAsync/useSuspenseData'
-import type { StreamReturnUtils } from './renderToStream'
+import { InitData, initDataHtmlClass } from '../shared/initData.js'
+import { useSuspense } from '../shared/useSuspense.js'
+import { assertKey, stringifyKey } from '../shared/key.js'
+import { useSuspenseData } from './useAsync/useSuspenseData.js'
+import type { StreamReturnUtils } from './renderToStream.js'
 
 function useAsync<T>(keyValue: unknown, asyncFn: () => T): Awaited<T> {
   assertKey(keyValue)

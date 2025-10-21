@@ -2,11 +2,11 @@ export { createPipeWrapper }
 export type { Pipe }
 
 import type { Writable as StreamNodeWritable } from 'stream'
-import { createDebugger } from '../utils'
-import { type DoNotClosePromise, orchestrateChunks, StreamOperations } from './orchestrateChunks'
+import { createDebugger } from '../utils.js'
+import { type DoNotClosePromise, orchestrateChunks, StreamOperations } from './orchestrateChunks.js'
 const debug = createDebugger('react-streaming:createPipeWrapper')
 import { Writable } from 'stream'
-import type { ClearTimeouts } from '../renderToStream'
+import type { ClearTimeouts } from '../renderToStream.js'
 
 // `pipeFromReact` is the pipe provided by React.
 // `pipeForUser` is the pipe we give to the user will (the wrapper).

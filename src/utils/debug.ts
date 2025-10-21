@@ -2,10 +2,10 @@ export { createDebugger }
 export { isDebugEnabled }
 export type { Debug }
 
-import { isBrowser } from './isBrowser'
-import { isCallable } from './isCallable'
-import { objectAssign } from './objectAssign'
-import { assert } from './assert'
+import { isBrowser } from './isBrowser.js'
+import { isCallable } from './isCallable.js'
+import { objectAssign } from './objectAssign.js'
+import { assert } from './assert.js'
 
 assert(!isBrowser(), 'utils/debug.js loaded in browser')
 
