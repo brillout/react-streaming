@@ -1,2 +1,2 @@
 // Many tools don't support `package.json#exports`
-module.exports = require('./dist/esm/server')
+module.exports = require('./dist/server')
