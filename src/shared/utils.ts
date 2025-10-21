@@ -1,3 +1,3 @@
-export * from '../utils/assert'
-export * from '../utils/getGlobalObject'
-export * from '../utils/isPromise'
+export * from '../utils/assert.js'
+export * from '../utils/getGlobalObject.js'
+export * from '../utils/isPromise.js'

@@ -1,3 +1,3 @@
-export { useAsync } from './useAsync'
-export { useStream } from './useStream'
-export { useStream as useStreamOptional } from './useStream'
+export { useAsync } from './useAsync.js'
+export { useStream } from './useStream.js'
+export { useStream as useStreamOptional } from './useStream.js'

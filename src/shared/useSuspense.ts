@@ -2,7 +2,7 @@ export { useSuspense }
 export type { Suspenses }
 export type { Suspense }
 
-import { assert, assertWarning, isPromise, getGlobalObject } from './utils'
+import { assert, assertWarning, isPromise, getGlobalObject } from './utils.js'
 
 type Suspenses = Record<
   string, // `suspenseId`

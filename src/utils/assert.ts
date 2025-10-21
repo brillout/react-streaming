@@ -4,9 +4,9 @@ export { assertWarning }
 export { assertInfo }
 export { getProjectError }
 
-import { createErrorWithCleanStackTrace } from './createErrorWithCleanStackTrace'
-import { getGlobalObject } from './getGlobalObject'
-import { projectInfo } from './projectInfo'
+import { createErrorWithCleanStackTrace } from './createErrorWithCleanStackTrace.js'
+import { getGlobalObject } from './getGlobalObject.js'
+import { projectInfo } from './projectInfo.js'
 import pc from '@brillout/picocolors'
 const errorPrefix = `[${projectInfo.npmPackageName}@${projectInfo.projectVersion}]`
 const internalErrorPrefix = `${errorPrefix}[Bug]`

@@ -6,7 +6,7 @@ export type { SeoStrategy }
 // https://stackoverflow.com/questions/34647657/how-to-detect-web-crawlers-for-seo-using-express/68869738#68869738
 import isBot from 'isbot-fast'
 import pc from '@brillout/picocolors'
-import { assertWarning, isVikeReactApp } from '../utils'
+import { assertWarning, isVikeReactApp } from '../utils.js'
 
 type SeoStrategy = 'conservative' | 'google-speed'
 function resolveSeoStrategy(options: { seoStrategy?: SeoStrategy; userAgent?: string } = {}): {

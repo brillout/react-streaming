@@ -14,16 +14,16 @@ import type {
   renderToReadableStream as RenderToReadableStream,
   RenderToReadableStreamOptions,
 } from 'react-dom/server'
-import { ReactStreamingProviderSuspenseData } from './useAsync/useSuspenseData'
-import { StreamProvider } from './useStream'
-import type { Pipe } from './renderToStream/createPipeWrapper'
-import { resolveSeoStrategy, SeoStrategy } from './renderToStream/resolveSeoStrategy'
-import { assert, assertUsage, getGlobalObject } from './utils'
-import type { renderToNodeStream as renderToNodeStream_ } from './renderToStream/renderToNodeStream'
-import type { renderToWebStream as renderToWebStream_ } from './renderToStream/renderToWebStream'
-import { debugFlow } from './renderToStream/common'
-import type { InjectToStream } from './index.node-and-web'
-import type { Chunk, DoNotClosePromise } from './renderToStream/orchestrateChunks'
+import { ReactStreamingProviderSuspenseData } from './useAsync/useSuspenseData.js'
+import { StreamProvider } from './useStream.js'
+import type { Pipe } from './renderToStream/createPipeWrapper.js'
+import { resolveSeoStrategy, SeoStrategy } from './renderToStream/resolveSeoStrategy.js'
+import { assert, assertUsage, getGlobalObject } from './utils.js'
+import type { renderToNodeStream as renderToNodeStream_ } from './renderToStream/renderToNodeStream.js'
+import type { renderToWebStream as renderToWebStream_ } from './renderToStream/renderToWebStream.js'
+import { debugFlow } from './renderToStream/common.js'
+import type { InjectToStream } from './index.node-and-web.js'
+import type { Chunk, DoNotClosePromise } from './renderToStream/orchestrateChunks.js'
 const globalObject = getGlobalObject('renderToStream.ts', {
   renderToNodeStream: null as null | typeof renderToNodeStream_,
   renderToWebStream: null as null | typeof renderToWebStream_,

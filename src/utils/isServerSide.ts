@@ -1,6 +1,6 @@
 export { isServerSide }
 
-import { isClientSide } from './isClientSide'
+import { isClientSide } from './isClientSide.js'
 
 function isServerSide() {
   return !isClientSide()

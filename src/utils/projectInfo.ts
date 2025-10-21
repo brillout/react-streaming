@@ -1,6 +1,6 @@
 export { projectInfo }
 
-import { PROJECT_VERSION } from './PROJECT_VERSION'
+import { PROJECT_VERSION } from './PROJECT_VERSION.js'
 
 const projectInfo = {
   projectName: 'react-streaming' as const,

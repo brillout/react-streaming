@@ -2,7 +2,7 @@ export { renderToWebStream }
 
 import React from 'react'
 import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
-import { createReadableWrapper } from './createReadableWrapper'
+import { createReadableWrapper } from './createReadableWrapper.js'
 import {
   getErrorEnhanced,
   type ErrorInfo,
@@ -10,11 +10,11 @@ import {
   assertReactImport,
   debugFlow,
   wrapStreamEnd,
-} from './common'
-import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream'
-import type { DoNotClosePromise } from './orchestrateChunks'
+} from './common.js'
+import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream.js'
+import type { DoNotClosePromise } from './orchestrateChunks.js'
 import { version } from 'react-dom/server'
-import { assert, assertVersion } from '../utils'
+import { assert, assertVersion } from '../utils.js'
 
 async function renderToWebStream(
   element: React.ReactNode,

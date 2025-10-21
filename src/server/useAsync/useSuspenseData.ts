@@ -2,8 +2,8 @@ export { useSuspenseData }
 export { ReactStreamingProviderSuspenseData }
 
 import React, { useContext } from 'react'
-import { Suspenses } from '../../shared/useSuspense'
-import { getGlobalObject } from '../utils'
+import { Suspenses } from '../../shared/useSuspense.js'
+import { getGlobalObject } from '../utils.js'
 
 const globalObject = getGlobalObject('useSuspenseData.ts', {
   ctxSuspenses: React.createContext<Suspenses>(undefined as never),
