@@ -14,7 +14,7 @@ import {
 import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream'
 import type { DoNotClosePromise } from './orchestrateChunks'
 import { version } from 'react-dom/server'
-import { assertVersion } from '../utils'
+import { assert, assertVersion } from '../utils'
 
 async function renderToWebStream(
   element: React.ReactNode,
@@ -35,7 +35,9 @@ async function renderToWebStream(
   // We import 'react-dom/server.edge' only if needed, because merely importing 'react-dom/server.browser' was preventing Node.js from exiting (e.g. after running Vike's prerender() API). But maybe that isn't the case with 'react-dom/server.edge' anymore?
   // - Reproduction: https://github.com/vikejs/vike/blob/a0d6777c84aee4c2e5bd0a0a585b18f7a87c8cac/test/playground/scripts/prerender.js
   // @ts-expect-error types export missing
-  const { renderToReadableStream: renderToReadableStream_ } = await import('react-dom/server.edge')
+  const moduleExports = await import('react-dom/server.edge')
+  assert(moduleExports?.default?.renderToReadableStream, moduleExports)
+  const renderToReadableStream_ = moduleExports.default.renderToReadableStream
 
   const controller: AbortController = new AbortController()
   setAbortFn(() => {
