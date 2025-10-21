@@ -1,3 +1,18 @@
+## [0.4.11](https://github.com/brillout/react-streaming/compare/v0.4.10...v0.4.11) (2025-10-21)
+
+
+### Bug Fixes
+
+* remove CJS build ([#51](https://github.com/brillout/react-streaming/issues/51)) ([4dae8e8](https://github.com/brillout/react-streaming/commit/4dae8e8b2f8abca12a4762eee05ac87186634f35))
+* support @cloudflare/vite-plugin ([be9f6c2](https://github.com/brillout/react-streaming/commit/be9f6c219274d92d08c66442fd1feb60b0ee61e6))
+
+
+### BREAKING CHANGES
+
+* If your app is CJS then update Node.js to v23 or above (or v22 with the `--experimental-require-module` flag) in order to [be able to `require(esm)`](https://nodejs.org/en/blog/announcements/v22-release-announce#support-requireing-synchronous-esm-graphs) . If your app is ESM then you can keep using older Node.js versions.
+
+
+
 ## [0.4.10](https://github.com/brillout/react-streaming/compare/v0.4.9...v0.4.10) (2025-10-10)
 
 
