@@ -12,7 +12,7 @@
 > [!NOTE]
 > We recommend ignoring `MINOR BREAKING CHANGES` unless this version breaks your app, see [Vike Versioning](https://vike.dev/versioning).
 
-* If your app is CJS then update Node.js to v23 or above (or v22 with the `--experimental-require-module` flag) in order to [be able to `require(esm)`](https://nodejs.org/en/blog/announcements/v22-release-announce#support-requireing-synchronous-esm-graphs) . If your app is ESM then you can keep using older Node.js versions.
+* If your app is CJS then update Node.js to v23 or above (or v22 with the `--experimental-require-module` flag) in order to [be able to `require(esm)`](https://nodejs.org/en/blog/announcements/v22-release-announce#support-requireing-synchronous-esm-graphs). If your app is ESM then you can keep using older Node.js versions.
 
 
 
