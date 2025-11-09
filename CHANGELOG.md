@@ -1,3 +1,12 @@
+## [0.4.12](https://github.com/brillout/react-streaming/compare/v0.4.11...v0.4.12) (2025-11-09)
+
+
+### Bug Fixes
+
+* add `"type": "module" ([637ced0](https://github.com/brillout/react-streaming/commit/637ced01fb08fbe66f4141e0708844101109c95f))
+
+
+
 ## [0.4.11](https://github.com/brillout/react-streaming/compare/v0.4.10...v0.4.11) (2025-10-21)
 
 

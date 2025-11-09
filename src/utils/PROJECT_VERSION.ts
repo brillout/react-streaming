@@ -1,1 +1,1 @@
-export const PROJECT_VERSION = '0.4.11'
+export const PROJECT_VERSION = '0.4.12'
