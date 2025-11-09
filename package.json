@@ -48,6 +48,7 @@
       "default": "./dist/server/index.node-only.js"
     }
   },
+  "type": "module",
   "scripts": {
     "========= Test": "",
     "// Make sure to run `pnpm run build` or `pnpm run dev` before running `pnpm run test`": "",
