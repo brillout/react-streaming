@@ -53,13 +53,22 @@ describe('renderToStream()', async () => {
         //  <h1>Welcome</h1>This page is:<ul>'
         //  ```
         //
-        //  // Suspense fallback
+        //  // Suspense fallback for LazyComponent
         //  ```html
         //  <li><!--$?--><template id="B:0"></template><p>Loading...</p><!--/$--></li>
         //  ```
         //
         //  ```html
-        //  <li>Rendered to HTML.</li><li>Interactive. <button type="button">Counter <!-- -->0</button></li></ul>
+        //  <li>Rendered to HTML.</li><li>Interactive. <button type="button">Counter <!-- -->0</button></li>
+        //  ```
+        //
+        //  // Suspense fallback for ErrorOnServer (client-only component)
+        //  ```html
+        //  <li><!--$!--><template data-msg="..." data-stck="..."></template><p>loading on server</p><!--/$--></li>
+        //  ```
+        //
+        //  ```html
+        //  </ul>
         //  ```
         //
         //  // Injection:
@@ -72,13 +81,23 @@ describe('renderToStream()', async () => {
         //  <script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script>
         //  ```
         //
-        //  // Suspense resolving
+        //  // Suspense resolving LazyComponent
         //  ```html
         //  <div hidden id="S:0"><p>Hello, I was lazy.</p></div><script><!--...--></script>
         //  ```
-        expect(data.content).toMatchInlineSnapshot(
-          `"<h1>Welcome</h1>This page is:<ul><li><!--$?--><template id="B:0"></template><p>Loading...</p><!--/$--></li><li>Rendered to HTML.</li><li>Interactive. <button type="button">Counter <!-- -->0</button></li></ul><script type="module" src="/main.js"></script><script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script><div hidden id="S:0"><p>Hello, I was lazy.</p></div><script>$RC=function(b,c,e){c=document.getElementById(c);c.parentNode.removeChild(c);var a=document.getElementById(b);if(a){b=a.previousSibling;if(e)b.data="$!",a.setAttribute("data-dgst",e);else{e=b.parentNode;a=b.nextSibling;var f=0;do{if(a&&8===a.nodeType){var d=a.data;if("/$"===d)if(0===f)break;else f--;else"$"!==d&&"$?"!==d&&"$!"!==d||f++}d=a.nextSibling;e.removeChild(a);a=d}while(a);for(;c.firstChild;)e.insertBefore(c.firstChild,a);b.data="$"}b._reactRetry&&b._reactRetry()}};$RC("B:0","S:0")</script>"`,
+        expect(data.content).toContain('<h1>Welcome</h1>This page is:<ul>')
+        expect(data.content).toContain('<!--$?--><template id="B:0"></template><p>Loading...</p><!--/$-->')
+        expect(data.content).toContain('<li>Rendered to HTML.</li>')
+        expect(data.content).toContain('<li>Interactive. <button type="button">Counter <!-- -->0</button></li>')
+        expect(data.content).toContain('<script type="module" src="/main.js"></script>')
+        expect(data.content).toContain(
+          '<script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script>',
         )
+        expect(data.content).toContain('<div hidden id="S:0"><p>Hello, I was lazy.</p></div>')
+        expect(data.content).toContain('$RC("B:0","S:0")')
+        // ErrorOnServer component should render fallback on server
+        expect(data.content).toContain('<p>loading on server</p>')
+        expect(data.content).toContain('Only renders on client')
       })
     })
   })

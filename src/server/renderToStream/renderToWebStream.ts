@@ -49,8 +49,6 @@ async function renderToWebStream(
   let reactBug: unknown = null
   const onError = (err: unknown, errorInfo?: ErrorInfo) => {
     err = getErrorEnhanced(err, errorInfo)
-    didError = true
-    firstErr = firstErr || err
     afterReactBugCatch(() => {
       // Is not a React internal error (i.e. a React bug)
       if (err !== reactBug) {

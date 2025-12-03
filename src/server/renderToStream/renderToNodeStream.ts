@@ -42,12 +42,16 @@ async function renderToNodeStream(
   let didError = false
   let firstErr: unknown = null
   let reactBug: unknown = null
-  const onError = (err: unknown, errorInfo?: ErrorInfo) => {
-    debugFlow('[react] onError() / onShellError()')
+  const onShellError = (err: unknown, errorInfo?: ErrorInfo) => {
+    debugFlow('[react] onShellError()')
     err = getErrorEnhanced(err, errorInfo)
     didError = true
     firstErr ??= err
     onShellReady()
+  }
+  const onError = (err: unknown, errorInfo?: ErrorInfo) => {
+    debugFlow('[react] onError()')
+    err = getErrorEnhanced(err, errorInfo)
     afterReactBugCatch(() => {
       // Is not a React internal error (i.e. a React bug)
       if (err !== reactBug) {
@@ -71,7 +75,7 @@ async function renderToNodeStream(
       onShellReady()
       onAllReady()
     },
-    onShellError: onError,
+    onShellError,
     onError,
   })
   setAbortFn(() => {
