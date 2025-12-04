@@ -1,7 +1,6 @@
 export { renderToNodeStream }
 
 import React from 'react'
-// @ts-expect-error types export missing
 import { renderToPipeableStream as renderToPipeableStream_ } from 'react-dom/server.node'
 import type { renderToPipeableStream as renderToPipeableStream__ } from 'react-dom/server'
 import { createPipeWrapper } from './createPipeWrapper.js'
