@@ -50,6 +50,7 @@ async function renderToWebStream(
   let firstErr: unknown = null
   // We intentionally swallow boundary errors, see https://github.com/brillout/react-streaming#error-handling
   const onBoundaryError = (err: unknown, errorInfo?: ErrorInfo) => {
+    debugFlow('[react] onError()')
     err = getErrorWithComponentStack(err, errorInfo)
     afterReactBugCatch(() => {
       // Is not a React internal error (i.e. a React bug)
@@ -58,7 +59,7 @@ async function renderToWebStream(
     })
   }
   const onReactBug = (err: unknown) => {
-    debugFlow('react bug')
+    debugFlow('[react] React bug: allReady.catch()')
     didError = true
     firstErr ??= err
     ;(err as Record<string, unknown>)[isReactBug] = true

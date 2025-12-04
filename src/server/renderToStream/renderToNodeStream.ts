@@ -61,7 +61,7 @@ async function renderToNodeStream(
     })
   }
   const onReactBug = (err: unknown) => {
-    debugFlow('react bug')
+    debugFlow('[react] React bug')
     didError = true
     firstErr ??= err
     ;(err as Record<string, unknown>)[isReactBug] = true
