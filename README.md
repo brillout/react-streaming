@@ -188,15 +188,16 @@ The promise `await renderToStream()` resolves after the page shell is rendered. 
 > :book: The page shell is the set of all components before `<Suspense>` boundaries.
 
 ```jsx
+let stream
 try {
-  const stream = await renderToStream(<Page />)
+  stream = await renderToStream(<Page />)
   // ✅ Page shell succesfully rendered and is ready in the stream buffer.
 } catch(err) {
   // ❌ Something went wrong while rendering the page shell.
 }
 ```
 
-The stream never emits an error. (If it does emit an error then it's a Bug in React or `react-streaming`).
+The stream never emits an error. (If it does emit an error then it's a Bug in React or `react-streaming`.)
 
 > :book: If an error occurs during the stream, then it means that a `<Suspense>` boundary failed.
 > Instead of emiting a stream error, React swallows the error on the server-side and retries the `<Suspense>` boundary on the client-side.
