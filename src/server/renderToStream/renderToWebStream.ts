@@ -67,6 +67,7 @@ async function renderToWebStream(
       console.error(err)
     }
   }
+
   const renderToReadableStream =
     options.renderToReadableStream ?? (renderToReadableStream_ as typeof renderToReadableStream__)
   if (!options.renderToReadableStream) {

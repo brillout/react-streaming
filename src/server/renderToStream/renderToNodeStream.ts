@@ -70,6 +70,7 @@ async function renderToNodeStream(
       console.error(err)
     }
   }
+
   const renderToPipeableStream =
     options.renderToPipeableStream ?? (renderToPipeableStream_ as typeof renderToPipeableStream__)
   if (!options.renderToPipeableStream) {
