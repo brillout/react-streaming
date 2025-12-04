@@ -42,6 +42,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.0.4
         version: 19.2.3(@types/react@19.2.7)
+      playwright-chromium:
+        specifier: ^1.57.0
+        version: 1.57.0
       prettier:
         specifier: ^3.2.5
         version: 3.7.4
