@@ -45,14 +45,14 @@ async function renderToNodeStream(
       debugFlow('[react] onShellReady()')
       onShellReady()
     },
+    onShellError(err) {
+      onShellError(err)
+      onShellReady()
+    },
     onAllReady() {
       debugFlow('[react] onAllReady()')
       onShellReady()
       onAllReady()
-    },
-    onShellError(err) {
-      onShellError(err)
-      onShellReady()
     },
     onError: onBoundaryError,
   })
