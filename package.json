@@ -52,7 +52,7 @@
   "scripts": {
     "========= Test": "",
     "// Make sure to run `pnpm run build` or `pnpm run dev` before running `pnpm run test`": "",
-    "test": "vitest run",
+    "test": "test-e2e && vitest run",
     "========= Dev": "",
     "dev": "tsc --watch",
     "========= Build": "",
