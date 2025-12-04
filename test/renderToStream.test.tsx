@@ -54,45 +54,9 @@ describe('renderToStream()', async () => {
         }
 
         //  Begin:
-        //  ```html
-        //  <h1>Welcome</h1>This page is:<ul>'
-        //  ```
-        //
-        //  // Suspense fallback for LazyComponent
-        //  ```html
-        //  <li><!--$?--><template id="B:0"></template><p>Loading...</p><!--/$--></li>
-        //  ```
-        //
-        //  ```html
-        //  <li>Rendered to HTML.</li><li>Interactive. <button type="button">Counter <!-- -->0</button></li>
-        //  ```
-        //
-        //  // Suspense fallback for ErrorOnServer (client-only component)
-        //  ```html
-        //  <li><!--$!--><template data-msg="..." data-stck="..."></template><p>loading on server</p><!--/$--></li>
-        //  ```
-        //
-        //  ```html
-        //  </ul>
-        //  ```
-        //
-        //  // Injection:
-        //  ```html
-        //  <script type="module" src="/main.js"></script>
-        //  ```
-        //
-        //  // Injection useAsync()
-        //  ```html
-        //  <script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script>
-        //  ```
-        //
-        //  // Suspense resolving LazyComponent
-        //  ```html
-        //  <div hidden id="S:0"><p>Hello, I was lazy.</p></div><script><!--...--></script>
-        //  ```
-
-        // Generic assertions that work for all combinations
         expect(data.content).toContain('<h1>Welcome</h1>This page is:<ul>')
+
+        //  Suspense fallback for LazyComponent
         if (!disable) {
           // When streaming is enabled, we see the streaming markers
           expect(data.content).toContain('<!--$?--><template id="B:0"></template><p>Loading...</p><!--/$-->')
@@ -100,16 +64,25 @@ describe('renderToStream()', async () => {
           // When streaming is disabled, Suspense resolves fully before rendering completes
           expect(data.content).toContain('<!--$--><p>Hello, I was lazy.</p><!--/$-->')
         }
+
+        //  Other page content
         expect(data.content).toContain('<li>Rendered to HTML.</li>')
         expect(data.content).toContain('<li>Interactive. <button type="button">Counter <!-- -->0</button></li>')
-        // ErrorOnServer component should render fallback on server
+
+        //  Suspense fallback for ErrorOnServer (client-only component)
         expect(data.content).toContain('<p>loading on server</p>')
         expect(data.content).toContain('Error: Only renders on client')
+
+        //  Injection:
         expect(data.content).toContain('<script type="module" src="/main.js"></script>')
+
         if (!disable) {
+          //  Injection useAsync()
           expect(data.content).toContain(
             '<script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script>',
           )
+
+          //  Suspense resolving LazyComponent
           expect(data.content).toContain('<div hidden id="S:0"><p>Hello, I was lazy.</p></div>')
           expect(data.content).toContain('$RC("B:0","S:0")')
         }
