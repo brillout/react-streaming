@@ -33,12 +33,14 @@ function handleErrors(
     didError: false,
     firstErr: null as unknown,
   }
+  let firstErrOriginal = null as unknown
 
   const onShellError = (err: unknown, errorInfo?: ErrorInfo) => {
     debugFlow('onShellError()')
+    firstErrOriginal ??= err
     err = getErrorWithComponentStack(err, errorInfo)
-    state.didError = true
     state.firstErr ??= err
+    state.didError = true
   }
   // We intentionally swallow boundary errors, see https://github.com/brillout/react-streaming#error-handling
   const onBoundaryError = (err: unknown, errorInfo?: ErrorInfo) => {
@@ -51,11 +53,12 @@ function handleErrors(
   }
   const onReactBug = (err: unknown) => {
     debugFlow('onReactBug()')
-    state.didError = true
+    firstErrOriginal ??= err
     state.firstErr ??= err
+    state.didError = true
     ;(err as Record<string, unknown>)[isReactBug] = true
     // Only log if it wasn't used as rejection value for `await renderToStream()`
-    if (err !== state.firstErr || isPromiseResolved()) {
+    if (err !== firstErrOriginal || isPromiseResolved()) {
       console.error(err)
     }
   }
