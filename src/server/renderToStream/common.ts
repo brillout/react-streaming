@@ -1,6 +1,6 @@
-export { wrapStreamEnd }
-export { assertReactImport }
 export { debugFlow }
+export { assertReactImport }
+export { wrapStreamEnd }
 export { handleErrors }
 
 import { toPosixPath } from '../../utils/path.js'
@@ -8,13 +8,6 @@ import { assert, assertUsage, createDebugger, getBetterError, isObject } from '.
 
 const debugFlow = createDebugger('react-streaming:flow')
 const isReactBug = '__@brillout/react-streaming__isReactBug'
-
-// Needed for the hacky solution to workaround https://github.com/facebook/react/issues/24536
-function afterReactBugCatch(fn: Function) {
-  setTimeout(() => {
-    fn()
-  }, 0)
-}
 
 function assertReactImport(fn: unknown, fnName: 'renderToPipeableStream' | 'renderToReadableStream') {
   assert(typeof fn === 'function')
@@ -74,6 +67,13 @@ function handleErrors(
     onBoundaryError,
     onReactBug,
   }
+}
+
+// Needed for the hacky solution to workaround https://github.com/facebook/react/issues/24536
+function afterReactBugCatch(fn: Function) {
+  setTimeout(() => {
+    fn()
+  }, 0)
 }
 
 // Inject componentStack to the error's stack trace
