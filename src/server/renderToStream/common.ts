@@ -35,6 +35,13 @@ function handleErrors(
   }
   let firstErrOriginal = null as unknown
 
+  return {
+    state,
+    onShellError,
+    onBoundaryError,
+    onReactBug,
+  }
+
   function onShellError(err: unknown, errorInfo?: ErrorInfo) {
     debugFlow('onShellError()')
     state.didError = true
@@ -62,13 +69,6 @@ function handleErrors(
     if (err !== firstErrOriginal || isPromiseResolved()) {
       console.error(err)
     }
-  }
-
-  return {
-    state,
-    onShellError,
-    onBoundaryError,
-    onReactBug,
   }
 }
 
