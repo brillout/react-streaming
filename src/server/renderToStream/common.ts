@@ -68,9 +68,9 @@ function handleErrors(
       firstErrOriginal = err
     }
     ;(err as Record<string, unknown>)[isReactBug] = true
-    logErr(err, null)
+    logErr(err)
   }
-  function logErr(err: unknown, errBetter: null | unknown) {
+  function logErr(err: unknown, errBetter?: unknown) {
     // Only log if it wasn't used as rejection value for `await renderToStream()`
     if (err !== firstErrOriginal || isPromiseResolved()) {
       console.error(errBetter ?? err)
