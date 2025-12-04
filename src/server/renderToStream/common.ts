@@ -57,7 +57,8 @@ function handleErrors(
     debugFlow('onBoundaryError()')
     afterReactBugCatch(() => {
       if ((err as Record<string, unknown>)[isReactBug]) return
-      options.onBoundaryError?.(getErrorWithComponentStack(err, errorInfo))
+      const errBetter = getErrorWithComponentStack(err, errorInfo)
+      options.onBoundaryError?.(errBetter)
     })
   }
   function onReactBug(err: unknown) {
