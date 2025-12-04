@@ -31,7 +31,10 @@ describe('renderToStream()', async () => {
         const { data, streamEnd, injectToStream } = await render(<Page />, { streamType, disable })
         injectToStream('<script type="module" src="/main.js"></script>')
 
-        if (!disable) {
+        if (disable) {
+          // When streaming is disabled, everything completes synchronously
+          await streamEnd
+        } else {
           // When streaming is enabled, injection happens asynchronously
           let timeoutResolved = false
           setTimeout(() => {
@@ -42,9 +45,6 @@ describe('renderToStream()', async () => {
           expect(timeoutResolved).toBe(false)
           await streamEnd
           expect(timeoutResolved).toBe(true)
-        } else {
-          // When streaming is disabled, everything completes synchronously
-          await streamEnd
         }
 
         try {
@@ -94,24 +94,19 @@ describe('renderToStream()', async () => {
 
         // Generic assertions that work for all combinations
         expect(data.content).toContain('<h1>Welcome</h1>This page is:<ul>')
-
-        if (disable) {
-          // When streaming is disabled, Suspense resolves fully before rendering completes
-          expect(data.content).toContain('<!--$--><p>Hello, I was lazy.</p><!--/$-->')
-        } else {
+        if (!disable) {
           // When streaming is enabled, we see the streaming markers
           expect(data.content).toContain('<!--$?--><template id="B:0"></template><p>Loading...</p><!--/$-->')
+        } else {
+          // When streaming is disabled, Suspense resolves fully before rendering completes
+          expect(data.content).toContain('<!--$--><p>Hello, I was lazy.</p><!--/$-->')
         }
-
         expect(data.content).toContain('<li>Rendered to HTML.</li>')
         expect(data.content).toContain('<li>Interactive. <button type="button">Counter <!-- -->0</button></li>')
-
         // ErrorOnServer component should render fallback on server
         expect(data.content).toContain('<p>loading on server</p>')
         expect(data.content).toContain('Only renders on client')
-
         expect(data.content).toContain('<script type="module" src="/main.js"></script>')
-
         if (!disable) {
           expect(data.content).toContain(
             '<script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script>',
