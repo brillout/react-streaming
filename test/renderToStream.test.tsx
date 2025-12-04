@@ -122,8 +122,8 @@ describe('renderToStream()', async () => {
 })
 
 function testSnapshots(content: string, streamType: 'node' | 'web', disable: boolean) {
-  // Normalize file paths for CI compatibility - replace absolute path up to the last /react-streaming/
-  const normalizedContent = content.replace(/\([^)]*\/react-streaming\//g, '(/FS-ROOT/react-streaming/')
+  // Normalize file paths for CI compatibility - replace absolute path up to the last /react-streaming/ (including node_modules cases)
+  const normalizedContent = content.replace(/\(([^)]*)(\/|node_modules\/)react-streaming\//g, '(/FS-ROOT/react-streaming/')
 
   if (streamType === 'node' && disable === false) {
     expect(normalizedContent).toMatchInlineSnapshot(
