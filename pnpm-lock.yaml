@@ -124,7 +124,7 @@ importers:
         specifier: ^0.4.247
         version: 0.4.247(react-streaming@0.4.13(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(vite@7.2.6(@types/node@15.14.9))
       vike-react:
-        specifier: 0.6.13
+        specifier: ^0.6.13
         version: 0.6.13(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(vike@0.4.247(react-streaming@0.4.13(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(vite@7.2.6(@types/node@15.14.9)))
       vite:
         specifier: ^7.2.6
