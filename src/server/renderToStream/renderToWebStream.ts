@@ -57,6 +57,16 @@ async function renderToWebStream(
       options.onBoundaryError?.(err)
     })
   }
+  const onReactBug = (err: unknown) => {
+    debugFlow('react bug')
+    didError = true
+    firstErr = firstErr || err
+    ;(err as Record<string, unknown>)[isReactBug] = true
+    // Only log if it wasn't used as rejection value for `await renderToStream()`
+    if (err !== firstErr || promiseResolved) {
+      console.error(err)
+    }
+  }
   const renderToReadableStream =
     options.renderToReadableStream ?? (renderToReadableStream_ as typeof renderToReadableStream__)
   if (!options.renderToReadableStream) {
@@ -69,18 +79,8 @@ async function renderToWebStream(
   })
   const { allReady } = readableOriginal
   let promiseResolved = false
-  // Upon React internal errors (i.e. React bugs), React rejects `allReady`.
-  // React doesn't reject `allReady` upon boundary errors.
-  allReady.catch((err) => {
-    debugFlow('react bug')
-    didError = true
-    firstErr = firstErr || err
-    ;(err as Record<string, unknown>)[isReactBug] = true
-    // Only log if it wasn't used as rejection value for `await renderToStream()`
-    if (err !== firstErr || promiseResolved) {
-      console.error(err)
-    }
-  })
+  // Upon React internal errors (i.e. React bugs), React rejects `allReady`. React doesn't reject `allReady` upon boundary errors.
+  allReady.catch(onReactBug)
   if (didError) throw firstErr
   if (disable) await allReady
   if (didError) throw firstErr
