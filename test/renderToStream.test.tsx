@@ -28,6 +28,7 @@ describe('renderToStream()', async () => {
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     ;[true, false].forEach((disable) => {
       it(`injectToStream - useAsync() - ${streamType} stream${disable ? ' - disabled' : ''}`, async () => {
+        // TODO: pass disable value
         const { data, streamEnd, injectToStream } = await render(<Page />, { streamType, disable: false })
         injectToStream('<script type="module" src="/main.js"></script>')
 
