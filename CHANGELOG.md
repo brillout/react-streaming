@@ -1,3 +1,12 @@
+## [0.4.13](https://github.com/brillout/react-streaming/compare/v0.4.12...v0.4.13) (2025-12-04)
+
+
+### Bug Fixes
+
+* further swallow errors in `<Suspense>` boundaries ([#52](https://github.com/brillout/react-streaming/issues/52)) ([842acd8](https://github.com/brillout/react-streaming/commit/842acd801407ead7aa4e8e600c32e11696cf4397))
+
+
+
 ## [0.4.12](https://github.com/brillout/react-streaming/compare/v0.4.11...v0.4.12) (2025-11-09)
 
 
