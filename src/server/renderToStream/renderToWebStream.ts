@@ -16,6 +16,8 @@ import type { DoNotClosePromise } from './orchestrateChunks.js'
 import { version } from 'react-dom/server'
 import { assert, assertVersion } from '../utils.js'
 
+const isReactBug = '__@brillout/react-streaming__isReactBug'
+
 async function renderToWebStream(
   element: React.ReactNode,
   disable: boolean,
@@ -46,16 +48,13 @@ async function renderToWebStream(
 
   let didError = false
   let firstErr: unknown = null
-  // TODO: simplify
-  let reactBug: unknown = null
   // We intentionally swallow boundary errors, see https://github.com/brillout/react-streaming#error-handling
   const onBoundaryError = (err: unknown, errorInfo?: ErrorInfo) => {
     err = getErrorWithComponentStack(err, errorInfo)
     afterReactBugCatch(() => {
       // Is not a React internal error (i.e. a React bug)
-      if (err !== reactBug) {
-        options.onBoundaryError?.(err)
-      }
+      if ((err as Record<string, unknown>)[isReactBug]) return
+      options.onBoundaryError?.(err)
     })
   }
   const renderToReadableStream =
@@ -76,10 +75,10 @@ async function renderToWebStream(
     debugFlow('react bug')
     didError = true
     firstErr = firstErr || err
-    reactBug = err
-    // Only log if it wasn't used as rejection for `await renderToStream()`
-    if (reactBug !== firstErr || promiseResolved) {
-      console.error(reactBug)
+    ;(err as Record<string, unknown>)[isReactBug] = true
+    // Only log if it wasn't used as rejection value for `await renderToStream()`
+    if (err !== firstErr || promiseResolved) {
+      console.error(err)
     }
   })
   if (didError) throw firstErr

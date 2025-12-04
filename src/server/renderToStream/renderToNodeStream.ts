@@ -16,6 +16,8 @@ import {
 import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream.js'
 import type { DoNotClosePromise } from './orchestrateChunks.js'
 
+const isReactBug = '__@brillout/react-streaming__isReactBug'
+
 async function renderToNodeStream(
   element: React.ReactNode,
   disable: boolean,
@@ -41,8 +43,6 @@ async function renderToNodeStream(
 
   let didError = false
   let firstErr: unknown = null
-  // TODO: simplify
-  let reactBug: unknown = null
   const onShellError = (err: unknown, errorInfo?: ErrorInfo) => {
     debugFlow('[react] onShellError()')
     err = getErrorWithComponentStack(err, errorInfo)
@@ -56,19 +56,18 @@ async function renderToNodeStream(
     err = getErrorWithComponentStack(err, errorInfo)
     afterReactBugCatch(() => {
       // Is not a React internal error (i.e. a React bug)
-      if (err !== reactBug) {
-        options.onBoundaryError?.(err)
-      }
+      if ((err as Record<string, unknown>)[isReactBug]) return
+      options.onBoundaryError?.(err)
     })
   }
   const onReactBug = (err: unknown) => {
     debugFlow('react bug')
     didError = true
     firstErr ??= err
-    reactBug = err
-    // Only log if it wasn't used as rejection for `await renderToStream()`
-    if (reactBug !== firstErr || promiseResolved) {
-      console.error(reactBug)
+    ;(err as Record<string, unknown>)[isReactBug] = true
+    // Only log if it wasn't used as rejection value for `await renderToStream()`
+    if (err !== firstErr || promiseResolved) {
+      console.error(err)
     }
   }
   const renderToPipeableStream =
