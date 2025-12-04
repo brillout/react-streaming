@@ -1,10 +1,5 @@
 export { testRunClassic }
 export { testCounter }
-export { ensureWasClientSideRouted }
-export { expectUrl }
-export { expectPageContextJsonRequest }
-export { waitForNavigation }
-export { sleepBeforeEditFile }
 
 import {
   page,
@@ -14,8 +9,6 @@ import {
   autoRetry,
   fetchHtml,
   getServerUrl,
-  partRegex,
-  sleep,
   skip,
   editFile,
   editFileRevert,
@@ -39,77 +32,6 @@ async function testCounter(currentValue = 0) {
     },
     { timeout: 5 * 1000 },
   )
-}
-
-async function expectUrl(pathname: string) {
-  await autoRetry(
-    async () => {
-      expect(page.url()).toBe(getServerUrl() + pathname)
-      /* Same?
-    const url = await page.evaluate(() => location.href)
-    expect(url.endsWith(pathname)).toBe(true)
-    //*/
-    },
-    { timeout: 3000 },
-  )
-}
-
-/** Ensure page wasn't server-side routed.
- *
- * Examples:
- *   await ensureWasClientSideRouted('/pages/index')
- *   await ensureWasClientSideRouted('/pages/about')
- */
-async function ensureWasClientSideRouted(pageIdFirst: `/pages/${string}`) {
-  // Check whether the HTML is from the first page before Client-side Routing.
-  // page.content() doesn't return the original HTML (it dumps the DOM to HTML).
-  // Therefore only the serialized pageContext tell us the original HTML.
-  const html = await page.content()
-  const pageId = findFirstPageId(html)
-  expect(pageId).toBe(pageIdFirst)
-}
-function findFirstPageId(html: string) {
-  expect(html).toMatch(partRegex`<script id="vike_pageContext" type="application/json"${/[^>]*/}>`)
-  expect(html).toContain('pageId')
-  expect(html.split('pageId').length).toBe(2)
-  const match = partRegex`"pageId":"${/([^"]+)/}"`.exec(html)
-  expect(match).toBeTruthy()
-  let pageId = match![1]
-  expect(pageId).toBeTruthy()
-  pageId = pageId.replaceAll('\\\\/', '/')
-  return pageId
-}
-
-function expectPageContextJsonRequest(shouldExist: boolean) {
-  const reqs: string[] = []
-  const listener = (request: any) => reqs.push(request.url())
-  page.on('request', listener)
-  return () => {
-    page.removeListener('request', listener)
-    const count = reqs.filter((url) => url.endsWith('.pageContext.json')).length
-    const exists = count > 0
-    expect(exists).toBe(shouldExist)
-  }
-}
-
-/** Wait for a full page navigation/reload (i.e. complete DOM de-/reconstruction)
- *
- * Reliable alternative to Playwright's:
- *  - page.waitForURL() which doesn't work for page reloads (https://github.com/microsoft/playwright/issues/20853)
- *  - page.waitForNavigation() which is unreliable (https://github.com/microsoft/playwright/issues/20853#issuecomment-1698770812)
- */
-async function waitForNavigation(): Promise<() => Promise<void>> {
-  // We need to await page.evaluate() before the page navigation is triggered, otherwise Playwright throws:
-  // ```bash
-  // proxy.evaluate: Execution context was destroyed, most likely because of a navigation
-  // ```
-  await page.evaluate(() => (window._stamp = true))
-  return async () => {
-    await page.waitForFunction(() => window._stamp === undefined)
-  }
-}
-declare global {
-  var _stamp: undefined | true
 }
 
 function testRunClassic(
@@ -184,14 +106,4 @@ function testRunClassic(
       expect(html).toContain('<h1>About</h1>')
     })
   }
-}
-
-/** Call it before `editFile()` and `editFileRevert()` to make these reliable.
- *
- * It doesn't seem to be always needed.
- *
- * I don't know why it's sometimes needed, there seem to be some kind of race condition?
- */
-async function sleepBeforeEditFile() {
-  await sleep(500)
 }
