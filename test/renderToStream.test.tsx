@@ -122,8 +122,8 @@ describe('renderToStream()', async () => {
 })
 
 function testSnapshots(content: string, streamType: 'node' | 'web', disable: boolean) {
-  // Normalize file paths for CI compatibility
-  const normalizedContent = content.replace(/\/home\/[^/]+\/[^/]+\//g, '/FS-ROOT/')
+  // Normalize file paths for CI compatibility - replace any path ending with /react-streaming
+  const normalizedContent = content.replace(/\/.*\/react-streaming\//g, '/FS-ROOT/')
 
   if (streamType === 'node' && disable === false) {
     expect(normalizedContent).toMatchInlineSnapshot(
@@ -133,22 +133,22 @@ function testSnapshots(content: string, streamType: 'node' | 'web', disable: boo
       Only renders on client" data-stck="Switched to client rendering because the server rendering errored:
 
       Error: Only renders on client
-          at ErrorOnServer (/FS-ROOT/react-streaming/test/Page.tsx:53:11)
-          at Object.react-stack-bottom-frame (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:8723:18)
-          at renderWithHooks (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:4621:19)
-          at renderElement (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5056:23)
-          at retryNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5704:22)
-          at renderNodeDestructive (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5530:11)
-          at renderNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:6080:18)
-          at renderElement (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5318:22)
-          at retryNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5704:22)
-          at renderNodeDestructive (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5530:11)" data-cstck="
-          at ErrorOnServer (/FS-ROOT/react-streaming/test/Page.tsx:23:11)
+          at ErrorOnServer (/FS-ROOT/test/Page.tsx:53:11)
+          at Object.react-stack-bottom-frame (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:8723:18)
+          at renderWithHooks (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:4621:19)
+          at renderElement (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5056:23)
+          at retryNode (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5704:22)
+          at renderNodeDestructive (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5530:11)
+          at renderNode (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:6080:18)
+          at renderElement (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5318:22)
+          at retryNode (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5704:22)
+          at renderNodeDestructive (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5530:11)" data-cstck="
+          at ErrorOnServer (/FS-ROOT/test/Page.tsx:23:11)
           at Suspense (&lt;anonymous&gt;)
           at li (&lt;anonymous&gt;)
           at ul (&lt;anonymous&gt;)
           at Page (&lt;anonymous&gt;)
-          at ReactStreamingProviderSuspenseData (/FS-ROOT/react-streaming/src/server/useAsync/useSuspenseData.ts:10:47)"></template><p>loading on server</p><!--/$--></li></ul><script type="module" src="/main.js"></script><script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script><div hidden id="S:0"><p>Hello, I was lazy.</p></div><script>$RC=function(b,c,e){c=document.getElementById(c);c.parentNode.removeChild(c);var a=document.getElementById(b);if(a){b=a.previousSibling;if(e)b.data="$!",a.setAttribute("data-dgst",e);else{e=b.parentNode;a=b.nextSibling;var f=0;do{if(a&&8===a.nodeType){var d=a.data;if("/$"===d)if(0===f)break;else f--;else"$"!==d&&"$?"!==d&&"$!"!==d||f++}d=a.nextSibling;e.removeChild(a);a=d}while(a);for(;c.firstChild;)e.insertBefore(c.firstChild,a);b.data="$"}b._reactRetry&&b._reactRetry()}};$RC("B:0","S:0")</script>"
+          at ReactStreamingProviderSuspenseData (/FS-ROOT/src/server/useAsync/useSuspenseData.ts:10:47)"></template><p>loading on server</p><!--/$--></li></ul><script type="module" src="/main.js"></script><script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script><div hidden id="S:0"><p>Hello, I was lazy.</p></div><script>$RC=function(b,c,e){c=document.getElementById(c);c.parentNode.removeChild(c);var a=document.getElementById(b);if(a){b=a.previousSibling;if(e)b.data="$!",a.setAttribute("data-dgst",e);else{e=b.parentNode;a=b.nextSibling;var f=0;do{if(a&&8===a.nodeType){var d=a.data;if("/$"===d)if(0===f)break;else f--;else"$"!==d&&"$?"!==d&&"$!"!==d||f++}d=a.nextSibling;e.removeChild(a);a=d}while(a);for(;c.firstChild;)e.insertBefore(c.firstChild,a);b.data="$"}b._reactRetry&&b._reactRetry()}};$RC("B:0","S:0")</script>"
     `,
     )
   } else if (streamType === 'node' && disable === true) {
@@ -159,22 +159,22 @@ function testSnapshots(content: string, streamType: 'node' | 'web', disable: boo
       Only renders on client" data-stck="Switched to client rendering because the server rendering errored:
 
       Error: Only renders on client
-          at ErrorOnServer (/FS-ROOT/react-streaming/test/Page.tsx:53:11)
-          at Object.react-stack-bottom-frame (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:8723:18)
-          at renderWithHooks (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:4621:19)
-          at renderElement (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5056:23)
-          at retryNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5704:22)
-          at renderNodeDestructive (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5530:11)
-          at renderNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:6080:18)
-          at renderElement (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5318:22)
-          at retryNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5704:22)
-          at renderNodeDestructive (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5530:11)" data-cstck="
-          at ErrorOnServer (/FS-ROOT/react-streaming/test/Page.tsx:23:11)
+          at ErrorOnServer (/FS-ROOT/test/Page.tsx:53:11)
+          at Object.react-stack-bottom-frame (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:8723:18)
+          at renderWithHooks (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:4621:19)
+          at renderElement (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5056:23)
+          at retryNode (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5704:22)
+          at renderNodeDestructive (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5530:11)
+          at renderNode (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:6080:18)
+          at renderElement (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5318:22)
+          at retryNode (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5704:22)
+          at renderNodeDestructive (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5530:11)" data-cstck="
+          at ErrorOnServer (/FS-ROOT/test/Page.tsx:23:11)
           at Suspense (&lt;anonymous&gt;)
           at li (&lt;anonymous&gt;)
           at ul (&lt;anonymous&gt;)
           at Page (&lt;anonymous&gt;)
-          at ReactStreamingProviderSuspenseData (/FS-ROOT/react-streaming/src/server/useAsync/useSuspenseData.ts:10:47)"></template><p>loading on server</p><!--/$--></li></ul><script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script><script type="module" src="/main.js"></script>"
+          at ReactStreamingProviderSuspenseData (/FS-ROOT/src/server/useAsync/useSuspenseData.ts:10:47)"></template><p>loading on server</p><!--/$--></li></ul><script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script><script type="module" src="/main.js"></script>"
     `,
     )
   } else if (streamType === 'web' && disable === false) {
@@ -185,22 +185,22 @@ function testSnapshots(content: string, streamType: 'node' | 'web', disable: boo
       Only renders on client" data-stck="Switched to client rendering because the server rendering errored:
 
       Error: Only renders on client
-          at ErrorOnServer (/FS-ROOT/react-streaming/test/Page.tsx:53:11)
-          at Object.react-stack-bottom-frame (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:8798:18)
-          at renderWithHooks (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:4722:19)
-          at renderElement (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5157:23)
-          at retryNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5805:22)
-          at renderNodeDestructive (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5631:11)
-          at renderNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6181:18)
-          at renderElement (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5419:22)
-          at retryNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5805:22)
-          at renderNodeDestructive (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5631:11)" data-cstck="
-          at ErrorOnServer (/FS-ROOT/react-streaming/test/Page.tsx:23:11)
+          at ErrorOnServer (/FS-ROOT/test/Page.tsx:53:11)
+          at Object.react-stack-bottom-frame (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:8798:18)
+          at renderWithHooks (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:4722:19)
+          at renderElement (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5157:23)
+          at retryNode (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5805:22)
+          at renderNodeDestructive (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5631:11)
+          at renderNode (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6181:18)
+          at renderElement (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5419:22)
+          at retryNode (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5805:22)
+          at renderNodeDestructive (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5631:11)" data-cstck="
+          at ErrorOnServer (/FS-ROOT/test/Page.tsx:23:11)
           at Suspense (&lt;anonymous&gt;)
           at li (&lt;anonymous&gt;)
           at ul (&lt;anonymous&gt;)
           at Page (&lt;anonymous&gt;)
-          at ReactStreamingProviderSuspenseData (/FS-ROOT/react-streaming/src/server/useAsync/useSuspenseData.ts:10:47)"></template><p>loading on server</p><!--/$--></li></ul><script type="module" src="/main.js"></script><script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script><div hidden id="S:0"><p>Hello, I was lazy.</p></div><script>$RC=function(b,c,e){c=document.getElementById(c);c.parentNode.removeChild(c);var a=document.getElementById(b);if(a){b=a.previousSibling;if(e)b.data="$!",a.setAttribute("data-dgst",e);else{e=b.parentNode;a=b.nextSibling;var f=0;do{if(a&&8===a.nodeType){var d=a.data;if("/$"===d)if(0===f)break;else f--;else"$"!==d&&"$?"!==d&&"$!"!==d||f++}d=a.nextSibling;e.removeChild(a);a=d}while(a);for(;c.firstChild;)e.insertBefore(c.firstChild,a);b.data="$"}b._reactRetry&&b._reactRetry()}};$RC("B:0","S:0")</script>"
+          at ReactStreamingProviderSuspenseData (/FS-ROOT/src/server/useAsync/useSuspenseData.ts:10:47)"></template><p>loading on server</p><!--/$--></li></ul><script type="module" src="/main.js"></script><script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script><div hidden id="S:0"><p>Hello, I was lazy.</p></div><script>$RC=function(b,c,e){c=document.getElementById(c);c.parentNode.removeChild(c);var a=document.getElementById(b);if(a){b=a.previousSibling;if(e)b.data="$!",a.setAttribute("data-dgst",e);else{e=b.parentNode;a=b.nextSibling;var f=0;do{if(a&&8===a.nodeType){var d=a.data;if("/$"===d)if(0===f)break;else f--;else"$"!==d&&"$?"!==d&&"$!"!==d||f++}d=a.nextSibling;e.removeChild(a);a=d}while(a);for(;c.firstChild;)e.insertBefore(c.firstChild,a);b.data="$"}b._reactRetry&&b._reactRetry()}};$RC("B:0","S:0")</script>"
     `,
     )
   } else if (streamType === 'web' && disable === true) {
@@ -211,22 +211,22 @@ function testSnapshots(content: string, streamType: 'node' | 'web', disable: boo
       Only renders on client" data-stck="Switched to client rendering because the server rendering errored:
 
       Error: Only renders on client
-          at ErrorOnServer (/FS-ROOT/react-streaming/test/Page.tsx:53:11)
-          at Object.react-stack-bottom-frame (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:8798:18)
-          at renderWithHooks (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:4722:19)
-          at renderElement (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5157:23)
-          at retryNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5805:22)
-          at renderNodeDestructive (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5631:11)
-          at renderNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6181:18)
-          at renderElement (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5419:22)
-          at retryNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5805:22)
-          at renderNodeDestructive (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5631:11)" data-cstck="
-          at ErrorOnServer (/FS-ROOT/react-streaming/test/Page.tsx:23:11)
+          at ErrorOnServer (/FS-ROOT/test/Page.tsx:53:11)
+          at Object.react-stack-bottom-frame (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:8798:18)
+          at renderWithHooks (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:4722:19)
+          at renderElement (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5157:23)
+          at retryNode (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5805:22)
+          at renderNodeDestructive (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5631:11)
+          at renderNode (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6181:18)
+          at renderElement (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5419:22)
+          at retryNode (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5805:22)
+          at renderNodeDestructive (/FS-ROOT/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5631:11)" data-cstck="
+          at ErrorOnServer (/FS-ROOT/test/Page.tsx:23:11)
           at Suspense (&lt;anonymous&gt;)
           at li (&lt;anonymous&gt;)
           at ul (&lt;anonymous&gt;)
           at Page (&lt;anonymous&gt;)
-          at ReactStreamingProviderSuspenseData (/FS-ROOT/react-streaming/src/server/useAsync/useSuspenseData.ts:10:47)"></template><p>loading on server</p><!--/$--></li></ul><script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script><script type="module" src="/main.js"></script>"
+          at ReactStreamingProviderSuspenseData (/FS-ROOT/src/server/useAsync/useSuspenseData.ts:10:47)"></template><p>loading on server</p><!--/$--></li></ul><script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script><script type="module" src="/main.js"></script>"
     `,
     )
   }
