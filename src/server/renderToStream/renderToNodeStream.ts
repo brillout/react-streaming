@@ -61,6 +61,16 @@ async function renderToNodeStream(
       }
     })
   }
+  const onReactBug = (err: unknown) => {
+    debugFlow('react bug')
+    didError = true
+    firstErr ??= err
+    reactBug = err
+    // Only log if it wasn't used as rejection for `await renderToStream()`
+    if (reactBug !== firstErr || promiseResolved) {
+      console.error(reactBug)
+    }
+  }
   const renderToPipeableStream =
     options.renderToPipeableStream ?? (renderToPipeableStream_ as typeof renderToPipeableStream__)
   if (!options.renderToPipeableStream) {
@@ -84,16 +94,6 @@ async function renderToNodeStream(
     abort()
   })
   let promiseResolved = false
-  const onReactBug = (err: unknown) => {
-    debugFlow('react bug')
-    didError = true
-    firstErr ??= err
-    reactBug = err
-    // Only log if it wasn't used as rejection for `await renderToStream()`
-    if (reactBug !== firstErr || promiseResolved) {
-      console.error(reactBug)
-    }
-  }
   const { pipeForUser, injectToStream, streamEnd, hasStreamEnded } = await createPipeWrapper(
     pipeOriginal,
     onReactBug,
