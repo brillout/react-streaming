@@ -6,7 +6,7 @@ import { renderToPipeableStream as renderToPipeableStream_ } from 'react-dom/ser
 import type { renderToPipeableStream as renderToPipeableStream__ } from 'react-dom/server'
 import { createPipeWrapper } from './createPipeWrapper.js'
 import {
-  getErrorEnhanced,
+  getErrorWithComponentStack,
   type ErrorInfo,
   afterReactBugCatch,
   assertReactImport,
@@ -45,7 +45,7 @@ async function renderToNodeStream(
   let reactBug: unknown = null
   const onShellError = (err: unknown, errorInfo?: ErrorInfo) => {
     debugFlow('[react] onShellError()')
-    err = getErrorEnhanced(err, errorInfo)
+    err = getErrorWithComponentStack(err, errorInfo)
     didError = true
     firstErr ??= err
     onShellReady()
@@ -53,7 +53,7 @@ async function renderToNodeStream(
   // We intentionally swallow boundary errors, see https://github.com/brillout/react-streaming#error-handling
   const onBoundaryError = (err: unknown, errorInfo?: ErrorInfo) => {
     debugFlow('[react] onError()')
-    err = getErrorEnhanced(err, errorInfo)
+    err = getErrorWithComponentStack(err, errorInfo)
     afterReactBugCatch(() => {
       // Is not a React internal error (i.e. a React bug)
       if (err !== reactBug) {

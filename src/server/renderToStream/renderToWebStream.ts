@@ -4,7 +4,7 @@ import React from 'react'
 import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
 import { createReadableWrapper } from './createReadableWrapper.js'
 import {
-  getErrorEnhanced,
+  getErrorWithComponentStack,
   type ErrorInfo,
   afterReactBugCatch,
   assertReactImport,
@@ -50,7 +50,7 @@ async function renderToWebStream(
   let reactBug: unknown = null
   // We intentionally swallow boundary errors, see https://github.com/brillout/react-streaming#error-handling
   const onBoundaryError = (err: unknown, errorInfo?: ErrorInfo) => {
-    err = getErrorEnhanced(err, errorInfo)
+    err = getErrorWithComponentStack(err, errorInfo)
     afterReactBugCatch(() => {
       // Is not a React internal error (i.e. a React bug)
       if (err !== reactBug) {

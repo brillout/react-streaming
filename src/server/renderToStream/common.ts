@@ -1,6 +1,6 @@
 export { wrapStreamEnd }
 export { assertReactImport }
-export { getErrorEnhanced }
+export { getErrorWithComponentStack }
 export { afterReactBugCatch }
 export { debugFlow }
 export type { ErrorInfo }
@@ -33,7 +33,7 @@ function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Promise<boo
 
 // Inject componentStack to the error's stack trace
 type ErrorInfo = { componentStack?: string }
-function getErrorEnhanced(errorOriginal: unknown, errorInfo?: ErrorInfo) {
+function getErrorWithComponentStack(errorOriginal: unknown, errorInfo?: ErrorInfo) {
   if (!errorInfo?.componentStack || !isObject(errorOriginal)) return errorOriginal
   const errorStackLines = String(errorOriginal.stack).split('\n')
 
