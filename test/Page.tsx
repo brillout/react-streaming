@@ -48,7 +48,7 @@ function LazyComponent() {
 }
 
 function ErrorOnServer() {
-  // https://react.dev/reference/react/Suspense#providing-a-fallback-for-server-errors-and-client-only-content
+  // https://github.com/brillout/react-streaming#error-handling
   if (typeof window === 'undefined') {
     throw Error('Only renders on client')
   }

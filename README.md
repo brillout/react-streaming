@@ -189,22 +189,27 @@ The promise `await renderToStream()` resolves after the page shell is rendered. 
 
 ```jsx
 try {
-  await renderToStream(<Page />)
+  const stream = await renderToStream(<Page />)
   // ✅ Page shell succesfully rendered and is ready in the stream buffer.
 } catch(err) {
   // ❌ Something went wrong while rendering the page shell.
 }
 ```
 
-The stream returned by `await renderToStream()` doesn't emit errors.
+The stream never emits an error. (If it does emit an error then it's a Bug in React or `react-streaming`).
 
-> :book: If an error occurs during the stream, then that means that a `<Suspense>` boundary failed.
-> Instead of emiting a stream error, React swallows the error on the server-side and retries to resolve the `<Suspense>` boundary on the client-side.
+> :book: If an error occurs during the stream, then it means that a `<Suspense>` boundary failed.
+> Instead of emiting a stream error, React swallows the error on the server-side and retries the `<Suspense>` boundary on the client-side.
 > If the `<Suspense>` fails again on the client-side, then the client-side throws the error.
 >
 > This means that errors occuring during the stream are handled by React and there is nothing for you to do on the server-side. That said, you may want to gracefully handle the error on the client-side e.g. with [`react-error-boundary`](https://www.npmjs.com/package/react-error-boundary).
 >
 > You can use `options.onBoundaryError()` for error tracking purposes.
+
+See also:
+- [React Docs > `renderToReadableStream` > Recovering from errors outside the shell](https://react.dev/reference/react-dom/server/renderToReadableStream#recovering-from-errors-outside-the-shell)
+- [React Docs > `renderToReadableStream` > Recovering from errors inside the shell](https://react.dev/reference/react-dom/server/renderToReadableStream#recovering-from-errors-inside-the-shell)
+- [React Docs > `<Suspense>` > Providing a fallback for server errors and client-only content](https://react.dev/reference/react/Suspense#providing-a-fallback-for-server-errors-and-client-only-content)
 
 #### Abort
 
