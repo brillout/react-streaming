@@ -41,6 +41,7 @@ async function renderToNodeStream(
 
   let didError = false
   let firstErr: unknown = null
+  // TODO: simplify
   let reactBug: unknown = null
   const onShellError = (err: unknown, errorInfo?: ErrorInfo) => {
     debugFlow('[react] onShellError()')
@@ -49,7 +50,8 @@ async function renderToNodeStream(
     firstErr ??= err
     onShellReady()
   }
-  const onError = (err: unknown, errorInfo?: ErrorInfo) => {
+  // We intentionally swallow boundary errors, see https://github.com/brillout/react-streaming#error-handling
+  const onBoundaryError = (err: unknown, errorInfo?: ErrorInfo) => {
     debugFlow('[react] onError()')
     err = getErrorEnhanced(err, errorInfo)
     afterReactBugCatch(() => {
@@ -76,7 +78,7 @@ async function renderToNodeStream(
       onAllReady()
     },
     onShellError,
-    onError,
+    onError: onBoundaryError,
   })
   setAbortFn(() => {
     abort()
