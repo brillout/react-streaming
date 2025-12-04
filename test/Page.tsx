@@ -18,6 +18,11 @@ function Page() {
         <li>
           Interactive. <Counter />
         </li>
+        <li>
+          <Suspense fallback={<p>loading on server</p>}>
+            <ErrorOnServer />
+          </Suspense>
+        </li>
       </ul>
     </>
   )
@@ -40,4 +45,12 @@ function LazyComponent() {
       }),
   )
   return <p>{val}</p>
+}
+
+function ErrorOnServer() {
+  // https://github.com/brillout/react-streaming#error-handling
+  if (typeof window === 'undefined') {
+    throw Error('Only renders on client')
+  }
+  return <p>This text is only rendered on the client.</p>
 }

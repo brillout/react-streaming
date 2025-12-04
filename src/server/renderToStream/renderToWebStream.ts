@@ -46,11 +46,11 @@ async function renderToWebStream(
 
   let didError = false
   let firstErr: unknown = null
+  // TODO: simplify
   let reactBug: unknown = null
-  const onError = (err: unknown, errorInfo?: ErrorInfo) => {
+  // We intentionally swallow boundary errors, see https://github.com/brillout/react-streaming#error-handling
+  const onBoundaryError = (err: unknown, errorInfo?: ErrorInfo) => {
     err = getErrorEnhanced(err, errorInfo)
-    didError = true
-    firstErr = firstErr || err
     afterReactBugCatch(() => {
       // Is not a React internal error (i.e. a React bug)
       if (err !== reactBug) {
@@ -64,7 +64,7 @@ async function renderToWebStream(
     assertReactImport(renderToReadableStream, 'renderToReadableStream')
   }
   const readableOriginal = await renderToReadableStream(element, {
-    onError,
+    onError: onBoundaryError,
     signal: controller.signal,
     ...options.streamOptions,
   })
