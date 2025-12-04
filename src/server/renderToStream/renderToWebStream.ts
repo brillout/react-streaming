@@ -60,7 +60,7 @@ async function renderToWebStream(
   const onReactBug = (err: unknown) => {
     debugFlow('react bug')
     didError = true
-    firstErr = firstErr || err
+    firstErr ??= err
     ;(err as Record<string, unknown>)[isReactBug] = true
     // Only log if it wasn't used as rejection value for `await renderToStream()`
     if (err !== firstErr || promiseResolved) {
