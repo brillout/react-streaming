@@ -75,7 +75,7 @@
     "@brillout/part-regex": "^0.1.2",
     "@brillout/release-me": "^0.4.0",
     "@brillout/test-e2e": "^0.6.19",
-    "@types/node": "^15.12.2",
+    "@types/node": "^24.10.1",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "playwright-chromium": "^1.57.0",
