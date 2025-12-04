@@ -5,14 +5,7 @@ import React from 'react'
 import { renderToPipeableStream as renderToPipeableStream_ } from 'react-dom/server.node'
 import type { renderToPipeableStream as renderToPipeableStream__ } from 'react-dom/server'
 import { createPipeWrapper } from './createPipeWrapper.js'
-import {
-  getErrorEnhanced,
-  type ErrorInfo,
-  afterReactBugCatch,
-  assertReactImport,
-  debugFlow,
-  wrapStreamEnd,
-} from './common.js'
+import { assertReactImport, debugFlow, wrapStreamEnd, handleErrors } from './common.js'
 import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream.js'
 import type { DoNotClosePromise } from './orchestrateChunks.js'
 
@@ -39,28 +32,8 @@ async function renderToNodeStream(
     onShellReady = () => r()
   })
 
-  let didError = false
-  let firstErr: unknown = null
-  // TODO: simplify
-  let reactBug: unknown = null
-  const onShellError = (err: unknown, errorInfo?: ErrorInfo) => {
-    debugFlow('[react] onShellError()')
-    err = getErrorEnhanced(err, errorInfo)
-    didError = true
-    firstErr ??= err
-    onShellReady()
-  }
-  // We intentionally swallow boundary errors, see https://github.com/brillout/react-streaming#error-handling
-  const onBoundaryError = (err: unknown, errorInfo?: ErrorInfo) => {
-    debugFlow('[react] onError()')
-    err = getErrorEnhanced(err, errorInfo)
-    afterReactBugCatch(() => {
-      // Is not a React internal error (i.e. a React bug)
-      if (err !== reactBug) {
-        options.onBoundaryError?.(err)
-      }
-    })
-  }
+  const { state, onShellError, onBoundaryError, onReactBug } = handleErrors(options, () => promiseResolved)
+
   const renderToPipeableStream =
     options.renderToPipeableStream ?? (renderToPipeableStream_ as typeof renderToPipeableStream__)
   if (!options.renderToPipeableStream) {
@@ -72,28 +45,21 @@ async function renderToNodeStream(
       debugFlow('[react] onShellReady()')
       onShellReady()
     },
+    onShellError(err) {
+      onShellError(err)
+      onShellReady()
+    },
     onAllReady() {
       debugFlow('[react] onAllReady()')
       onShellReady()
       onAllReady()
     },
-    onShellError,
     onError: onBoundaryError,
   })
   setAbortFn(() => {
     abort()
   })
   let promiseResolved = false
-  const onReactBug = (err: unknown) => {
-    debugFlow('react bug')
-    didError = true
-    firstErr ??= err
-    reactBug = err
-    // Only log if it wasn't used as rejection for `await renderToStream()`
-    if (reactBug !== firstErr || promiseResolved) {
-      console.error(reactBug)
-    }
-  }
   const { pipeForUser, injectToStream, streamEnd, hasStreamEnded } = await createPipeWrapper(
     pipeOriginal,
     onReactBug,
@@ -101,15 +67,15 @@ async function renderToNodeStream(
     doNotClosePromise,
   )
   await shellReady
-  if (didError) throw firstErr
+  if (state.didError) throw state.firstErr
   if (disable) await allReady
-  if (didError) throw firstErr
+  if (state.didError) throw state.firstErr
   promiseResolved = true
   return {
     pipe: pipeForUser,
     abort,
     readable: null,
-    streamEnd: wrapStreamEnd(streamEnd, didError),
+    streamEnd: wrapStreamEnd(streamEnd, state.didError),
     injectToStream,
     hasStreamEnded,
   }

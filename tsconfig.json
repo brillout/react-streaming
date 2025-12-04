@@ -1,15 +1,22 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
+    // Output
     "target": "ES2019",
     "module": "ES2020",
-    "moduleResolution": "Node",
+    "outDir": "./dist/",
+    "declaration": true,
+    // Resolution
     "lib": ["es2022", "DOM"],
-    "skipLibCheck": true,
+    "moduleResolution": "Node",
     "esModuleInterop": true,
+    // Strictness
     "strict": true,
     "noUncheckedIndexedAccess": true,
-    "declaration": true
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    // Misc
+    "skipLibCheck": true,
+    "noErrorTruncation": true
   },
   "include": ["src/**/*"],
   "rootDir": "./src/"

@@ -1,21 +1,13 @@
-export { wrapStreamEnd }
-export { assertReactImport }
-export { getErrorEnhanced }
-export { afterReactBugCatch }
 export { debugFlow }
-export type { ErrorInfo }
+export { assertReactImport }
+export { wrapStreamEnd }
+export { handleErrors }
 
 import { toPosixPath } from '../../utils/path.js'
 import { assert, assertUsage, createDebugger, getBetterError, isObject } from '../utils.js'
 
 const debugFlow = createDebugger('react-streaming:flow')
-
-// Needed for the hacky solution to workaround https://github.com/facebook/react/issues/24536
-function afterReactBugCatch(fn: Function) {
-  setTimeout(() => {
-    fn()
-  }, 0)
-}
+const isReactBug = '__@brillout/react-streaming__isReactBug'
 
 function assertReactImport(fn: unknown, fnName: 'renderToPipeableStream' | 'renderToReadableStream') {
   assert(typeof fn === 'function')
@@ -31,9 +23,72 @@ function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Promise<boo
   )
 }
 
+function handleErrors(
+  options: {
+    onBoundaryError?: (err: unknown) => void
+  },
+  isPromiseResolved: () => boolean,
+) {
+  const state = {
+    didError: false,
+    firstErr: undefined as unknown,
+  }
+  let firstErrOriginal = undefined as unknown
+
+  return {
+    state,
+    onShellError,
+    onBoundaryError,
+    onReactBug,
+  }
+
+  function onShellError(err: unknown, errorInfo?: ErrorInfo) {
+    debugFlow('onShellError()')
+    state.didError = true
+    const errBetter = getErrorWithComponentStack(err, errorInfo)
+    if (state.firstErr === undefined) {
+      state.firstErr = errBetter
+      firstErrOriginal = err
+    }
+    logErr(err, errBetter)
+  }
+  // We intentionally swallow boundary errors, see https://github.com/brillout/react-streaming#error-handling
+  function onBoundaryError(err: unknown, errorInfo?: ErrorInfo) {
+    debugFlow('onBoundaryError()')
+    afterReactBugCatch(() => {
+      if ((err as Record<string, unknown>)[isReactBug]) return
+      const errBetter = getErrorWithComponentStack(err, errorInfo)
+      options.onBoundaryError?.(errBetter)
+    })
+  }
+  function onReactBug(err: unknown) {
+    debugFlow('onReactBug()')
+    state.didError = true
+    if (state.firstErr === undefined) {
+      state.firstErr = err
+      firstErrOriginal = err
+    }
+    ;(err as Record<string, unknown>)[isReactBug] = true
+    logErr(err)
+  }
+  function logErr(err: unknown, errBetter?: unknown) {
+    // Only log if it wasn't used as rejection value for `await renderToStream()`
+    if (err !== firstErrOriginal || isPromiseResolved()) {
+      console.error(errBetter ?? err)
+    }
+  }
+}
+
+// Needed for the hacky solution to workaround https://github.com/facebook/react/issues/24536
+function afterReactBugCatch(fn: Function) {
+  setTimeout(() => {
+    fn()
+  }, 0)
+}
+
 // Inject componentStack to the error's stack trace
 type ErrorInfo = { componentStack?: string }
-function getErrorEnhanced(errorOriginal: unknown, errorInfo?: ErrorInfo) {
+function getErrorWithComponentStack(errorOriginal: unknown, errorInfo?: ErrorInfo) {
   if (!errorInfo?.componentStack || !isObject(errorOriginal)) return errorOriginal
   const errorStackLines = String(errorOriginal.stack).split('\n')
 
