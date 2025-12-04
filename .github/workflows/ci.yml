@@ -17,6 +17,6 @@ jobs:
           node-version: 22
           cache: "pnpm"
       - run: pnpm install
-      - run: pnpm exec playwright-chromium install chromium
+      - run: pnpm exec playwright install chromium
       - run: pnpm run build
       - run: pnpm run test
