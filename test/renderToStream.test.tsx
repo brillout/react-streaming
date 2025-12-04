@@ -85,6 +85,8 @@ describe('renderToStream()', async () => {
         //  ```html
         //  <div hidden id="S:0"><p>Hello, I was lazy.</p></div><script><!--...--></script>
         //  ```
+
+        // Generic assertions that work for all combinations
         expect(data.content).toContain('<h1>Welcome</h1>This page is:<ul>')
         expect(data.content).toContain('<!--$?--><template id="B:0"></template><p>Loading...</p><!--/$-->')
         expect(data.content).toContain('<li>Rendered to HTML.</li>')
@@ -98,7 +100,110 @@ describe('renderToStream()', async () => {
         // ErrorOnServer component should render fallback on server
         expect(data.content).toContain('<p>loading on server</p>')
         expect(data.content).toContain('Only renders on client')
+
+        // Detailed snapshots for each combination
+        testSnapshots(data.content, streamType, disable)
       })
     })
   })
 })
+
+function testSnapshots(content: string, streamType: 'node' | 'web', disable: boolean) {
+  if (streamType === 'node' && disable === false) {
+    expect(content).toMatchInlineSnapshot(
+      `"<h1>Welcome</h1>This page is:<ul><li><!--$?--><template id="B:0"></template><p>Loading...</p><!--/$--></li><li>Rendered to HTML.</li><li>Interactive. <button type="button">Counter <!-- -->0</button></li><li><!--$!--><template data-msg="Switched to client rendering because the server rendering errored:
+
+Only renders on client" data-stck="Switched to client rendering because the server rendering errored:
+
+Error: Only renders on client
+    at ErrorOnServer (/home/rom/code/react-streaming/test/Page.tsx:53:11)
+    at Object.react-stack-bottom-frame (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:8723:18)
+    at renderWithHooks (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:4621:19)
+    at renderElement (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5056:23)
+    at retryNode (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5704:22)
+    at renderNodeDestructive (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5530:11)
+    at renderNode (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:6080:18)
+    at renderElement (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5318:22)
+    at retryNode (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5704:22)
+    at renderNodeDestructive (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5530:11)" data-cstck="
+    at ErrorOnServer (/home/rom/code/react-streaming/test/Page.tsx:23:11)
+    at Suspense (&lt;anonymous&gt;)
+    at li (&lt;anonymous&gt;)
+    at ul (&lt;anonymous&gt;)
+    at Page (&lt;anonymous&gt;)
+    at ReactStreamingProviderSuspenseData (/home/rom/code/react-streaming/src/server/useAsync/useSuspenseData.ts:10:47)"></template><p>loading on server</p><!--/$--></li></ul><script type="module" src="/main.js"></script><script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script><div hidden id="S:0"><p>Hello, I was lazy.</p></div><script>$RC=function(b,c,e){c=document.getElementById(c);c.parentNode.removeChild(c);var a=document.getElementById(b);if(a){b=a.previousSibling;if(e)b.data="$!",a.setAttribute("data-dgst",e);else{e=b.parentNode;a=b.nextSibling;var f=0;do{if(a&&8===a.nodeType){var d=a.data;if("/$"===d)if(0===f)break;else f--;else"$"!==d&&"$?"!==d&&"$!"!==d||f++}d=a.nextSibling;e.removeChild(a);a=d}while(a);for(;c.firstChild;)e.insertBefore(c.firstChild,a);b.data="$"}b._reactRetry&&b._reactRetry()}};$RC("B:0","S:0")</script>"`,
+    )
+  } else if (streamType === 'node' && disable === true) {
+    expect(content).toMatchInlineSnapshot(
+      `"<h1>Welcome</h1>This page is:<ul><li><!--$?--><template id="B:0"></template><p>Loading...</p><!--/$--></li><li>Rendered to HTML.</li><li>Interactive. <button type="button">Counter <!-- -->0</button></li><li><!--$!--><template data-msg="Switched to client rendering because the server rendering errored:
+
+Only renders on client" data-stck="Switched to client rendering because the server rendering errored:
+
+Error: Only renders on client
+    at ErrorOnServer (/home/rom/code/react-streaming/test/Page.tsx:53:11)
+    at Object.react-stack-bottom-frame (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:8723:18)
+    at renderWithHooks (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:4621:19)
+    at renderElement (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5056:23)
+    at retryNode (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5704:22)
+    at renderNodeDestructive (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5530:11)
+    at renderNode (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:6080:18)
+    at renderElement (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5318:22)
+    at retryNode (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5704:22)
+    at renderNodeDestructive (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.node.development.js:5530:11)" data-cstck="
+    at ErrorOnServer (/home/rom/code/react-streaming/test/Page.tsx:23:11)
+    at Suspense (&lt;anonymous&gt;)
+    at li (&lt;anonymous&gt;)
+    at ul (&lt;anonymous&gt;)
+    at Page (&lt;anonymous&gt;)
+    at ReactStreamingProviderSuspenseData (/home/rom/code/react-streaming/src/server/useAsync/useSuspenseData.ts:10:47)"></template><p>loading on server</p><!--/$--></li></ul><script type="module" src="/main.js"></script><script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script><div hidden id="S:0"><p>Hello, I was lazy.</p></div><script>$RC=function(b,c,e){c=document.getElementById(c);c.parentNode.removeChild(c);var a=document.getElementById(b);if(a){b=a.previousSibling;if(e)b.data="$!",a.setAttribute("data-dgst",e);else{e=b.parentNode;a=b.nextSibling;var f=0;do{if(a&&8===a.nodeType){var d=a.data;if("/$"===d)if(0===f)break;else f--;else"$"!==d&&"$?"!==d&&"$!"!==d||f++}d=a.nextSibling;e.removeChild(a);a=d}while(a);for(;c.firstChild;)e.insertBefore(c.firstChild,a);b.data="$"}b._reactRetry&&b._reactRetry()}};$RC("B:0","S:0")</script>"`,
+    )
+  } else if (streamType === 'web' && disable === false) {
+    expect(content).toMatchInlineSnapshot(
+      `"<h1>Welcome</h1>This page is:<ul><li><!--$?--><template id="B:0"></template><p>Loading...</p><!--/$--></li><li>Rendered to HTML.</li><li>Interactive. <button type="button">Counter <!-- -->0</button></li><li><!--$!--><template data-msg="Switched to client rendering because the server rendering errored:
+
+Only renders on client" data-stck="Switched to client rendering because the server rendering errored:
+
+Error: Only renders on client
+    at ErrorOnServer (/home/rom/code/react-streaming/test/Page.tsx:53:11)
+    at Object.react-stack-bottom-frame (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:8798:18)
+    at renderWithHooks (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:4722:19)
+    at renderElement (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5157:23)
+    at retryNode (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5805:22)
+    at renderNodeDestructive (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5631:11)
+    at renderNode (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6181:18)
+    at renderElement (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5419:22)
+    at retryNode (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5805:22)
+    at renderNodeDestructive (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5631:11)" data-cstck="
+    at ErrorOnServer (/home/rom/code/react-streaming/test/Page.tsx:23:11)
+    at Suspense (&lt;anonymous&gt;)
+    at li (&lt;anonymous&gt;)
+    at ul (&lt;anonymous&gt;)
+    at Page (&lt;anonymous&gt;)
+    at ReactStreamingProviderSuspenseData (/home/rom/code/react-streaming/src/server/useAsync/useSuspenseData.ts:10:47)"></template><p>loading on server</p><!--/$--></li></ul><script type="module" src="/main.js"></script><script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script><div hidden id="S:0"><p>Hello, I was lazy.</p></div><script>$RC=function(b,c,e){c=document.getElementById(c);c.parentNode.removeChild(c);var a=document.getElementById(b);if(a){b=a.previousSibling;if(e)b.data="$!",a.setAttribute("data-dgst",e);else{e=b.parentNode;a=b.nextSibling;var f=0;do{if(a&&8===a.nodeType){var d=a.data;if("/$"===d)if(0===f)break;else f--;else"$"!==d&&"$?"!==d&&"$!"!==d||f++}d=a.nextSibling;e.removeChild(a);a=d}while(a);for(;c.firstChild;)e.insertBefore(c.firstChild,a);b.data="$"}b._reactRetry&&b._reactRetry()}};$RC("B:0","S:0")</script>"`,
+    )
+  } else if (streamType === 'web' && disable === true) {
+    expect(content).toMatchInlineSnapshot(
+      `"<h1>Welcome</h1>This page is:<ul><li><!--$?--><template id="B:0"></template><p>Loading...</p><!--/$--></li><li>Rendered to HTML.</li><li>Interactive. <button type="button">Counter <!-- -->0</button></li><li><!--$!--><template data-msg="Switched to client rendering because the server rendering errored:
+
+Only renders on client" data-stck="Switched to client rendering because the server rendering errored:
+
+Error: Only renders on client
+    at ErrorOnServer (/home/rom/code/react-streaming/test/Page.tsx:53:11)
+    at Object.react-stack-bottom-frame (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:8798:18)
+    at renderWithHooks (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:4722:19)
+    at renderElement (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5157:23)
+    at retryNode (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5805:22)
+    at renderNodeDestructive (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5631:11)
+    at renderNode (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6181:18)
+    at renderElement (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5419:22)
+    at retryNode (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5805:22)
+    at renderNodeDestructive (/home/rom/code/react-streaming/node_modules/.pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5631:11)" data-cstck="
+    at ErrorOnServer (/home/rom/code/react-streaming/test/Page.tsx:23:11)
+    at Suspense (&lt;anonymous&gt;)
+    at li (&lt;anonymous&gt;)
+    at ul (&lt;anonymous&gt;)
+    at Page (&lt;anonymous&gt;)
+    at ReactStreamingProviderSuspenseData (/home/rom/code/react-streaming/src/server/useAsync/useSuspenseData.ts:10:47)"></template><p>loading on server</p><!--/$--></li></ul><script type="module" src="/main.js"></script><script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script><div hidden id="S:0"><p>Hello, I was lazy.</p></div><script>$RC=function(b,c,e){c=document.getElementById(c);c.parentNode.removeChild(c);var a=document.getElementById(b);if(a){b=a.previousSibling;if(e)b.data="$!",a.setAttribute("data-dgst",e);else{e=b.parentNode;a=b.nextSibling;var f=0;do{if(a&&8===a.nodeType){var d=a.data;if("/$"===d)if(0===f)break;else f--;else"$"!==d&&"$?"!==d&&"$!"!==d||f++}d=a.nextSibling;e.removeChild(a);a=d}while(a);for(;c.firstChild;)e.insertBefore(c.firstChild,a);b.data="$"}b._reactRetry&&b._reactRetry()}};$RC("B:0","S:0")</script>"`,
+    )
+  }
+}
