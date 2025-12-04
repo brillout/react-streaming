@@ -3,20 +3,11 @@ export { renderToWebStream }
 import React from 'react'
 import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
 import { createReadableWrapper } from './createReadableWrapper.js'
-import {
-  getErrorWithComponentStack,
-  type ErrorInfo,
-  afterReactBugCatch,
-  assertReactImport,
-  debugFlow,
-  wrapStreamEnd,
-} from './common.js'
+import { assertReactImport, debugFlow, wrapStreamEnd, handleErrors } from './common.js'
 import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream.js'
 import type { DoNotClosePromise } from './orchestrateChunks.js'
 import { version } from 'react-dom/server'
 import { assert, assertVersion } from '../utils.js'
-
-const isReactBug = '__@brillout/react-streaming__isReactBug'
 
 async function renderToWebStream(
   element: React.ReactNode,
@@ -46,28 +37,7 @@ async function renderToWebStream(
     controller.abort()
   })
 
-  let didError = false
-  let firstErr: unknown = null
-  // We intentionally swallow boundary errors, see https://github.com/brillout/react-streaming#error-handling
-  const onBoundaryError = (err: unknown, errorInfo?: ErrorInfo) => {
-    debugFlow('[react] onError()')
-    err = getErrorWithComponentStack(err, errorInfo)
-    afterReactBugCatch(() => {
-      // Is not a React internal error (i.e. a React bug)
-      if ((err as Record<string, unknown>)[isReactBug]) return
-      options.onBoundaryError?.(err)
-    })
-  }
-  const onReactBug = (err: unknown) => {
-    debugFlow('[react] React bug: allReady.catch()')
-    didError = true
-    firstErr ??= err
-    ;(err as Record<string, unknown>)[isReactBug] = true
-    // Only log if it wasn't used as rejection value for `await renderToStream()`
-    if (err !== firstErr || promiseResolved) {
-      console.error(err)
-    }
-  }
+  const { state, onBoundaryError, onReactBug } = handleErrors(options, () => promiseResolved)
 
   const renderToReadableStream =
     options.renderToReadableStream ?? (renderToReadableStream_ as typeof renderToReadableStream__)
@@ -83,9 +53,9 @@ async function renderToWebStream(
   let promiseResolved = false
   // Upon React internal errors (i.e. React bugs), React rejects `allReady`. React doesn't reject `allReady` upon boundary errors.
   allReady.catch(onReactBug)
-  if (didError) throw firstErr
+  if (state.didError) throw state.firstErr
   if (disable) await allReady
-  if (didError) throw firstErr
+  if (state.didError) throw state.firstErr
   const { readableForUser, streamEnd, injectToStream, hasStreamEnded } = createReadableWrapper(
     readableOriginal,
     clearTimeouts,
@@ -96,7 +66,7 @@ async function renderToWebStream(
     readable: readableForUser,
     pipe: null,
     abort: controller.abort,
-    streamEnd: wrapStreamEnd(streamEnd, didError),
+    streamEnd: wrapStreamEnd(streamEnd, state.didError),
     injectToStream,
     hasStreamEnded,
   }

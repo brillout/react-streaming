@@ -1,14 +1,13 @@
 export { wrapStreamEnd }
 export { assertReactImport }
-export { getErrorWithComponentStack }
-export { afterReactBugCatch }
 export { debugFlow }
-export type { ErrorInfo }
+export { handleErrors }
 
 import { toPosixPath } from '../../utils/path.js'
 import { assert, assertUsage, createDebugger, getBetterError, isObject } from '../utils.js'
 
 const debugFlow = createDebugger('react-streaming:flow')
+const isReactBug = '__@brillout/react-streaming__isReactBug'
 
 // Needed for the hacky solution to workaround https://github.com/facebook/react/issues/24536
 function afterReactBugCatch(fn: Function) {
@@ -29,6 +28,52 @@ function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Promise<boo
       .then(() => new Promise<void>((r) => setTimeout(r, 0)))
       .then(() => !didError)
   )
+}
+
+function handleErrors(
+  options: {
+    onBoundaryError?: (err: unknown) => void
+  },
+  isPromiseResolved: () => boolean,
+) {
+  const state = {
+    didError: false,
+    firstErr: null as unknown,
+  }
+
+  const onShellError = (err: unknown, errorInfo?: ErrorInfo) => {
+    debugFlow('[react] onShellError()')
+    err = getErrorWithComponentStack(err, errorInfo)
+    state.didError = true
+    state.firstErr ??= err
+  }
+  // We intentionally swallow boundary errors, see https://github.com/brillout/react-streaming#error-handling
+  const onBoundaryError = (err: unknown, errorInfo?: ErrorInfo) => {
+    debugFlow('[react] onError()')
+    err = getErrorWithComponentStack(err, errorInfo)
+    afterReactBugCatch(() => {
+      // Is not a React internal error (i.e. a React bug)
+      if ((err as Record<string, unknown>)[isReactBug]) return
+      options.onBoundaryError?.(err)
+    })
+  }
+  const onReactBug = (err: unknown) => {
+    debugFlow('[react] React bug')
+    state.didError = true
+    state.firstErr ??= err
+    ;(err as Record<string, unknown>)[isReactBug] = true
+    // Only log if it wasn't used as rejection value for `await renderToStream()`
+    if (err !== state.firstErr || isPromiseResolved()) {
+      console.error(err)
+    }
+  }
+
+  return {
+    state,
+    onShellError,
+    onBoundaryError,
+    onReactBug,
+  }
 }
 
 // Inject componentStack to the error's stack trace
