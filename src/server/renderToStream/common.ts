@@ -45,7 +45,6 @@ function handleErrors(
     debugFlow('onBoundaryError()')
     err = getErrorWithComponentStack(err, errorInfo)
     afterReactBugCatch(() => {
-      // Is not a React internal error (i.e. a React bug)
       if ((err as Record<string, unknown>)[isReactBug]) return
       options.onBoundaryError?.(err)
     })
