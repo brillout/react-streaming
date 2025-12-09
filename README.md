@@ -157,9 +157,10 @@ await renderToStream(<Page />, options)
 By default, `react-streaming` disables streaming for bots and crawlers, such as:
 - The [Google Bot](https://developers.google.com/search/docs/crawling-indexing/googlebot), which crawls the HTML of your pages to be able to show a preview of your website on Google's result pages.
 - The bot of social sites (Twitter/Instagram/WhatsApp...), which crawl the HTML of your pages to be able to show a preview of your website when it's shared on Twitter/Instagram/WhatsApp/...
+- AI bots
 
 > [!NOTE]
-> These bots explore your website by navigating the HTML of your pages. It isn't clear what bots do when they encounter an HTML stream ([to be researched](https://github.com/brillout/react-streaming/issues/39)); it's therefore safer to provide bots with a fully rendered HTML at once that contains all the content of your page (i.e. disable HTML streaming) instead of hoping that bots will await the HTML stream.
+> These bots explore your website by navigating the HTML of your pages. [It isn't clear how bots handle HTML streams](https://github.com/brillout/react-streaming/issues/39). It's therefore safer to provide bots with a fully rendered HTML at once that contains all the content of your page (i.e. disable HTML streaming) instead of hoping that bots will await the HTML stream.
 
 For `react-streaming` to be able to determine whether a request comes from a bot or a real user, you need to provide <a href="https://github.com/brillout/react-streaming#:~:text=disable%20%7D)-,options.userAgent,-%3F%3A%20string%3A%20The%20HTTP">`options.userAgent`</a>.
 
@@ -231,7 +232,7 @@ abort()
 With `react-streaming`, all your page content is included in the HTML stream, giving you all the benefits of SSR.
 
 > [!NOTE]
-> It isn't entirely clear whether and how long crawlers (e.g. Googlebot) wait for the HTML stream to complete. That's why `react-streaming` automatically disables HTML Streaming for crawlers and falls back to "classic SSR" — see [Bots](#bots).
+> [It isn't clear how bots handle HTML streams](https://github.com/brillout/react-streaming/issues/39). For now, `react-streaming` takes a conservative approach and automatically disables HTML streaming for crawlers, falling back to classic SSR — see [Bots](#bots).
 
 > [!NOTE]
 > The order in which the content of your page is included in the HTML stream depends on which data comes first. For example, if you use a loading fallback component, the content of the loading component appears first, followed by the content of the main component after the `<Suspense>` boundary resolves.
