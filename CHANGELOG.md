@@ -1,3 +1,12 @@
+## [0.4.14](https://github.com/brillout/react-streaming/compare/v0.4.13...v0.4.14) (2025-12-11)
+
+
+### Bug Fixes
+
+* update getBetterError() impl ([b8565c1](https://github.com/brillout/react-streaming/commit/b8565c1257c63a665bda31b9be42112e458859d1))
+
+
+
 ## [0.4.13](https://github.com/brillout/react-streaming/compare/v0.4.12...v0.4.13) (2025-12-04)
 
 
