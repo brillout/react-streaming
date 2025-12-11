@@ -44,8 +44,10 @@ async function renderToNodeStream(
       debugFlow('[react] onShellReady()')
       onShellReady()
     },
-    onShellError(err) {
-      onShellError(err)
+    // @ts-expect-error Taking a leap of faith that `errorInfo` will eventually be passed to onShellError()
+    // https://github.com/facebook/react/issues/35349
+    onShellError(err: any, errorInfo: any) {
+      onShellError(err, errorInfo)
       onShellReady()
     },
     onAllReady() {

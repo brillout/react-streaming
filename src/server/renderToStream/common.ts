@@ -87,6 +87,8 @@ function afterReactBugCatch(fn: Function) {
 }
 
 // Inject componentStack to the error's stack trace
+// - Doesn't seem to be used for now: https://github.com/facebook/react/issues/35349
+// - Client counterpart: https://github.com/vikejs/vike-react/blob/80fde437bfab666e5b4a0a30386300363bd99939/packages/vike-react/src/integration/onRenderClient.tsx#L108
 type ErrorInfo = { componentStack?: string }
 function getErrorWithComponentStack(errorOriginal: unknown, errorInfo?: ErrorInfo) {
   if (!errorInfo?.componentStack || !isObject(errorOriginal)) return errorOriginal
