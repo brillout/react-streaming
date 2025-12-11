@@ -73,7 +73,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.7.0",
     "@brillout/part-regex": "^0.1.2",
-    "@brillout/release-me": "^0.4.0",
+    "@brillout/release-me": "^0.4.9",
     "@brillout/test-e2e": "^0.6.20",
     "@types/node": "^24.10.1",
     "@types/react": "^19.0.10",
