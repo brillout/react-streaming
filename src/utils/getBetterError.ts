@@ -1,11 +1,21 @@
 export { getBetterError }
 
-// TO-DO/eventually: make it a library `@brillout/better-error`
+// TO-DO/maybe: make it a library `@brillout/better-error`
+
+// Copies:
+// - https://github.com/vikejs/vike/blob/a54b7618d80409c6df4b597489ddbb7739f3e86f/packages/vike/utils/getBetterError.ts
+// - https://github.com/vikejs/vike-react/blob/0367843eae1289430413bea69018997c582326c7/packages/vike-react/src/utils/getBetterErrorLight.ts
 
 import { isObject } from './isObject.js'
+import { assertIsNotBrowser } from './assertIsNotBrowser.js'
+import { objectAssign } from './objectAssign.js'
+assertIsNotBrowser()
 
-function getBetterError(err: unknown, modifications: { message?: string; stack?: string; hideStack?: true }) {
-  let errBetter: { message: string; stack: string }
+function getBetterError(
+  err: unknown,
+  modifications: { message?: string | { prepend?: string; append?: string }; stack?: string; hideStack?: true },
+) {
+  let errBetter: { message: string; stack: string; hideStack?: true }
 
   // Normalize
   if (!isObject(err)) {
@@ -19,17 +29,43 @@ function getBetterError(err: unknown, modifications: { message?: string; stack?:
     warnMalformed(err)
     errBetter.stack = new Error(errBetter.message).stack!
   }
-  if (!errBetter.stack.includes(errBetter.message)) {
-    warnMalformed(err)
+
+  // Modifications: err.hideStack and err.stack
+  const { message: modsMessage, ...mods } = modifications
+  Object.assign(errBetter, mods)
+
+  // Modifications: err.message
+  if (typeof modsMessage === 'string') {
+    // Modify err.message
+    const messagePrev = errBetter.message
+    const messageNext = modsMessage
+    errBetter.message = messageNext
+    // Update err.stack
+    const messagePrevIdx = errBetter.stack.indexOf(messagePrev)
+    if (messagePrevIdx >= 0) {
+      // Completely replace the beginning of err.stack — removing prefix such as "SyntaxError: "
+      // - Following isn't always true: `err.stack.startsWith(err.message)` — because err.stack can start with "SyntaxError: " whereas err.message doesn't
+      const stack = errBetter.stack.slice(messagePrevIdx + messagePrev.length)
+      errBetter.stack = messageNext + stack
+    } else {
+      warnMalformed(err)
+    }
+  } else {
+    if (modsMessage?.append) {
+      const messagePrev = errBetter.message
+      const messageNext = errBetter.message + modsMessage.append
+      errBetter.message = messageNext
+      errBetter.stack = errBetter.stack.replace(messagePrev, messageNext)
+    }
+    if (modsMessage?.prepend) {
+      const { prepend } = modsMessage
+      errBetter.message = prepend + errBetter.message
+      errBetter.stack = prepend + errBetter.stack
+    }
   }
 
-  // Modifications
-  const errMessageOriginal = errBetter.message
-  Object.assign(errBetter, modifications)
-  if (modifications.message) errBetter.stack = errBetter.stack.replaceAll(errMessageOriginal, modifications.message)
-
   // Enable users to retrieve the original error
-  Object.assign(errBetter, { getOriginalError: () => (err as any)?.getOriginalError?.() ?? err })
+  objectAssign(errBetter, { getOriginalError: () => (err as any)?.getOriginalError?.() ?? err })
 
   return errBetter
 }
