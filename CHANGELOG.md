@@ -1,3 +1,12 @@
+## [0.4.15](https://github.com/brillout/react-streaming/compare/v0.4.14...v0.4.15) (2025-12-15)
+
+
+### Bug Fixes
+
+* avoid breaking ssrFixStacktrace (vitejs/vite[#21269](https://github.com/brillout/react-streaming/issues/21269)) (vikejs/vike[#2942](https://github.com/brillout/react-streaming/issues/2942)) ([59d1e34](https://github.com/brillout/react-streaming/commit/59d1e3475c98f4bfa8f17f30a5bd202c1d6cfe48))
+
+
+
 ## [0.4.14](https://github.com/brillout/react-streaming/compare/v0.4.13...v0.4.14) (2025-12-11)
 
 
