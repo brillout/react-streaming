@@ -3,8 +3,8 @@ export { getBetterError }
 // TO-DO/maybe: make it a library `@brillout/better-error`
 
 // Copies:
-// - https://github.com/brillout/react-streaming/blob/b8565c1257c63a665bda31b9be42112e458859d1/src/utils/getBetterError.ts
-// - https://github.com/vikejs/vike-react/blob/5477461e67592e24d2aa38a552703b9e76a01d2a/packages/vike-react/src/utils/getBetterErrorLight.ts
+// - https://github.com/vikejs/vike/blob/a54b7618d80409c6df4b597489ddbb7739f3e86f/packages/vike/utils/getBetterError.ts
+// - https://github.com/vikejs/vike-react/blob/0367843eae1289430413bea69018997c582326c7/packages/vike-react/src/utils/getBetterErrorLight.ts
 
 import { isObject } from './isObject.js'
 import { assertIsNotBrowser } from './assertIsNotBrowser.js'
