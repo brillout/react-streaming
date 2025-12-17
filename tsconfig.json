@@ -1,23 +1,26 @@
 {
+  "include": ["./src"],
+  "exclude": ["**/*.spec.ts"],
   "compilerOptions": {
-    // Output
-    "target": "ES2019",
-    "module": "ES2020",
-    "outDir": "./dist/",
-    "declaration": true,
-    // Resolution
-    "lib": ["es2022", "DOM"],
-    "moduleResolution": "Node",
-    "esModuleInterop": true,
+    // Misc
+    "skipLibCheck": true,
+    "noErrorTruncation": true,
     // Strictness
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    // Misc
-    "skipLibCheck": true,
-    "noErrorTruncation": true
-  },
-  "include": ["src/**/*"],
-  "rootDir": "./src/"
+    // Resolution
+    "esModuleInterop": true,
+    "moduleResolution": "Node16",
+    // Libs
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "types": [],
+    // Output
+    "target": "ES2020",
+    "module": "Node16",
+    "outDir": "./dist/",
+    "rootDir": "./src/",
+    "declaration": true
+  }
 }
