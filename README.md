@@ -6,7 +6,7 @@
 
 # `react-streaming`
 
-HTML Streaming with React — batteries-included and made easy.
+HTML Streaming with React — batteries-included, easy, and rock-solid (it powers Vike's official React integration [`vike-react`](https://vike.dev/vike-react)).
 
 > [!NOTE]
 > Unfamiliar with HTML Streaming? Check out [Dan's article about SSR and Streaming](https://github.com/reactwg/react-18/discussions/37).
