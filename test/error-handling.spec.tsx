@@ -86,7 +86,14 @@ describe('error handling', async () => {
         // <script class="react-streaming_initData" type="application/json">{"key":"\\"lazy-component-key\\"","value":"Hello, I was lazy.","elementId":":R0:"}</script>
         // ```
         expect(dataBegin).toMatchInlineSnapshot(
-          `"<!--$?--><template id="B:0"></template><p>Loading...</p><!--/$--><script class="react-streaming_initData" type="application/json">{"key":"\\"lazy-component-key\\"","value":"Hello, I was lazy.","elementId":":R0:"}</script><script>$RX=function(b,c,d,e,f){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data="$!",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),f&&(a.cstck=f),b._reactRetry&&b._reactRetry())};;$RX("B:0","","Switched to client rendering because the server rendering errored:\\n\\nsome-error","Switched to client rendering because the server rendering errored:\\n\\nError: some-error\\n    "`,
+          `
+          "<!--$!--><template data-msg="Switched to client rendering because the server rendering errored:
+
+          some-error" data-stck="Switched to client rendering because the server rendering errored:
+
+          Error: some-error
+              "
+        `,
         )
 
         // React handling the suspense boundary error
