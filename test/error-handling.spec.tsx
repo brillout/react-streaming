@@ -76,15 +76,7 @@ describe('error handling', async () => {
         const [dataBegin, ...rest] = data.content.split(split)
         const dataEnd = rest.join(split)
 
-        // Page Shell:
-        // ```html
-        // <!--$?--><template id="B:0"></template><p>Loading...</p><!--/$-->
-        // ```
-        //
-        // `useAsync()` script injection:
-        // ```html
-        // <script class="react-streaming_initData" type="application/json">{"key":"\\"lazy-component-key\\"","value":"Hello, I was lazy.","elementId":":R0:"}</script>
-        // ```
+        // This used to contain the page shell (`<p>Loading...</p>` and `<script class="react-streaming_initData" type="application/json">`) in react@19.0.0 but this isn't the case anymore in react@19.2.3
         expect(dataBegin).toMatchInlineSnapshot(
           `
           "<!--$!--><template data-msg="Switched to client rendering because the server rendering errored:
@@ -100,14 +92,9 @@ describe('error handling', async () => {
         {
           const content = split + dataEnd
           const filePointer = /[^\)]+/
-          try {
-            expect(content).toMatch(
-              partRegex`at Page (${filePointer})\\n    at ReactStreamingProviderSuspenseData (${filePointer})")</script>`,
-            )
-          } catch (err) {
-            console.log('actual:', content)
-            throw err
-          }
+          expect(content).toMatch(
+            partRegex`at Page (${filePointer})\n    at ReactStreamingProviderSuspenseData (${filePointer})"`,
+          )
         }
       }
       expect(onBoundaryError).toBeCalled()

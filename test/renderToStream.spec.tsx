@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import React from 'react'
 import { Page } from './Page'
 import { render } from './render'
+import partRegex from '@brillout/part-regex'
 
 describe('renderToStream()', async () => {
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
@@ -78,8 +79,8 @@ describe('renderToStream()', async () => {
 
         if (!disable) {
           //  Injection useAsync()
-          expect(data.content).toContain(
-            '<script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":":R7:"}</script>',
+          expect(data.content).toMatch(
+            partRegex`<script class="react-streaming_initData" type="application/json">{"key":"\\"hello-component-key\\"","value":"Hello, I was lazy.","elementId":"${/[^"]*/}"}</script>`,
           )
 
           //  Suspense resolving LazyComponent
