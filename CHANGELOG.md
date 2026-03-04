@@ -1,3 +1,12 @@
+## [0.4.16](https://github.com/brillout/react-streaming/compare/v0.4.15...v0.4.16) (2026-03-04)
+
+
+### Bug Fixes
+
+* export RenderToStreamOptions ([ed955b8](https://github.com/brillout/react-streaming/commit/ed955b89542baa639daa76d7308a0f44f5971ad4))
+
+
+
 ## [0.4.15](https://github.com/brillout/react-streaming/compare/v0.4.14...v0.4.15) (2025-12-15)
 
 
