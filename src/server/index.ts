@@ -1,4 +1,4 @@
-export { renderToStream, disable }
+export { renderToStream, disable, type RenderToStreamOptions }
 export type { InjectToStream }
 
 // We don't import from ./utils.ts because utils/debug.js contains a !isBrowser() assertion
@@ -9,5 +9,5 @@ assertUsage(
   "The file node_modules/react-streaming/dist/server/index.js is loaded in the browser but it shouldn't. Make sure to never `import { something } from 'react-streaming/server'` in code that runs on the client-side. Also make sure your bundler picks the right node_modules/react-streaming/package.json#exports entries.",
 )
 
-import { renderToStream, disable } from './renderToStream.js'
+import { renderToStream, disable, type RenderToStreamOptions } from './renderToStream.js'
 import type { InjectToStream } from './renderToStream/orchestrateChunks.js'

@@ -5,6 +5,7 @@ export { renderToWebStream_set }
 export type { StreamReturnUtils }
 export type { SetAbortFn }
 export type { ClearTimeouts }
+export type { RenderToStreamOptions }
 
 import React from 'react'
 import ReactDOMServer, { version as reactDomVersion } from 'react-dom/server'
@@ -35,7 +36,7 @@ export type StreamOptions =
   | Omit<RenderToPipeableStreamOptions, 'onShellReady' | 'onShellError' | 'onError' | 'onAllReady'>
   | Omit<RenderToReadableStreamOptions, 'onError' | 'signal'>
 
-type Options = {
+type RenderToStreamOptions = {
   webStream?: boolean
   disable?: boolean
   seoStrategy?: SeoStrategy
@@ -84,7 +85,7 @@ function disable() {
   globalConfig.disable = true
 }
 
-async function renderToStream(element: React.ReactNode, options: Options = {}): Promise<StreamReturn> {
+async function renderToStream(element: React.ReactNode, options: RenderToStreamOptions = {}): Promise<StreamReturn> {
   // Let's see if a user complains
   assertUsage(!options.renderToPipeableStream && !options.renderToReadableStream, 'using deprecated options')
 
