@@ -57,16 +57,22 @@ async function createPipeWrapper(
           debug('final')
           clearTimeouts()
           await onBeforeEnd()
-          writableFromUser.end()
-          onEnded()
-          callback()
+          // https://github.com/brillout/react-streaming/pull/56
+          writableFromUser.end(() => {
+            onEnded()
+            callback()
+          })
         },
         destroy(err) {
           debug(`destroy (\`!!err === ${!!err}\`)`)
           clearTimeouts()
           // Upon React internal errors (i.e. React bugs), React destroys the stream.
           if (err) onReactBug(err)
-          writableFromUser.destroy(err ?? undefined)
+          // If the user writable has been ended, we don't need to destroy it. Doing so
+          // crashes Node if there's still data being flushed from it.
+          if (!writableFromUser.writableEnded) {
+            writableFromUser.destroy(err ?? undefined)
+          }
           onEnded()
         },
       })
