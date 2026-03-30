@@ -57,6 +57,7 @@ async function createPipeWrapper(
           debug('final')
           clearTimeouts()
           await onBeforeEnd()
+          // https://github.com/brillout/react-streaming/pull/56
           writableFromUser.end(() => {
             onEnded()
             callback()
