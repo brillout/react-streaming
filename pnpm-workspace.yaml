@@ -7,3 +7,4 @@ allowBuilds:
   playwright-chromium: true
 minimumReleaseAgeExclude:
   - '@brillout/json-serializer@0.5.23-commit-8c863db'
+  - '@brillout/json-serializer@0.5.24'
