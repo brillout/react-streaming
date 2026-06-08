@@ -12,8 +12,8 @@ importers:
         specifier: ^0.2.3
         version: 0.2.6
       '@brillout/json-serializer':
-        specifier: ^0.5.24
-        version: 0.5.24
+        specifier: ^0.5.25
+        version: 0.5.25
       '@brillout/picocolors':
         specifier: ^1.0.11
         version: 1.0.29
@@ -278,11 +278,11 @@ packages:
   '@brillout/import@0.2.6':
     resolution: {integrity: sha512-1GUTmADc8trUC1YSW2lp9r6PmwluMoEyHajnE1kxVdbKGD0wJOlq/DvTWMUqLtBDCnQR+n//qgMtz6HwA/lotA==}
 
-  '@brillout/json-serializer@0.5.21':
-    resolution: {integrity: sha512-pzzT4U4A9rk7eZpFjloRoMrGG2jnptwNGAhPIH7ZVjCMHd6TaJ29hrERPaY6Bp3Xdzu8JWlHI1o3x7PysxkaHQ==}
-
   '@brillout/json-serializer@0.5.24':
     resolution: {integrity: sha512-SPCNVar0eStsbmrS+2oovY5f6HFG+KFwsuHXepWuNpZMMyBRQPHMnevpiqS0rsF20XNvupbHdF0WZW34i0P8RQ==}
+
+  '@brillout/json-serializer@0.5.25':
+    resolution: {integrity: sha512-/Ahv1XIHAYyROWfyOQZxbxmkvM3ef3aMPPzEC0EfkyZUFb88y/nFFwCFvYUjE20MGoF8/9Z1jIy7ihkpkE+maw==}
 
   '@brillout/part-regex@0.1.4':
     resolution: {integrity: sha512-PQy5LfRmIueEfGwhvMedsnj6KulDfxlfvUaTsUchBqA7nTge4C7taG/V6np2uCHVxxE4+cSmwM4COn9aNcMn7g==}
@@ -2120,9 +2120,9 @@ snapshots:
 
   '@brillout/import@0.2.6': {}
 
-  '@brillout/json-serializer@0.5.21': {}
-
   '@brillout/json-serializer@0.5.24': {}
+
+  '@brillout/json-serializer@0.5.25': {}
 
   '@brillout/part-regex@0.1.4': {}
 
@@ -3261,7 +3261,7 @@ snapshots:
   react-streaming@0.4.16(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
       '@brillout/import': 0.2.6
-      '@brillout/json-serializer': 0.5.21
+      '@brillout/json-serializer': 0.5.24
       '@brillout/picocolors': 1.0.29
       isbot-fast: 1.2.0
       react: 19.2.3
@@ -3494,7 +3494,7 @@ snapshots:
   vike@0.4.247(react-streaming@0.4.16(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(vite@7.2.6(@types/node@24.10.1)):
     dependencies:
       '@brillout/import': 0.2.6
-      '@brillout/json-serializer': 0.5.21
+      '@brillout/json-serializer': 0.5.24
       '@brillout/picocolors': 1.0.29
       '@brillout/require-shim': 0.1.2
       '@brillout/vite-plugin-server-entry': 0.7.15
