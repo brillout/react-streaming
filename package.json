@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@brillout/import": "^0.2.3",
-    "@brillout/json-serializer": "^0.5.1",
+    "@brillout/json-serializer": "0.5.23-commit-8c863db",
     "@brillout/picocolors": "^1.0.11",
     "isbot-fast": "1.2.0"
   },

@@ -5,3 +5,5 @@ allowBuilds:
   '@biomejs/biome': true
   esbuild: true
   playwright-chromium: true
+minimumReleaseAgeExclude:
+  - '@brillout/json-serializer@0.5.23-commit-8c863db'
