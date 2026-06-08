@@ -32,7 +32,7 @@ function useAsync<T>(keyValue: unknown, asyncFn: () => T): Awaited<T> {
 
 // See consumer getInitData()
 function provideInitData(streamUtils: StreamReturnUtils, initData: InitData) {
-  const initDataSerialized = stringify(initData)
+  const initDataSerialized = stringify(initData, { htmlScriptSafe: true })
   const initDataInjection = `<script class="${initDataHtmlClass}" type="application/json">${initDataSerialized}</script>`
   streamUtils.injectToStream(initDataInjection)
 }

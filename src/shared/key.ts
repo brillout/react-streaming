@@ -6,7 +6,14 @@ import { isCallable } from '../utils/isCallable.js'
 import { assertUsage } from './utils.js'
 
 function stringifyKey(key: unknown): string {
-  const keyString = stringify(key, { sortObjectKeys: true })
+  const keyString = stringify(key, {
+    sortObjectKeys: true,
+    htmlScriptSafe: {
+      // Could be set to `false` but we always use `htmlScriptSafe.escapeScripts` to be extra safe
+      escapeScripts: true,
+      escapeURLs: false,
+    },
+  })
   return keyString
 }
 
