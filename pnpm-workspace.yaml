@@ -1,6 +1,9 @@
 packages:
   - './'
   - 'examples/*'
+# Duplicated in package.json#pnpm.overrides: pnpm 9.x reads it there, pnpm 10+ reads it here.
+overrides:
+  react-streaming: workspace:*
 allowBuilds:
   '@biomejs/biome': true
   esbuild: true
