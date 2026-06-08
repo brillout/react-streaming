@@ -90,6 +90,11 @@
     "*.d.ts",
     "*.js"
   ],
+  "pnpm": {
+    "overrides": {
+      "react-streaming": "workspace:*"
+    }
+  },
   "repository": "github:brillout/react-streaming",
   "packageManager": "pnpm@9.15.9",
   "license": "MIT"
