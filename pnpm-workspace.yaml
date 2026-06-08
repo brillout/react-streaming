@@ -5,3 +5,4 @@ allowBuilds:
   '@biomejs/biome': true
   esbuild: true
   playwright-chromium: true
+minimumReleaseAge: 0
