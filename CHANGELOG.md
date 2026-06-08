@@ -1,3 +1,13 @@
+## [0.4.19](https://github.com/brillout/react-streaming/compare/v0.4.16...v0.4.19) (2026-06-08)
+
+
+### Bug Fixes
+
+* fix race conditions when closing and destroying streams ([#56](https://github.com/brillout/react-streaming/issues/56)) ([c88f508](https://github.com/brillout/react-streaming/commit/c88f508ceb7a8b3acd1e5f8cf28e93cf931c2993))
+* update @brillout/json-serializer@0.5.23 ([#57](https://github.com/brillout/react-streaming/issues/57)) ([c77ddc5](https://github.com/brillout/react-streaming/commit/c77ddc50ee9a1b56a8f5aee55868522d2ba30dd7))
+
+
+
 ## [0.4.16](https://github.com/brillout/react-streaming/compare/v0.4.15...v0.4.16) (2026-03-04)
 
 
