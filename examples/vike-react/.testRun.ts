@@ -237,7 +237,10 @@ function findFirstPageId(html: string) {
   expect(match).toBeTruthy()
   let pageId = match![1]
   expect(pageId).toBeTruthy()
-  pageId = pageId.replaceAll('\\/', '/')
+  // The serialized pageId is escaped multiple times (each `/` ends up as several
+  // backslashes followed by `/`), so collapse any run of backslashes preceding a
+  // slash to recover the original pageId.
+  pageId = pageId.replace(/\\+\//g, '/')
   return pageId
 }
 
