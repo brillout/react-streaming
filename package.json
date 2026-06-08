@@ -1,6 +1,7 @@
 {
   "name": "react-streaming",
   "description": "React 18 Streaming. Full-fledged & Easy.",
+  "repository": "github:brillout/react-streaming",
   "version": "0.4.17",
   "peerDependencies": {
     "react": ">=19",
@@ -95,6 +96,5 @@
       "react-streaming": "workspace:*"
     }
   },
-  "repository": "github:brillout/react-streaming",
   "license": "MIT"
 }
