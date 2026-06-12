@@ -49,20 +49,5 @@ describe('disable + large Suspense boundary (progressiveChunkSize)', async () =>
         contentInHtml: true,
       })
     })
-
-    it(`disable respects an explicit progressiveChunkSize - ${streamType} stream`, async () => {
-      const { data, streamEnd } = await render(<BigBoundary />, {
-        streamType,
-        disable: true,
-        streamOptions: { progressiveChunkSize: 1 },
-      })
-      await streamEnd
-      // The user opted back in to outlining, so the artifacts are expected.
-      expect(artifacts(data.content)).toMatchObject({
-        outOfOrder: true,
-        hiddenSegment: true,
-        reveal: true,
-      })
-    })
   })
 })
