@@ -31,13 +31,15 @@ async function render(
     streamType,
     onBoundaryError,
     disable,
+    streamOptions,
   }: {
     streamType: 'web' | 'node'
     onBoundaryError?: (err: unknown) => void
     disable?: boolean
+    streamOptions?: NonNullable<Parameters<typeof renderToStream>[1]>['streamOptions']
   },
 ) {
-  const options = { userAgent, onBoundaryError, disable }
+  const options = { userAgent, onBoundaryError, disable, streamOptions }
   if (streamType === 'node') {
     const { pipe, injectToStream, streamEnd, doNotClose } = await renderToStream(element, options)
     const { writable, data } = createWritable()
