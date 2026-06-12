@@ -1,3 +1,12 @@
+## [0.4.20](https://github.com/brillout/react-streaming/compare/v0.4.19...v0.4.20) (2026-06-12)
+
+
+### Bug Fixes
+
+* inline large Suspense boundaries when streaming is disabled (fix [#58](https://github.com/brillout/react-streaming/issues/58)) ([#59](https://github.com/brillout/react-streaming/issues/59)) ([aff799a](https://github.com/brillout/react-streaming/commit/aff799a9629b148a6bef6a6541fabedac733a09f))
+
+
+
 ## [0.4.19](https://github.com/brillout/react-streaming/compare/v0.4.16...v0.4.19) (2026-06-08)
 
 
