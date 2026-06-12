@@ -162,7 +162,7 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
 
   // When streaming is disabled, React still outlines Suspense boundaries larger than `progressiveChunkSize` into out-of-order segments that require an inline `$RC` script to reveal — defeating `disable`'s purpose (bots/SEO, stream-to-string).
   // https://github.com/brillout/react-streaming/pull/59
-  if (disable && options.streamOptions?.progressiveChunkSize === undefined) {
+  if (disable) {
     options = {
       ...options,
       streamOptions: {
