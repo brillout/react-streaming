@@ -110,7 +110,6 @@ await renderToStream(<Page />, options)
 
 - `options.disable?: boolean`: Disable streaming.
   > `<Page>` is still rendered to a stream, but the promise `const promise = renderToStream()` resolves only after the stream has finished. (This effectively disables streaming from a user perspective, while unlocking capabilities such as server-side `<Supsense>`.)
-  > When streaming is disabled, `react-streaming` also raises React's [`progressiveChunkSize`](https://react.dev/reference/react-dom/server/renderToPipeableStream#parameters) so that completed `<Suspense>` boundaries are inlined in document order instead of being emitted as out-of-order segments that rely on an inline `$RC` script to be revealed. This keeps the fully-rendered HTML intact for consumers that don't run scripts (bots/SEO, capturing the stream to a string for micro-frontend composition). Set `options.streamOptions.progressiveChunkSize` explicitly to override this.
 - `options.seoStrategy?: 'conservative' | 'google-speed'`
 
   - `conservative` (default): Disable streaming if the HTTP request originates from a bot. (Ensuring bots to always see the whole HTML.)
