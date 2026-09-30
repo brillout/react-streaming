@@ -27,6 +27,22 @@ describe('renderToStream()', async () => {
     })
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
+    it(`injectToStream - while the stream is ending - ${streamType} stream`, async () => {
+      const { data, streamEnd, injectToStream } = await render(<>hi</>, { streamType })
+      // The stream is ending: it waits for the first chunk, and the second chunk is injected meanwhile
+      injectToStream(
+        new Promise<string>((resolve) =>
+          setTimeout(() => {
+            injectToStream('<p>second</p>')
+            resolve('<p>first</p>')
+          }, 10),
+        ),
+      )
+      await streamEnd
+      expect(data.content).toBe('hi<p>first</p><p>second</p>')
+    })
+  })
+  ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     ;[true, false].forEach((disable) => {
       it(`injectToStream - useAsync() - ${streamType} stream${disable ? ' - disabled' : ''}`, async () => {
         const { data, streamEnd, injectToStream } = await render(<Page />, { streamType, disable })

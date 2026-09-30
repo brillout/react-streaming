@@ -109,7 +109,12 @@ function orchestrateChunks(
     // Ensure user is able to use doNotClose() because, otherwise, stream may already have ended after `const { doNotClose } = await renderToStream()`
     await new Promise<void>((r) => setTimeout(r, 0))
     await doNotClosePromise.promise
-    await lastWritePromise
+    // Chunks can be injected while we wait for the last write
+    let written: null | Promise<void> = null
+    while (written !== lastWritePromise) {
+      written = lastWritePromise
+      await written
+    }
     hasEnded = true
     debug('>>> END')
   }
