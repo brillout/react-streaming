@@ -28,7 +28,7 @@ function useAsync<T>(keyValue: unknown, asyncFn: () => T): Awaited<T> {
     return null
   }
 
-  return useSuspense({
+  return useSuspense<Promise<T>>({
     suspenses: globalObject.suspenses,
     resolver,
     resolverSync,
