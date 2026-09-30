@@ -30,14 +30,9 @@ describe('renderToStream()', async () => {
     it(`injectToStream - while the stream is ending - ${streamType} stream`, async () => {
       const { data, streamEnd, injectToStream } = await render(<>hi</>, { streamType })
       // The stream is ending: it waits for the first chunk, and the second chunk is injected meanwhile
-      injectToStream(
-        new Promise<string>((resolve) =>
-          setTimeout(() => {
-            injectToStream('<p>second</p>')
-            resolve('<p>first</p>')
-          }, 10),
-        ),
-      )
+      const first = new Promise<string>((resolve) => setTimeout(() => resolve('<p>first</p>'), 10))
+      injectToStream(first)
+      first.then(() => injectToStream('<p>second</p>'))
       await streamEnd
       expect(data.content).toBe('hi<p>first</p><p>second</p>')
     })
