@@ -28,10 +28,10 @@ function createReadableWrapper(
       onReady(onEnded)
     },
     // E.g. when the HTTP client disconnects
-    cancel(reason) {
+    cancel() {
       isCancelled = true
-      // Makes React abort rendering
-      return reader.cancel(reason)
+      // Makes React abort rendering. Not passing the cancel reason: it can be any value (e.g. `null`) and React would pass it to onBoundaryError() as the error.
+      return reader.cancel()
     },
   })
   const { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded } = orchestrateChunks(
