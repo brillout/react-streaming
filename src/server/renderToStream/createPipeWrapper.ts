@@ -63,7 +63,7 @@ async function createPipeWrapper(
             callback()
           })
         },
-        destroy(err) {
+        destroy(err, callback) {
           debug(`destroy (\`!!err === ${!!err}\`)`)
           clearTimeouts()
           // Upon React internal errors (i.e. React bugs), React destroys the stream.
@@ -74,7 +74,13 @@ async function createPipeWrapper(
             writableFromUser.destroy(err ?? undefined)
           }
           onEnded()
+          // Emits 'close' which makes React abort rendering
+          callback(null)
         },
+      })
+      // E.g. when the HTTP client disconnects
+      writableFromUser.on('close', () => {
+        if (!writableFromUser.writableFinished) writableForReact.destroy()
       })
       const flush = () => {
         if (typeof (writableFromUser as any).flush === 'function') {

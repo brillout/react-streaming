@@ -44,7 +44,8 @@ async function render(
     const { pipe, injectToStream, streamEnd, doNotClose } = await renderToStream(element, options)
     const { writable, data } = createWritable()
     pipe(writable)
-    return { data, injectToStream, streamEnd, doNotClose }
+    const disconnect = () => writable.destroy()
+    return { data, injectToStream, streamEnd, doNotClose, disconnect }
   }
   if (streamType === 'web') {
     const { readable, injectToStream, streamEnd, doNotClose } = await renderToStream(element, {
@@ -52,8 +53,14 @@ async function render(
       ...options,
     })
     const { writable, data } = createWebWritable()
-    readable.pipeTo(writable)
-    return { data, injectToStream, streamEnd, doNotClose }
+    const controller = new AbortController()
+    const piping = readable.pipeTo(writable, { signal: controller.signal })
+    // Cancels `readable`, like a server does when the HTTP client disconnects
+    const disconnect = () => {
+      controller.abort()
+      piping.catch(() => {})
+    }
+    return { data, injectToStream, streamEnd, doNotClose, disconnect }
   }
 }
 

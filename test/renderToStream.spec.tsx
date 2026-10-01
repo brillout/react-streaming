@@ -104,6 +104,33 @@ describe('renderToStream()', async () => {
       })
     })
   })
+  ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
+    it(`client disconnect aborts rendering - ${streamType} stream`, async () => {
+      let rendered = 0
+      const data: Record<number, Promise<void>> = {}
+      const Slow = ({ n }: { n: number }) => {
+        React.use((data[n] ??= new Promise((r) => setTimeout(r, 50 * n))))
+        rendered++
+        return <p>{n}</p>
+      }
+      const { disconnect, injectToStream, streamEnd } = await render(
+        <div>
+          {[1, 2, 3].map((n) => (
+            <React.Suspense key={n} fallback="...">
+              <Slow n={n} />
+            </React.Suspense>
+          ))}
+        </div>,
+        { streamType },
+      )
+      await new Promise((r) => setTimeout(r, 10))
+      disconnect()
+      await new Promise((r) => setTimeout(r, 200))
+      injectToStream('ignored')
+      expect(rendered).toBe(0)
+      await streamEnd
+    })
+  })
 })
 
 function testSnapshots(content: string, streamType: 'node' | 'web', disable: boolean) {

@@ -16,14 +16,22 @@ function createReadableWrapper(
     operations: null,
   }
   let controllerOfUserStream: ReadableStreamController<any>
+  let isCancelled = false
   let onEnded!: () => void
   const streamEnd = new Promise<void>((r) => {
     onEnded = () => r()
   })
+  const reader = readableFromReact.getReader()
   const readableForUser = new ReadableStream({
     start(controller) {
       controllerOfUserStream = controller
       onReady(onEnded)
+    },
+    // E.g. when the HTTP client disconnects
+    cancel() {
+      isCancelled = true
+      // Makes React abort rendering. Without the reason: React would pass it, whatever it is (e.g. `null`), to onBoundaryError().
+      return reader.cancel()
     },
   })
   const { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded } = orchestrateChunks(
@@ -35,12 +43,10 @@ function createReadableWrapper(
   async function onReady(onEnded: () => void) {
     streamOperations.operations = {
       writeChunk(chunk) {
-        controllerOfUserStream.enqueue(encodeForWebStream(chunk) as any)
+        if (!isCancelled) controllerOfUserStream.enqueue(encodeForWebStream(chunk) as any)
       },
       flush: null,
     }
-
-    const reader = readableFromReact.getReader()
 
     while (true) {
       let result: ReadableStreamReadResult<any>
@@ -60,8 +66,10 @@ function createReadableWrapper(
 
     clearTimeouts()
 
-    await onBeforeEnd()
-    controllerOfUserStream.close()
+    if (!isCancelled) {
+      await onBeforeEnd()
+      if (!isCancelled) controllerOfUserStream.close()
+    }
     onEnded()
   }
 }
