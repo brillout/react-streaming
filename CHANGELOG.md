@@ -1,3 +1,13 @@
+## [0.4.21](https://github.com/brillout/react-streaming/compare/v0.4.20...v0.4.21) (2026-10-01)
+
+
+### Bug Fixes
+
+* abort rendering when the client disconnects ([#61](https://github.com/brillout/react-streaming/issues/61)) ([16bba97](https://github.com/brillout/react-streaming/commit/16bba97c6a06d92567955a43101ba337212ef915))
+* write chunks injected while the stream is ending ([#60](https://github.com/brillout/react-streaming/issues/60)) ([8e51edc](https://github.com/brillout/react-streaming/commit/8e51edcf3fb3f6e6d7ee2f5ec16f65c5fcc2d0da))
+
+
+
 ## [0.4.20](https://github.com/brillout/react-streaming/compare/v0.4.19...v0.4.20) (2026-06-12)
 
 
