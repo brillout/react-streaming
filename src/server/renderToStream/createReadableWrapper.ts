@@ -30,7 +30,7 @@ function createReadableWrapper(
     // E.g. when the HTTP client disconnects
     cancel() {
       isCancelled = true
-      // Makes React abort rendering. Not passing the cancel reason: it can be any value (e.g. `null`) and React would pass it to onBoundaryError() as the error.
+      // Makes React abort rendering. Without the reason: React would pass it, whatever it is (e.g. `null`), to onBoundaryError().
       return reader.cancel()
     },
   })
@@ -68,7 +68,7 @@ function createReadableWrapper(
 
     if (!isCancelled) {
       await onBeforeEnd()
-      controllerOfUserStream.close()
+      if (!isCancelled) controllerOfUserStream.close()
     }
     onEnded()
   }
