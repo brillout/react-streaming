@@ -209,7 +209,7 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
       }
     }
   } catch (err) {
-    options.signal?.removeEventListener('abort', onSignalAbort)
+    clearTimeouts()
     throw err
   }
 
