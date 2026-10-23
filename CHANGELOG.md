@@ -1,3 +1,12 @@
+## [0.4.22](https://github.com/brillout/react-streaming/compare/v0.4.21...v0.4.22) (2026-10-23)
+
+
+### Features
+
+* `signal` option ([#62](https://github.com/brillout/react-streaming/issues/62)) ([099182d](https://github.com/brillout/react-streaming/commit/099182dc204fc4d06423670a72320908d1572e5e))
+
+
+
 ## [0.4.21](https://github.com/brillout/react-streaming/compare/v0.4.20...v0.4.21) (2026-10-01)
 
 
