@@ -161,7 +161,9 @@ describe('renderToStream()', async () => {
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`signal already aborted - ${streamType} stream`, async () => {
-      await expect(render(<div>hi</div>, { streamType, signal: AbortSignal.abort() })).rejects.toThrow()
+      const signal = AbortSignal.abort()
+      await expect(render(<div>hi</div>, { streamType, signal })).rejects.toThrow()
+      expect(getEventListeners(signal, 'abort')).toEqual([])
     })
   })
 })
