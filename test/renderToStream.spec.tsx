@@ -133,8 +133,8 @@ describe('renderToStream()', async () => {
     })
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
-    ;[true, false].forEach((disable) =>
-      it(`signal aborts rendering - ${streamType} stream - disable: ${disable}`, async () => {
+    ;[true, false].forEach((disable) => {
+      it(`signal aborts rendering - ${streamType} stream${disable ? ' - disabled' : ''}`, async () => {
         let rendered = 0
         const data: Record<number, Promise<void>> = {}
         const Slow = ({ n }: { n: number }) => {
@@ -158,8 +158,8 @@ describe('renderToStream()', async () => {
         expect(rendered).toBe(0)
         await streamEnd
         expect(getEventListeners(controller.signal, 'abort')).toEqual([])
-      }),
-    )
+      })
+    })
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`signal already aborted - ${streamType} stream`, async () => {
