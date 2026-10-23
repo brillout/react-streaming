@@ -57,10 +57,10 @@ async function renderToNodeStream(
     },
     onError: onBoundaryError,
   })
+  let promiseResolved = false
   setAbortFn(() => {
     abort()
   })
-  let promiseResolved = false
   const { pipeForUser, injectToStream, streamEnd, hasStreamEnded } = await createPipeWrapper(
     pipeOriginal,
     onReactBug,
