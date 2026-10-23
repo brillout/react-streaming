@@ -1,3 +1,12 @@
+## [0.4.23](https://github.com/brillout/react-streaming/compare/v0.4.22...v0.4.23) (2026-10-23)
+
+
+### Bug Fixes
+
+* make the returned abort() work with Web Streams ([#63](https://github.com/brillout/react-streaming/issues/63)) ([792858a](https://github.com/brillout/react-streaming/commit/792858ab38128ce5c5c05f83f973a917baad0710))
+
+
+
 ## [0.4.22](https://github.com/brillout/react-streaming/compare/v0.4.21...v0.4.22) (2026-10-23)
 
 
