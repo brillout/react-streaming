@@ -64,7 +64,7 @@ async function renderToWebStream(
   return {
     readable: readableForUser,
     pipe: null,
-    abort: controller.abort,
+    abort: () => controller.abort(),
     streamEnd: wrapStreamEnd(streamEnd, state.didError),
     injectToStream,
     hasStreamEnded,

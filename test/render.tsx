@@ -47,14 +47,14 @@ async function render(
 ) {
   const options = { userAgent, onBoundaryError, disable, streamOptions, signal, timeout, onTimeout }
   if (streamType === 'node') {
-    const { pipe, injectToStream, streamEnd, doNotClose } = await renderToStream(element, options)
+    const { pipe, injectToStream, streamEnd, doNotClose, abort } = await renderToStream(element, options)
     const { writable, data } = createWritable()
     pipe(writable)
     const disconnect = () => writable.destroy()
-    return { data, injectToStream, streamEnd, doNotClose, disconnect }
+    return { data, injectToStream, streamEnd, doNotClose, abort, disconnect }
   }
   if (streamType === 'web') {
-    const { readable, injectToStream, streamEnd, doNotClose } = await renderToStream(element, {
+    const { readable, injectToStream, streamEnd, doNotClose, abort } = await renderToStream(element, {
       webStream: true,
       ...options,
     })
@@ -66,7 +66,7 @@ async function render(
       controller.abort()
       piping.catch(() => {})
     }
-    return { data, injectToStream, streamEnd, doNotClose, disconnect }
+    return { data, injectToStream, streamEnd, doNotClose, abort, disconnect }
   }
 }
 
