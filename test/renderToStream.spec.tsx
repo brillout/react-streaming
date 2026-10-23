@@ -162,6 +162,27 @@ describe('renderToStream()', async () => {
     })
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
+    it(`abort() aborts rendering - ${streamType} stream`, async () => {
+      let rendered = 0
+      const data = new Promise((r) => setTimeout(r, 50))
+      const Slow = () => {
+        React.use(data)
+        rendered++
+        return <p>slow</p>
+      }
+      const { abort, streamEnd } = await render(
+        <React.Suspense fallback="...">
+          <Slow />
+        </React.Suspense>,
+        { streamType },
+      )
+      abort()
+      await new Promise((r) => setTimeout(r, 100))
+      expect(rendered).toBe(0)
+      await streamEnd
+    })
+  })
+  ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`signal already aborted - ${streamType} stream`, async () => {
       const signal = AbortSignal.abort()
       await expect(render(<div>hi</div>, { streamType, signal })).rejects.toThrow()
