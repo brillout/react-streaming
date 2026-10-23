@@ -179,38 +179,32 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
     }
   }
 
-  let ret: StreamReturn
-  const retCommon: Pick<StreamReturn, 'disabled' | 'doNotClose'> = { disabled: disable, doNotClose }
-  try {
-    if (!webStream) {
-      ret = {
-        ...retCommon,
-        ...(await globalObject.renderToNodeStream!(
-          element,
-          disable,
-          options,
-          doNotClosePromise,
-          setAbortFn,
-          clearTimeouts,
-        )),
-      }
-    } else {
-      assert(globalObject.renderToWebStream)
-      ret = {
-        ...retCommon,
-        ...(await globalObject.renderToWebStream(
-          element,
-          disable,
-          options,
-          doNotClosePromise,
-          setAbortFn,
-          clearTimeouts,
-        )),
-      }
-    }
-  } catch (err) {
+  const onRenderError = (err: unknown): never => {
     clearTimeouts()
     throw err
+  }
+  let ret: StreamReturn
+  const retCommon: Pick<StreamReturn, 'disabled' | 'doNotClose'> = { disabled: disable, doNotClose }
+  if (!webStream) {
+    ret = {
+      ...retCommon,
+      ...(await globalObject.renderToNodeStream!(
+        element,
+        disable,
+        options,
+        doNotClosePromise,
+        setAbortFn,
+        clearTimeouts,
+      ).catch(onRenderError)),
+    }
+  } else {
+    assert(globalObject.renderToWebStream)
+    ret = {
+      ...retCommon,
+      ...(await globalObject
+        .renderToWebStream(element, disable, options, doNotClosePromise, setAbortFn, clearTimeouts)
+        .catch(onRenderError)),
+    }
   }
 
   injectToStream = ret.injectToStream
