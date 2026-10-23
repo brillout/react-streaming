@@ -31,6 +31,7 @@ async function renderToNodeStream(
     onShellReady = () => r()
   })
 
+  let promiseResolved = false
   const { state, onShellError, onBoundaryError, onReactBug } = handleErrors(options, () => promiseResolved)
 
   const renderToPipeableStream =
@@ -60,7 +61,6 @@ async function renderToNodeStream(
   setAbortFn(() => {
     abort()
   })
-  let promiseResolved = false
   const { pipeForUser, injectToStream, streamEnd, hasStreamEnded } = await createPipeWrapper(
     pipeOriginal,
     onReactBug,

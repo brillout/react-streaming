@@ -49,6 +49,17 @@ describe('error handling', async () => {
     })
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
+    it(`no timeout after a failed render - ${streamType} stream`, async () => {
+      const Page = (() => {
+        throw new Error('some-error')
+      }) as any
+      const onTimeout = vitest.fn()
+      await expect(render(<Page />, { streamType, timeout: 0.03, onTimeout })).rejects.toThrow('some-error')
+      await new Promise((r) => setTimeout(r, 60))
+      expect(onTimeout).not.toBeCalled()
+    })
+  })
+  ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`throw Error() after suspense boundary - ${streamType} stream`, async () => {
       const LazyComponent = () => {
         useAsync(

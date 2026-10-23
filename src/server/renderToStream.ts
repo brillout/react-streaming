@@ -45,6 +45,7 @@ type RenderToStreamOptions = {
   streamOptions?: StreamOptions
   timeout?: number | null
   onTimeout?: () => void
+  signal?: AbortSignal
   // Are these two options still needed? I think we can now remove them.
   //  - options.renderToReadableStream used to be needed by https://github.com/brillout/react-streaming/blob/43941f65e84e88a05801a93723df0e38687df872/test/render.tsx#L51 but that isnt' the case anymore.
   //  - option.renderToPipeableStream was introduced by https://github.com/brillout/react-streaming/commit/9f0403d7b738e59ddc3dcaa27f0e3fd33a8f5895 but I don't remember why. Do we still it?
@@ -119,7 +120,12 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
   }
 
   let abortFn: AbortFn | undefined
-  const setAbortFn: SetAbortFn = (fn) => (abortFn = fn)
+  const setAbortFn: SetAbortFn = (fn) => {
+    abortFn = fn
+    if (options.signal?.aborted) abortFn()
+  }
+  const onSignalAbort = () => abortFn?.()
+  options.signal?.addEventListener('abort', onSignalAbort)
   const streamTimeout = (() => {
     // User explicity opting out of timeout (the default value is `undefined` not `null`)
     if (options.timeout === null) return null
@@ -136,6 +142,7 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
   const clearTimeouts: ClearTimeouts = () => {
     if (streamTimeout !== null) clearTimeout(streamTimeout)
     if (doNotCloseTimeout !== null) clearTimeout(doNotCloseTimeout)
+    options.signal?.removeEventListener('abort', onSignalAbort)
   }
 
   let streamEndResolve!: (value: boolean) => void
@@ -174,31 +181,36 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
 
   let ret: StreamReturn
   const retCommon: Pick<StreamReturn, 'disabled' | 'doNotClose'> = { disabled: disable, doNotClose }
-  if (!webStream) {
-    ret = {
-      ...retCommon,
-      ...(await globalObject.renderToNodeStream!(
-        element,
-        disable,
-        options,
-        doNotClosePromise,
-        setAbortFn,
-        clearTimeouts,
-      )),
+  try {
+    if (!webStream) {
+      ret = {
+        ...retCommon,
+        ...(await globalObject.renderToNodeStream!(
+          element,
+          disable,
+          options,
+          doNotClosePromise,
+          setAbortFn,
+          clearTimeouts,
+        )),
+      }
+    } else {
+      assert(globalObject.renderToWebStream)
+      ret = {
+        ...retCommon,
+        ...(await globalObject.renderToWebStream(
+          element,
+          disable,
+          options,
+          doNotClosePromise,
+          setAbortFn,
+          clearTimeouts,
+        )),
+      }
     }
-  } else {
-    assert(globalObject.renderToWebStream)
-    ret = {
-      ...retCommon,
-      ...(await globalObject.renderToWebStream(
-        element,
-        disable,
-        options,
-        doNotClosePromise,
-        setAbortFn,
-        clearTimeouts,
-      )),
-    }
+  } catch (err) {
+    clearTimeouts()
+    throw err
   }
 
   injectToStream = ret.injectToStream

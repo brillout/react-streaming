@@ -3,6 +3,7 @@ import React from 'react'
 import { Page } from './Page'
 import { render } from './render'
 import partRegex from '@brillout/part-regex'
+import { getEventListeners } from 'events'
 
 describe('renderToStream()', async () => {
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
@@ -129,6 +130,42 @@ describe('renderToStream()', async () => {
       injectToStream('ignored')
       expect(rendered).toBe(0)
       await streamEnd
+    })
+  })
+  ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
+    ;[true, false].forEach((disable) => {
+      it(`signal aborts rendering - ${streamType} stream${disable ? ' - disabled' : ''}`, async () => {
+        let rendered = 0
+        const data: Record<number, Promise<void>> = {}
+        const Slow = ({ n }: { n: number }) => {
+          React.use((data[n] ??= new Promise((r) => setTimeout(r, 50 * n))))
+          rendered++
+          return <p>{n}</p>
+        }
+        const controller = new AbortController()
+        setTimeout(() => controller.abort(), 10)
+        const { streamEnd } = await render(
+          <div>
+            {[1, 2, 3].map((n) => (
+              <React.Suspense key={n} fallback="...">
+                <Slow n={n} />
+              </React.Suspense>
+            ))}
+          </div>,
+          { streamType, disable, signal: controller.signal },
+        )
+        await new Promise((r) => setTimeout(r, 200))
+        expect(rendered).toBe(0)
+        await streamEnd
+        expect(getEventListeners(controller.signal, 'abort')).toEqual([])
+      })
+    })
+  })
+  ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
+    it(`signal already aborted - ${streamType} stream`, async () => {
+      const signal = AbortSignal.abort()
+      await expect(render(<div>hi</div>, { streamType, signal })).rejects.toThrow()
+      expect(getEventListeners(signal, 'abort')).toEqual([])
     })
   })
 })
