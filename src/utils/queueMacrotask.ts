@@ -6,6 +6,7 @@ function queueMacrotask(fn: () => void) {
   if (typeof setImmediate === 'function') {
     setImmediate(fn)
   } else {
+    // `setImmediate()` isn't a web standard: a runtime that only implements web APIs doesn't have it
     setTimeout(fn, 0)
   }
 }
