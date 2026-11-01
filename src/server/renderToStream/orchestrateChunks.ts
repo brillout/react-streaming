@@ -4,7 +4,7 @@ export type { StreamOperations }
 export type { Chunk }
 export type { DoNotClosePromise }
 
-import { assert, assertUsage, createDebugger, isPromise } from '../utils.js'
+import { assert, assertUsage, createDebugger, isPromise, queueMacrotask } from '../utils.js'
 
 const debug = createDebugger('react-streaming:chunks')
 
@@ -94,10 +94,10 @@ function orchestrateChunks(
       writeChunkNow(chunk, flush)
       // Because of Rule 1, all subsequent synchronous React write after the first one also need to be injected first.
       // See Rule 1: https://github.com/brillout/react-streaming/tree/main/src#rule-1
-      setTimeout(() => {
+      queueMacrotask(() => {
         isFirstReactWrite = false
         firstReactWritePromise_resolve()
-      }, 0)
+      })
     } else {
       writeChunkInSequence(chunk, flush)
     }
@@ -107,7 +107,7 @@ function orchestrateChunks(
     // In case React didn't write anything
     firstReactWritePromise_resolve()
     // Ensure user is able to use doNotClose() because, otherwise, stream may already have ended after `const { doNotClose } = await renderToStream()`
-    await new Promise<void>((r) => setTimeout(r, 0))
+    await new Promise<void>((r) => queueMacrotask(r))
     await doNotClosePromise.promise
     // Chunks can be injected while we wait for the last write
     let written: null | Promise<void> = null

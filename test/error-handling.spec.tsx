@@ -111,4 +111,24 @@ describe('error handling', async () => {
       expect(onBoundaryError).toBeCalled()
     })
   })
+  ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
+    it(`onBoundaryError() is called before streamEnd resolves, upon client disconnect - ${streamType} stream`, async () => {
+      const never = new Promise(() => {})
+      const Pending = () => {
+        React.use(never)
+        return null
+      }
+      const onBoundaryError = vitest.fn()
+      const { disconnect, streamEnd } = await render(
+        <Suspense fallback="...">
+          <Pending />
+        </Suspense>,
+        { streamType, onBoundaryError },
+      )
+      // React aborts the pending boundary, which calls onBoundaryError()
+      disconnect()
+      await streamEnd
+      expect(onBoundaryError).toBeCalled()
+    })
+  })
 })

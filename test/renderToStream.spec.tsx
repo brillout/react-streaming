@@ -28,6 +28,20 @@ describe('renderToStream()', async () => {
     })
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
+    ;[true, false].forEach((disable) => {
+      it(`doNotClose() - after microtasks - ${streamType} stream${disable ? ' - disabled' : ''}`, async () => {
+        const { data, streamEnd, injectToStream, doNotClose } = await render(<>hi</>, { streamType, disable })
+        // E.g. awaits that only wait on promises (microtasks) between `await renderToStream()` and doNotClose()
+        for (let i = 0; i < 10; i++) await Promise.resolve()
+        const makeClosableAgain = doNotClose()
+        injectToStream('<script type="module" src="/main.js"></script>')
+        makeClosableAgain()
+        await streamEnd
+        expect(data.content).toBe('hi<script type="module" src="/main.js"></script>')
+      })
+    })
+  })
+  ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`injectToStream - while the stream is ending - ${streamType} stream`, async () => {
       const { data, streamEnd, injectToStream } = await render(<>hi</>, { streamType })
       // The stream is ending: it waits for the first chunk, and the second chunk is injected meanwhile
