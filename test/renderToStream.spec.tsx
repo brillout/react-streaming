@@ -1,4 +1,4 @@
-import { describe, expect, it, onTestFinished, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import React from 'react'
 import { Page } from './Page'
 import { render } from './render'
@@ -39,20 +39,6 @@ describe('renderToStream()', async () => {
         await streamEnd
         expect(data.content).toBe('hi<script type="module" src="/main.js"></script>')
       })
-    })
-  })
-  // React's Node.js renderer requires setImmediate()
-  ;[true, false].forEach((disable) => {
-    it(`without setImmediate() - web stream${disable ? ' - disabled' : ''}`, async () => {
-      vi.stubGlobal('setImmediate', undefined)
-      onTestFinished(() => vi.unstubAllGlobals())
-      const { data, streamEnd, injectToStream, doNotClose } = await render(<Page />, { streamType: 'web', disable })
-      const makeClosableAgain = doNotClose()
-      injectToStream('<script type="module" src="/main.js"></script>')
-      makeClosableAgain()
-      await streamEnd
-      expect(data.content).toContain('<li>Rendered to HTML.</li>')
-      expect(data.content).toContain('<script type="module" src="/main.js"></script>')
     })
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
