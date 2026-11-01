@@ -1,3 +1,12 @@
+## [0.4.24](https://github.com/brillout/react-streaming/compare/v0.4.23...v0.4.24) (2026-11-01)
+
+
+### Bug Fixes
+
+* end streams ~2ms sooner by using `setImmediate()` instead of `setTimeout(fn, 0)` ([#64](https://github.com/brillout/react-streaming/issues/64)) ([15dc65d](https://github.com/brillout/react-streaming/commit/15dc65deec7513a6cef8dba159ce1a7d3f25b071))
+
+
+
 ## [0.4.23](https://github.com/brillout/react-streaming/compare/v0.4.22...v0.4.23) (2026-10-23)
 
 
