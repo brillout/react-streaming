@@ -31,7 +31,7 @@ describe('renderToStream()', async () => {
     ;[true, false].forEach((disable) => {
       it(`doNotClose() - after microtasks - ${streamType} stream${disable ? ' - disabled' : ''}`, async () => {
         const { data, streamEnd, injectToStream, doNotClose } = await render(<>hi</>, { streamType, disable })
-        // E.g. awaits without I/O between `await renderToStream()` and doNotClose()
+        // E.g. awaits that only wait on promises (microtasks) between `await renderToStream()` and doNotClose()
         for (let i = 0; i < 10; i++) await Promise.resolve()
         const makeClosableAgain = doNotClose()
         injectToStream('<script type="module" src="/main.js"></script>')
