@@ -4,7 +4,7 @@ export { wrapStreamEnd }
 export { handleErrors }
 
 import { toPosixPath } from '../../utils/path.js'
-import { assert, assertUsage, createDebugger, getBetterError, isObject } from '../utils.js'
+import { assert, assertUsage, createDebugger, getBetterError, isObject, queueMacrotask } from '../utils.js'
 
 const debugFlow = createDebugger('react-streaming:flow')
 const isReactBug = '__@brillout/react-streaming__isReactBug'
@@ -18,7 +18,7 @@ function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Promise<boo
   return (
     streamEnd
       // Needed because of the `afterReactBugCatch()` hack above, otherwise `onBoundaryError` triggers after `streamEnd` resolved
-      .then(() => new Promise<void>((r) => setTimeout(r, 0)))
+      .then(() => new Promise<void>((r) => queueMacrotask(r)))
       .then(() => !didError)
   )
 }
@@ -81,9 +81,9 @@ function handleErrors(
 
 // Needed for the hacky solution to workaround https://github.com/facebook/react/issues/24536
 function afterReactBugCatch(fn: Function) {
-  setTimeout(() => {
+  queueMacrotask(() => {
     fn()
-  }, 0)
+  })
 }
 
 // Inject componentStack to the error's stack trace
