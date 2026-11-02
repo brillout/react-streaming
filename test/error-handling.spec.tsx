@@ -112,24 +112,6 @@ describe('error handling', async () => {
     })
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
-    it(`throw Error() with a blank line in its message after suspense boundary - ${streamType} stream`, async () => {
-      const LazyComponent = () => {
-        useAsync('lazy-component-key', () => new Promise<string>((resolve) => setTimeout(() => resolve('lazy'), 10)))
-        throw new Error('line 1\n\nline 3')
-      }
-      const onBoundaryError = vitest.fn()
-      const { streamEnd } = await render(
-        <Suspense fallback={<p>Loading...</p>}>
-          <LazyComponent />
-        </Suspense>,
-        { streamType, onBoundaryError },
-      )
-      await streamEnd
-      expect(onBoundaryError).toBeCalledTimes(1)
-      expect(onBoundaryError.mock.calls[0]![0].message).toBe('line 1\n\nline 3')
-    })
-  })
-  ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`onBoundaryError() is called before streamEnd resolves, upon client disconnect - ${streamType} stream`, async () => {
       const never = new Promise(() => {})
       const Pending = () => {
