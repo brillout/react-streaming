@@ -3,7 +3,6 @@ export { assertReactImport }
 export { wrapStreamEnd }
 export { handleErrors }
 
-import { toPosixPath } from '../../utils/path.js'
 import { assert, assertUsage, createDebugger, getBetterError, isObject, queueMacrotask } from '../utils.js'
 
 const debugFlow = createDebugger('react-streaming:flow')
@@ -96,7 +95,7 @@ function getErrorWithComponentStack(errorOriginal: unknown, errorInfo?: ErrorInf
 
   // Inject the component stack right before the React stack trace (potentially *after* some vike-react or react-streaming strack trace, e.g. if react-streaming's useAsync() throws an error).
   const cutoff = errorStackLines.findIndex((l) => {
-    l = toPosixPath(l)
+    l = l.split('\\').join('/')
     return l.includes('node_modules/react-dom/') || l.includes('node_modules/react/')
   })
   if (cutoff === -1) return errorOriginal
