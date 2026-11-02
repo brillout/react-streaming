@@ -1,3 +1,12 @@
+## [0.4.25](https://github.com/brillout/react-streaming/compare/v0.4.24...v0.4.25) (2026-11-02)
+
+
+### Bug Fixes
+
+* don't crash on errors whose message has a blank line ([#65](https://github.com/brillout/react-streaming/issues/65)) ([299d98f](https://github.com/brillout/react-streaming/commit/299d98f304a02247ddc5edab04358ee43fe5b8dc))
+
+
+
 ## [0.4.24](https://github.com/brillout/react-streaming/compare/v0.4.23...v0.4.24) (2026-11-01)
 
 
