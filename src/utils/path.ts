@@ -1,4 +1,5 @@
 export { toPosixPath }
+export { toPosixPathLenient }
 
 import { assert } from './assert.js'
 import { assertIsNotBrowser } from './assertIsNotBrowser.js'
@@ -6,9 +7,13 @@ import { assertIsNotBrowser } from './assertIsNotBrowser.js'
 assertIsNotBrowser()
 
 function toPosixPath(path: string): string {
-  const pathPosix = path.split('\\').join('/')
+  const pathPosix = toPosixPathLenient(path)
   assertPosixPath(pathPosix)
   return pathPosix
+}
+
+function toPosixPathLenient(path: string): string {
+  return path.split('\\').join('/')
 }
 
 function assertPosixPath(path: string): void {
