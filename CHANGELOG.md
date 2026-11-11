@@ -1,3 +1,12 @@
+## [0.4.26](https://github.com/brillout/react-streaming/compare/v0.4.25...v0.4.26) (2026-11-11)
+
+
+### Bug Fixes
+
+* render Web Streams with the same React renderer as Node.js Streams ([#66](https://github.com/brillout/react-streaming/issues/66)) ([0705ce9](https://github.com/brillout/react-streaming/commit/0705ce9bfad02e0544ec11b05380474f4e88afd8))
+
+
+
 ## [0.4.25](https://github.com/brillout/react-streaming/compare/v0.4.24...v0.4.25) (2026-11-02)
 
 
