@@ -1,5 +1,4 @@
 export { renderToWebStream }
-export { renderToReadableStream_set }
 
 import React from 'react'
 import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
@@ -8,11 +7,7 @@ import { assertReactImport, debugFlow, wrapStreamEnd, handleErrors } from './com
 import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream.js'
 import type { DoNotClosePromise } from './orchestrateChunks.js'
 import { version } from 'react-dom/server'
-import { assert, assertVersion, getGlobalObject } from '../utils.js'
-// Set by the Node.js entry, so that Node.js Streams and Web Streams use the same React renderer: React doesn't support two renderers rendering the same context provider ("Detected multiple renderers concurrently rendering the same context provider")
-const globalObject = getGlobalObject('renderToWebStream.ts', {
-  renderToReadableStreamNode: undefined as undefined | typeof renderToReadableStream__,
-})
+import { assert, assertVersion } from '../utils.js'
 
 async function renderToWebStream(
   element: React.ReactNode,
@@ -25,13 +20,14 @@ async function renderToWebStream(
   doNotClosePromise: DoNotClosePromise,
   setAbortFn: SetAbortFn,
   clearTimeouts: ClearTimeouts,
+  renderToReadableStreamNode: null | typeof renderToReadableStream__,
 ) {
   debugFlow('creating Web Stream Pipe')
 
   // 'react-dom/server.edge' doesn't exist in React 18
   assertVersion('React', version, '19.0.0')
   // Without the Node.js entry (e.g. Cloudflare Workers), or with React 19.0 and 19.1, whose 'react-dom/server.node' doesn't have renderToReadableStream()
-  const renderToReadableStream_ = globalObject.renderToReadableStreamNode ?? (await loadEdgeBuild())
+  const renderToReadableStream_ = renderToReadableStreamNode ?? (await loadEdgeBuild())
 
   const controller: AbortController = new AbortController()
   setAbortFn(() => {
@@ -71,10 +67,6 @@ async function renderToWebStream(
     injectToStream,
     hasStreamEnded,
   }
-}
-
-function renderToReadableStream_set(renderToReadableStream: typeof renderToReadableStream__) {
-  globalObject.renderToReadableStreamNode = renderToReadableStream
 }
 
 async function loadEdgeBuild() {

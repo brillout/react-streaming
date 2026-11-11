@@ -28,6 +28,8 @@ import type { Chunk, DoNotClosePromise } from './renderToStream/orchestrateChunk
 const globalObject = getGlobalObject('renderToStream.ts', {
   renderToNodeStream: null as null | typeof renderToNodeStream_,
   renderToWebStream: null as null | typeof renderToWebStream_,
+  // Set by the Node.js entry, so that Node.js Streams and Web Streams use the same React renderer: React doesn't support two renderers rendering the same context provider ("Detected multiple renderers concurrently rendering the same context provider")
+  renderToReadableStreamNode: null as null | typeof RenderToReadableStream,
 })
 
 assertReact()
@@ -205,6 +207,7 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
           doNotClosePromise,
           setAbortFn,
           clearTimeouts,
+          globalObject.renderToReadableStreamNode,
         )),
       }
     }
@@ -230,8 +233,13 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
 function renderToNodeStream_set(renderToNodeStream: typeof renderToNodeStream_) {
   globalObject.renderToNodeStream = renderToNodeStream
 }
-function renderToWebStream_set(renderToWebStream: typeof renderToWebStream_) {
+function renderToWebStream_set(
+  renderToWebStream: typeof renderToWebStream_,
+  renderToReadableStreamNode?: typeof RenderToReadableStream,
+) {
   globalObject.renderToWebStream = renderToWebStream
+  // So that the web-only entry of another react-streaming copy doesn't unset it
+  if (renderToReadableStreamNode) globalObject.renderToReadableStreamNode = renderToReadableStreamNode
 }
 
 // To debug wrong peer dependency loading:
