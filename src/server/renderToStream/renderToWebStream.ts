@@ -1,4 +1,5 @@
 export { renderToWebStream }
+export { renderToReadableStream_set }
 
 import React from 'react'
 import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
@@ -25,11 +26,7 @@ async function renderToWebStream(
 
   // 'react-dom/server.edge' doesn't exist in React 18
   assertVersion('React', version, '19.0.0')
-  // We import 'react-dom/server.edge' only if needed, because merely importing 'react-dom/server.browser' was preventing Node.js from exiting (e.g. after running Vike's prerender() API). But maybe that isn't the case with 'react-dom/server.edge' anymore?
-  // - Reproduction: https://github.com/vikejs/vike/blob/a0d6777c84aee4c2e5bd0a0a585b18f7a87c8cac/test/playground/scripts/prerender.js
-  const moduleExports = await import('react-dom/server.edge')
-  assert(moduleExports?.default?.renderToReadableStream, moduleExports)
-  const renderToReadableStream_ = moduleExports.default.renderToReadableStream
+  const renderToReadableStream_ = renderToReadableStreamNode ?? (await loadEdgeBuild())
 
   const controller: AbortController = new AbortController()
   setAbortFn(() => {
@@ -69,4 +66,18 @@ async function renderToWebStream(
     injectToStream,
     hasStreamEnded,
   }
+}
+
+// Set by the Node.js entry, so that Node.js Streams and Web Streams use the same React renderer: React doesn't support two renderers rendering the same context provider ("Detected multiple renderers concurrently rendering the same context provider")
+let renderToReadableStreamNode: undefined | typeof renderToReadableStream__
+function renderToReadableStream_set(renderToReadableStream: typeof renderToReadableStream__) {
+  renderToReadableStreamNode = renderToReadableStream
+}
+
+async function loadEdgeBuild() {
+  // We import 'react-dom/server.edge' only if needed, because merely importing 'react-dom/server.browser' was preventing Node.js from exiting (e.g. after running Vike's prerender() API). But maybe that isn't the case with 'react-dom/server.edge' anymore?
+  // - Reproduction: https://github.com/vikejs/vike/blob/a0d6777c84aee4c2e5bd0a0a585b18f7a87c8cac/test/playground/scripts/prerender.js
+  const moduleExports = await import('react-dom/server.edge')
+  assert(moduleExports?.default?.renderToReadableStream, moduleExports)
+  return moduleExports.default.renderToReadableStream
 }
