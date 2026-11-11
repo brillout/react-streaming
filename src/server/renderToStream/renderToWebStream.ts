@@ -6,7 +6,7 @@ import { createReadableWrapper } from './createReadableWrapper.js'
 import { assertReactImport, debugFlow, wrapStreamEnd, handleErrors } from './common.js'
 import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream.js'
 import type { DoNotClosePromise } from './orchestrateChunks.js'
-import { version } from 'react-dom/server'
+import { version } from 'react-dom'
 import { assert, assertVersion } from '../utils.js'
 
 async function renderToWebStream(

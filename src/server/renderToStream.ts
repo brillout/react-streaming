@@ -8,7 +8,7 @@ export type { ClearTimeouts }
 export type { RenderToStreamOptions }
 
 import React from 'react'
-import ReactDOMServer, { version as reactDomVersion } from 'react-dom/server'
+import { version as reactDomVersion } from 'react-dom'
 import type {
   RenderToPipeableStreamOptions,
   renderToReadableStream as RenderToReadableStream,
@@ -238,9 +238,5 @@ function assertReact() {
   assertUsage(
     versionMajor >= 18,
     `\`react-dom@${reactDomVersion}\` was loaded, but react-streaming only works with React version 18 or greater.`,
-  )
-  assert(
-    typeof ReactDOMServer.renderToPipeableStream === 'function' ||
-      typeof ReactDOMServer.renderToReadableStream === 'function',
   )
 }
