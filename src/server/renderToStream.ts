@@ -9,7 +9,11 @@ export type { RenderToStreamOptions }
 
 import React from 'react'
 import ReactDOMServer, { version as reactDomVersion } from 'react-dom/server'
-import type { RenderToPipeableStreamOptions, RenderToReadableStreamOptions } from 'react-dom/server'
+import type {
+  RenderToPipeableStreamOptions,
+  renderToReadableStream as RenderToReadableStream,
+  RenderToReadableStreamOptions,
+} from 'react-dom/server'
 import { ReactStreamingProviderSuspenseData } from './useAsync/useSuspenseData.js'
 import { StreamProvider } from './useStream.js'
 import type { Pipe } from './renderToStream/createPipeWrapper.js'
@@ -23,6 +27,7 @@ import type { Chunk, DoNotClosePromise } from './renderToStream/orchestrateChunk
 const globalObject = getGlobalObject('renderToStream.ts', {
   renderToNodeStream: null as null | typeof renderToNodeStream_,
   renderToWebStream: null as null | typeof renderToWebStream_,
+  renderToReadableStreamNode: null as null | typeof RenderToReadableStream,
 })
 
 assertReact()
@@ -191,6 +196,7 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
           doNotClosePromise,
           setAbortFn,
           clearTimeouts,
+          globalObject.renderToReadableStreamNode,
         )),
       }
     }
@@ -216,8 +222,12 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
 function renderToNodeStream_set(renderToNodeStream: typeof renderToNodeStream_) {
   globalObject.renderToNodeStream = renderToNodeStream
 }
-function renderToWebStream_set(renderToWebStream: typeof renderToWebStream_) {
+function renderToWebStream_set(
+  renderToWebStream: typeof renderToWebStream_,
+  renderToReadableStreamNode?: typeof RenderToReadableStream,
+) {
   globalObject.renderToWebStream = renderToWebStream
+  if (renderToReadableStreamNode) globalObject.renderToReadableStreamNode = renderToReadableStreamNode
 }
 
 // To debug wrong peer dependency loading:

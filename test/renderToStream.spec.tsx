@@ -274,15 +274,15 @@ function testSnapshots(content: string, streamType: 'node' | 'web', disable: boo
 
       Error: Only renders on client
           at ErrorOnServer (/FS-ROOT/react-streaming/test/Page.tsx:53:11)
-          at Object.react_stack_bottom_frame (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:10313:18)
-          at renderWithHooks (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5399:19)
-          at renderElement (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5834:23)
-          at retryNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6776:21)
-          at renderNodeDestructive (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6715:11)
-          at renderNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:7253:18)
-          at renderElement (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6259:22)
-          at retryNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6776:21)
-          at renderNodeDestructive (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6715:11)" data-cstck="
+          at Object.react_stack_bottom_frame (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:10288:18)
+          at renderWithHooks (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:5298:19)
+          at renderElement (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:5733:23)
+          at retryNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:6675:21)
+          at renderNodeDestructive (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:6614:11)
+          at renderNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:7152:18)
+          at renderElement (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:6158:22)
+          at retryNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:6675:21)
+          at renderNodeDestructive (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:6614:11)" data-cstck="
           at ErrorOnServer (/FS-ROOT/react-streaming/test/Page.tsx:25:11)
           at Suspense (&lt;anonymous&gt;)
           at li (&lt;anonymous&gt;)
@@ -301,15 +301,15 @@ function testSnapshots(content: string, streamType: 'node' | 'web', disable: boo
 
       Error: Only renders on client
           at ErrorOnServer (/FS-ROOT/react-streaming/test/Page.tsx:53:11)
-          at Object.react_stack_bottom_frame (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:10313:18)
-          at renderWithHooks (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5399:19)
-          at renderElement (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5834:23)
-          at retryNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6776:21)
-          at renderNodeDestructive (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6715:11)
-          at renderNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:7253:18)
-          at renderElement (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6259:22)
-          at retryNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6776:21)
-          at renderNodeDestructive (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6715:11)" data-cstck="
+          at Object.react_stack_bottom_frame (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:10288:18)
+          at renderWithHooks (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:5298:19)
+          at renderElement (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:5733:23)
+          at retryNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:6675:21)
+          at renderNodeDestructive (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:6614:11)
+          at renderNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:7152:18)
+          at renderElement (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:6158:22)
+          at retryNode (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:6675:21)
+          at renderNodeDestructive (/FS-ROOT/react-streaming/node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server.node.development.js:6614:11)" data-cstck="
           at ErrorOnServer (/FS-ROOT/react-streaming/test/Page.tsx:25:11)
           at Suspense (&lt;anonymous&gt;)
           at li (&lt;anonymous&gt;)
