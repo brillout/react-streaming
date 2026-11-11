@@ -1,9 +1,9 @@
 import { expect, it } from 'vitest'
 import React from 'react'
 import { render } from './render'
-import '../src/server/index.web-only'
+import { renderToStream } from '../src/server/index.web-only.node'
 
-// The web-only entry imported after the Node.js entry must not switch Web Streams back to 'react-dom/server.edge'
+// react-streaming/server.web on Node.js must render with the same React build as react-streaming/server
 it('both server entries in one process', async () => {
   const Ctx = React.createContext('default')
   const loaded = new Promise<string>((resolve) => setTimeout(() => resolve('loaded'), 50))
@@ -17,10 +17,10 @@ it('both server entries in one process', async () => {
   )
   const [node, web] = await Promise.all([
     render(element, { streamType: 'node' }),
-    render(element, { streamType: 'web' }),
+    renderToStream(element, { disable: false }),
   ])
-  for (const { data, streamEnd } of [node!, web!]) {
-    expect(await streamEnd).toBe(true)
-    expect(data.content).toContain('<span>provided loaded</span>')
-  }
+  expect(await new Response(web.readable).text()).toContain('<span>provided loaded</span>')
+  expect(await web.streamEnd).toBe(true)
+  expect(await node!.streamEnd).toBe(true)
+  expect(node!.data.content).toContain('<span>provided loaded</span>')
 })

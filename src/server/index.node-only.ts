@@ -1,4 +1,5 @@
 export * from './index.js'
+export { renderToStream }
 
 // Node.js Stream
 
@@ -7,6 +8,9 @@ export * from './index.js'
 //  - The module react-dom/server.node contains require('stream')
 //  - Using a dynamic import() is problematic for nitedani's standaloner
 
+import { createRenderToStream } from './renderToStream.js'
 import { renderToNodeStream } from './renderToStream/renderToNodeStream.js'
-import { renderToNodeStream_set } from './renderToStream.js'
-renderToNodeStream_set(renderToNodeStream)
+const renderToStream = createRenderToStream({
+  renderToNodeStream,
+  renderToWebStream: null,
+})

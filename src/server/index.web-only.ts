@@ -1,7 +1,11 @@
 export * from './index.js'
+export { renderToStream }
 
-// Web Stream
+import { createRenderToStream } from './renderToStream.js'
+import { webStreamRenderer, loadEdgeBuild } from './renderToStream/renderToWebStream.js'
 
-import { renderToWebStream } from './renderToStream/renderToWebStream.js'
-import { renderToWebStream_set } from './renderToStream.js'
-renderToWebStream_set(renderToWebStream)
+// Web Streams only, rendered by React's edge build (e.g. Cloudflare Workers)
+const renderToStream = createRenderToStream({
+  renderToNodeStream: null,
+  renderToWebStream: webStreamRenderer(loadEdgeBuild),
+})

@@ -29,7 +29,7 @@
       "workerd": "./dist/server/index.web-only.js",
       "browser": "./dist/server/client-poison-pill.js",
       "node": "./dist/server/index.node-and-web.js",
-      "types": "./dist/server/index.d.ts",
+      "types": "./dist/server/index.node-and-web.d.ts",
       "default": "./dist/server/index.node-and-web.js"
     },
     "./server.web": {
@@ -37,7 +37,7 @@
       "workerd": "./dist/server/index.web-only.js",
       "browser": "./dist/server/client-poison-pill.js",
       "node": "./dist/server/index.web-only.node.js",
-      "types": "./dist/server/index.d.ts",
+      "types": "./dist/server/index.node-and-web.d.ts",
       "default": "./dist/server/index.web-only.js"
     },
     "./server.node": {
@@ -45,7 +45,7 @@
       "workerd": "./dist/server/index.node-only.js",
       "browser": "./dist/server/client-poison-pill.js",
       "node": "./dist/server/index.node-only.js",
-      "types": "./dist/server/index.d.ts",
+      "types": "./dist/server/index.node-and-web.d.ts",
       "default": "./dist/server/index.node-only.js"
     }
   },

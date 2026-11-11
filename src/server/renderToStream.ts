@@ -1,7 +1,6 @@
-export { renderToStream }
+export { createRenderToStream }
 export { disable }
-export { renderToNodeStream_set }
-export { renderToWebStream_set }
+export type { RenderToStream }
 export type { StreamReturnUtils }
 export type { SetAbortFn }
 export type { ClearTimeouts }
@@ -9,26 +8,17 @@ export type { RenderToStreamOptions }
 
 import React from 'react'
 import ReactDOMServer, { version as reactDomVersion } from 'react-dom/server'
-import type {
-  RenderToPipeableStreamOptions,
-  renderToReadableStream as RenderToReadableStream,
-  RenderToReadableStreamOptions,
-} from 'react-dom/server'
+import type { RenderToPipeableStreamOptions, RenderToReadableStreamOptions } from 'react-dom/server'
 import { ReactStreamingProviderSuspenseData } from './useAsync/useSuspenseData.js'
 import { StreamProvider } from './useStream.js'
 import type { Pipe } from './renderToStream/createPipeWrapper.js'
 import { resolveSeoStrategy, SeoStrategy } from './renderToStream/resolveSeoStrategy.js'
-import { assert, assertUsage, getGlobalObject } from './utils.js'
+import { assert, assertUsage } from './utils.js'
 import type { renderToNodeStream as renderToNodeStream_ } from './renderToStream/renderToNodeStream.js'
-import type { renderToWebStream as renderToWebStream_ } from './renderToStream/renderToWebStream.js'
+import type { RenderToWebStream } from './renderToStream/renderToWebStream.js'
 import { debugFlow } from './renderToStream/common.js'
 import type { InjectToStream } from './index.node-and-web.js'
 import type { Chunk, DoNotClosePromise } from './renderToStream/orchestrateChunks.js'
-const globalObject = getGlobalObject('renderToStream.ts', {
-  renderToNodeStream: null as null | typeof renderToNodeStream_,
-  renderToWebStream: null as null | typeof renderToWebStream_,
-  renderToReadableStreamNode: null as null | typeof RenderToReadableStream,
-})
 
 assertReact()
 
@@ -68,6 +58,12 @@ type StreamReturn = StreamReturnMain &
     abort: () => void
   }
 
+type RenderToStream = (element: React.ReactNode, options?: RenderToStreamOptions) => Promise<StreamReturn>
+type Renderers = {
+  renderToNodeStream: null | typeof renderToNodeStream_
+  renderToWebStream: null | RenderToWebStream
+}
+
 type AbortFn = () => void
 type SetAbortFn = (abortFn: AbortFn) => void
 type ClearTimeouts = () => void
@@ -80,7 +76,16 @@ function disable() {
   globalConfig.disable = true
 }
 
-async function renderToStream(element: React.ReactNode, options: RenderToStreamOptions = {}): Promise<StreamReturn> {
+// Each entry passes the renderers of the React build it imports
+function createRenderToStream(renderers: Renderers): RenderToStream {
+  return (element, options = {}) => renderToStream(element, options, renderers)
+}
+
+async function renderToStream(
+  element: React.ReactNode,
+  options: RenderToStreamOptions,
+  renderers: Renderers,
+): Promise<StreamReturn> {
   element = React.createElement(ReactStreamingProviderSuspenseData, null, element)
 
   const buffer: Chunk[] = []
@@ -155,7 +160,7 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
   )
 
   const disable = globalConfig.disable || (options.disable ?? resolveSeoStrategy(options).disableStream)
-  const webStream = options.webStream ?? !globalObject.renderToNodeStream
+  const webStream = options.webStream ?? !renderers.renderToNodeStream
   debugFlow(`disable === ${disable} && webStream === ${webStream}`)
 
   // When streaming is disabled, React still outlines Suspense boundaries larger than `progressiveChunkSize` into out-of-order segments that require an inline `$RC` script to reveal — defeating `disable`'s purpose (bots/SEO, stream-to-string).
@@ -176,7 +181,7 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
     if (!webStream) {
       ret = {
         ...retCommon,
-        ...(await globalObject.renderToNodeStream!(
+        ...(await renderers.renderToNodeStream!(
           element,
           disable,
           options,
@@ -186,18 +191,10 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
         )),
       }
     } else {
-      assert(globalObject.renderToWebStream)
+      assert(renderers.renderToWebStream)
       ret = {
         ...retCommon,
-        ...(await globalObject.renderToWebStream(
-          element,
-          disable,
-          options,
-          doNotClosePromise,
-          setAbortFn,
-          clearTimeouts,
-          globalObject.renderToReadableStreamNode,
-        )),
+        ...(await renderers.renderToWebStream(element, disable, options, doNotClosePromise, setAbortFn, clearTimeouts)),
       }
     }
   } catch (err) {
@@ -217,17 +214,6 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
 
   debugFlow('promise `await renderToStream()` resolved')
   return ret
-}
-
-function renderToNodeStream_set(renderToNodeStream: typeof renderToNodeStream_) {
-  globalObject.renderToNodeStream = renderToNodeStream
-}
-function renderToWebStream_set(
-  renderToWebStream: typeof renderToWebStream_,
-  renderToReadableStreamNode?: typeof RenderToReadableStream,
-) {
-  globalObject.renderToWebStream = renderToWebStream
-  if (renderToReadableStreamNode) globalObject.renderToReadableStreamNode = renderToReadableStreamNode
 }
 
 // To debug wrong peer dependency loading:

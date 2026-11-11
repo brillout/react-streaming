@@ -1,12 +1,13 @@
 export * from './index.js'
+export { renderToStream }
 
-// Node.js Stream
+import { createRenderToStream } from './renderToStream.js'
 import { renderToNodeStream } from './renderToStream/renderToNodeStream.js'
-import { renderToNodeStream_set } from './renderToStream.js'
-renderToNodeStream_set(renderToNodeStream)
+import { webStreamRenderer } from './renderToStream/renderToWebStream.js'
+import { getRenderToReadableStream } from './renderToStream/reactBuild.node.js'
 
-// Web Stream
-import { renderToWebStream } from './renderToStream/renderToWebStream.js'
-import { renderToWebStream_set } from './renderToStream.js'
-import ReactDOMServerNode from 'react-dom/server.node'
-renderToWebStream_set(renderToWebStream, ReactDOMServerNode.renderToReadableStream)
+// Node.js Streams and Web Streams, both rendered by React's Node build: React doesn't support two renderers rendering the same context provider ("Detected multiple renderers concurrently rendering the same context provider")
+const renderToStream = createRenderToStream({
+  renderToNodeStream,
+  renderToWebStream: webStreamRenderer(getRenderToReadableStream),
+})

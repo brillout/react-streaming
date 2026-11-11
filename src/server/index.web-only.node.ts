@@ -1,8 +1,12 @@
 export * from './index.js'
+export { renderToStream }
 
-// Web Stream, rendered by React's Node build so that it shares React's renderer with ./index.node-and-web.ts
+import { createRenderToStream } from './renderToStream.js'
+import { webStreamRenderer } from './renderToStream/renderToWebStream.js'
+import { getRenderToReadableStream } from './renderToStream/reactBuild.node.js'
 
-import { renderToWebStream } from './renderToStream/renderToWebStream.js'
-import { renderToWebStream_set } from './renderToStream.js'
-import ReactDOMServerNode from 'react-dom/server.node'
-renderToWebStream_set(renderToWebStream, ReactDOMServerNode.renderToReadableStream)
+// Web Streams only, rendered by React's Node build so that it shares React's renderer with ./index.node-and-web.ts
+const renderToStream = createRenderToStream({
+  renderToNodeStream: null,
+  renderToWebStream: webStreamRenderer(getRenderToReadableStream),
+})
