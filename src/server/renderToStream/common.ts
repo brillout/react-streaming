@@ -16,7 +16,7 @@ function assertReactImport(fn: unknown) {
 function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Promise<boolean> {
   return (
     streamEnd
-      // Needed because of the `afterReactBugCatch()` hack above, otherwise `onBoundaryError` triggers after `streamEnd` resolved
+      // Needed because of the `afterReactBugCatch()` hack below, otherwise `onBoundaryError` triggers after `streamEnd` resolved
       .then(() => new Promise<void>((r) => queueMacrotask(r)))
       .then(() => !didError)
   )
