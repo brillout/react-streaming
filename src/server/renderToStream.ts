@@ -228,7 +228,6 @@ function renderToWebStream_set(
   renderToReadableStreamNode?: typeof RenderToReadableStream,
 ) {
   globalObject.renderToWebStream = renderToWebStream
-  // So that the web-only entry of another react-streaming copy doesn't unset it
   if (renderToReadableStreamNode) globalObject.renderToReadableStreamNode = renderToReadableStreamNode
 }
 
