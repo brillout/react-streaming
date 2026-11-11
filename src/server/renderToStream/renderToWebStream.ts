@@ -24,8 +24,6 @@ async function renderToWebStream(
 ) {
   debugFlow('creating Web Stream Pipe')
 
-  // 'react-dom/server.edge' doesn't exist in React 18
-  assertVersion('React', version, '19.0.0')
   // Without the Node.js entry (e.g. Cloudflare Workers), or with React 19.0 and 19.1, whose 'react-dom/server.node' doesn't have renderToReadableStream()
   const renderToReadableStream_ = renderToReadableStreamNode ?? (await loadEdgeBuild())
 
@@ -70,6 +68,8 @@ async function renderToWebStream(
 }
 
 async function loadEdgeBuild() {
+  // 'react-dom/server.edge' doesn't exist in React 18
+  assertVersion('React', version, '19.0.0')
   // We import 'react-dom/server.edge' only if needed, because merely importing 'react-dom/server.browser' was preventing Node.js from exiting (e.g. after running Vike's prerender() API). But maybe that isn't the case with 'react-dom/server.edge' anymore?
   // - Reproduction: https://github.com/vikejs/vike/blob/a0d6777c84aee4c2e5bd0a0a585b18f7a87c8cac/test/playground/scripts/prerender.js
   const moduleExports = await import('react-dom/server.edge')
