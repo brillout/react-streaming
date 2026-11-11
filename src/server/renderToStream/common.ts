@@ -4,14 +4,13 @@ export { wrapStreamEnd }
 export { handleErrors }
 
 import { toPosixPathLenient } from '../../utils/path.js'
-import { assert, assertUsage, createDebugger, getBetterError, isObject, queueMacrotask } from '../utils.js'
+import { assert, createDebugger, getBetterError, isObject, queueMacrotask } from '../utils.js'
 
 const debugFlow = createDebugger('react-streaming:flow')
 const isReactBug = '__@brillout/react-streaming__isReactBug'
 
-function assertReactImport(fn: unknown, fnName: 'renderToPipeableStream' | 'renderToReadableStream') {
+function assertReactImport(fn: unknown) {
   assert(typeof fn === 'function')
-  assertUsage(fn, `Couldn't import ${fnName}() from 'react-dom'`)
 }
 
 function wrapStreamEnd(streamEnd: Promise<void>, didError: boolean): Promise<boolean> {

@@ -42,7 +42,7 @@ function webStreamRenderer(getRenderToReadableStream: () => Promise<typeof Rende
 
     const { state, onBoundaryError, onReactBug } = handleErrors(options, () => promiseResolved)
 
-    assertReactImport(renderToReadableStream, 'renderToReadableStream')
+    assertReactImport(renderToReadableStream)
     const readableOriginal = await renderToReadableStream(element, {
       onError: onBoundaryError,
       signal: controller.signal,

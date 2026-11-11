@@ -36,7 +36,7 @@ function nodeStreamRenderer(renderToPipeableStream: typeof RenderToPipeableStrea
     let promiseResolved = false
     const { state, onShellError, onBoundaryError, onReactBug } = handleErrors(options, () => promiseResolved)
 
-    assertReactImport(renderToPipeableStream, 'renderToPipeableStream')
+    assertReactImport(renderToPipeableStream)
     const { pipe: pipeOriginal, abort } = renderToPipeableStream(element, {
       ...options.streamOptions,
       onShellReady() {
