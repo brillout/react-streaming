@@ -24,7 +24,7 @@ async function renderToWebStream(
   debugFlow('creating Web Stream Pipe')
 
   const renderToReadableStream =
-    // Set by the Node.js entry, so that Node.js Streams and Web Streams use the same React renderer: React doesn't support two renderers rendering the same context provider ("Detected multiple renderers concurrently rendering the same context provider")
+    // Set by server/index.node-and-web.ts so that Node.js Streams and Web Streams use the same React renderer: React doesn't support two renderers rendering the same context provider ("Detected multiple renderers concurrently rendering the same context provider")
     renderToReadableStreamNode ??
     // - Without the Node.js entry (e.g. Cloudflare Workers)
     // - Or with React 19.0 and 19.1, whose 'react-dom/server.node' doesn't have renderToReadableStream()
