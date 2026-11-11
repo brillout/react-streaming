@@ -36,7 +36,7 @@
       "worker": "./dist/server/index.web-only.js",
       "workerd": "./dist/server/index.web-only.js",
       "browser": "./dist/server/client-poison-pill.js",
-      "node": "./dist/server/index.web-only.js",
+      "node": "./dist/server/index.web-only.node.js",
       "types": "./dist/server/index.d.ts",
       "default": "./dist/server/index.web-only.js"
     },
