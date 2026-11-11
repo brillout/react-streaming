@@ -23,8 +23,11 @@ async function renderToWebStream(
 ) {
   debugFlow('creating Web Stream Pipe')
 
-  // Without the Node.js entry (e.g. Cloudflare Workers), or with React 19.0 and 19.1, whose 'react-dom/server.node' doesn't have renderToReadableStream()
-  const renderToReadableStream = renderToReadableStreamNode ?? (await loadEdgeBuild())
+  const renderToReadableStream =
+    renderToReadableStreamNode ??
+    // - Without the Node.js entry (e.g. Cloudflare Workers)
+    // - Or with React 19.0 and 19.1, whose 'react-dom/server.node' doesn't have renderToReadableStream()
+    (await loadEdgeBuild())
 
   const controller: AbortController = new AbortController()
   setAbortFn(() => {
