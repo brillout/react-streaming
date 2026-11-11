@@ -22,8 +22,7 @@ import { assert, assertUsage, getGlobalObject } from './utils.js'
 import type { RenderToNodeStream } from './renderToStream/renderToNodeStream.js'
 import type { RenderToWebStream } from './renderToStream/renderToWebStream.js'
 import { debugFlow } from './renderToStream/common.js'
-import type { InjectToStream } from './index.node-and-web.js'
-import type { Chunk, DoNotClosePromise } from './renderToStream/orchestrateChunks.js'
+import type { Chunk, DoNotClosePromise, InjectToStream } from './renderToStream/orchestrateChunks.js'
 const globalObject = getGlobalObject('renderToStream.ts', {
   renderToNodeStream: null as null | RenderToNodeStream,
   renderToWebStream: null as null | RenderToWebStream,
