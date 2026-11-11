@@ -30,6 +30,7 @@ async function renderToWebStream(
 
   // 'react-dom/server.edge' doesn't exist in React 18
   assertVersion('React', version, '19.0.0')
+  // 'react-dom/server.node' doesn't have renderToReadableStream() in React 19.0 and 19.1: https://react.dev/blog/2025/10/01/react-19-2
   const renderToReadableStream_ = globalObject.renderToReadableStreamNode ?? (await loadEdgeBuild())
 
   const controller: AbortController = new AbortController()
