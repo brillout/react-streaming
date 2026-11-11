@@ -27,7 +27,6 @@ import type { Chunk, DoNotClosePromise } from './renderToStream/orchestrateChunk
 const globalObject = getGlobalObject('renderToStream.ts', {
   renderToNodeStream: null as null | typeof renderToNodeStream_,
   renderToWebStream: null as null | typeof renderToWebStream_,
-  // Set by the Node.js entry, so that Node.js Streams and Web Streams use the same React renderer: React doesn't support two renderers rendering the same context provider ("Detected multiple renderers concurrently rendering the same context provider")
   renderToReadableStreamNode: null as null | typeof RenderToReadableStream,
 })
 

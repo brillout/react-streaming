@@ -19,6 +19,7 @@ async function renderToWebStream(
   doNotClosePromise: DoNotClosePromise,
   setAbortFn: SetAbortFn,
   clearTimeouts: ClearTimeouts,
+  // Set by the Node.js entry, so that Node.js Streams and Web Streams use the same React renderer: React doesn't support two renderers rendering the same context provider ("Detected multiple renderers concurrently rendering the same context provider")
   renderToReadableStreamNode: null | typeof RenderToReadableStream,
 ) {
   debugFlow('creating Web Stream Pipe')
