@@ -8,7 +8,11 @@ import { assertReactImport, debugFlow, wrapStreamEnd, handleErrors } from './com
 import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream.js'
 import type { DoNotClosePromise } from './orchestrateChunks.js'
 import { version } from 'react-dom/server'
-import { assert, assertVersion } from '../utils.js'
+import { assert, assertVersion, getGlobalObject } from '../utils.js'
+// Set by the Node.js entry, so that Node.js Streams and Web Streams use the same React renderer: React doesn't support two renderers rendering the same context provider ("Detected multiple renderers concurrently rendering the same context provider")
+const globalObject = getGlobalObject('renderToWebStream.ts', {
+  renderToReadableStreamNode: undefined as undefined | typeof renderToReadableStream__,
+})
 
 async function renderToWebStream(
   element: React.ReactNode,
@@ -26,7 +30,7 @@ async function renderToWebStream(
 
   // 'react-dom/server.edge' doesn't exist in React 18
   assertVersion('React', version, '19.0.0')
-  const renderToReadableStream_ = renderToReadableStreamNode ?? (await loadEdgeBuild())
+  const renderToReadableStream_ = globalObject.renderToReadableStreamNode ?? (await loadEdgeBuild())
 
   const controller: AbortController = new AbortController()
   setAbortFn(() => {
@@ -68,10 +72,8 @@ async function renderToWebStream(
   }
 }
 
-// Set by the Node.js entry, so that Node.js Streams and Web Streams use the same React renderer: React doesn't support two renderers rendering the same context provider ("Detected multiple renderers concurrently rendering the same context provider")
-let renderToReadableStreamNode: undefined | typeof renderToReadableStream__
 function renderToReadableStream_set(renderToReadableStream: typeof renderToReadableStream__) {
-  renderToReadableStreamNode = renderToReadableStream
+  globalObject.renderToReadableStreamNode = renderToReadableStream
 }
 
 async function loadEdgeBuild() {
