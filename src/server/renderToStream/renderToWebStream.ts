@@ -1,7 +1,7 @@
 export { renderToWebStream }
 
 import React from 'react'
-import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
+import type { renderToReadableStream as RenderToReadableStream } from 'react-dom/server'
 import { createReadableWrapper } from './createReadableWrapper.js'
 import { assertReactImport, debugFlow, wrapStreamEnd, handleErrors } from './common.js'
 import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream.js'
@@ -15,17 +15,16 @@ async function renderToWebStream(
   options: {
     onBoundaryError?: (err: unknown) => void
     streamOptions?: StreamOptions
-    renderToReadableStream?: typeof renderToReadableStream__
   },
   doNotClosePromise: DoNotClosePromise,
   setAbortFn: SetAbortFn,
   clearTimeouts: ClearTimeouts,
-  renderToReadableStreamNode: null | typeof renderToReadableStream__,
+  renderToReadableStreamNode: null | typeof RenderToReadableStream,
 ) {
   debugFlow('creating Web Stream Pipe')
 
   // Without the Node.js entry (e.g. Cloudflare Workers), or with React 19.0 and 19.1, whose 'react-dom/server.node' doesn't have renderToReadableStream()
-  const renderToReadableStream_ = renderToReadableStreamNode ?? (await loadEdgeBuild())
+  const renderToReadableStream = renderToReadableStreamNode ?? (await loadEdgeBuild())
 
   const controller: AbortController = new AbortController()
   setAbortFn(() => {
@@ -34,11 +33,7 @@ async function renderToWebStream(
 
   const { state, onBoundaryError, onReactBug } = handleErrors(options, () => promiseResolved)
 
-  const renderToReadableStream =
-    options.renderToReadableStream ?? (renderToReadableStream_ as typeof renderToReadableStream__)
-  if (!options.renderToReadableStream) {
-    assertReactImport(renderToReadableStream, 'renderToReadableStream')
-  }
+  assertReactImport(renderToReadableStream, 'renderToReadableStream')
   const readableOriginal = await renderToReadableStream(element, {
     onError: onBoundaryError,
     signal: controller.signal,
