@@ -9,12 +9,7 @@ export type { RenderToStreamOptions }
 
 import React from 'react'
 import ReactDOMServer, { version as reactDomVersion } from 'react-dom/server'
-import type {
-  renderToPipeableStream as RenderToPipeableStream,
-  RenderToPipeableStreamOptions,
-  renderToReadableStream as RenderToReadableStream,
-  RenderToReadableStreamOptions,
-} from 'react-dom/server'
+import type { RenderToPipeableStreamOptions, RenderToReadableStreamOptions } from 'react-dom/server'
 import { ReactStreamingProviderSuspenseData } from './useAsync/useSuspenseData.js'
 import { StreamProvider } from './useStream.js'
 import type { Pipe } from './renderToStream/createPipeWrapper.js'
@@ -46,12 +41,6 @@ type RenderToStreamOptions = {
   timeout?: number | null
   onTimeout?: () => void
   signal?: AbortSignal
-  // Are these two options still needed? I think we can now remove them.
-  //  - options.renderToReadableStream used to be needed by https://github.com/brillout/react-streaming/blob/43941f65e84e88a05801a93723df0e38687df872/test/render.tsx#L51 but that isnt' the case anymore.
-  //  - option.renderToPipeableStream was introduced by https://github.com/brillout/react-streaming/commit/9f0403d7b738e59ddc3dcaa27f0e3fd33a8f5895 but I don't remember why. Do we still it?
-  //  - TO-DO/eventually: the options are now deprecated (see assert() below) => remove if no user complains
-  renderToReadableStream?: typeof RenderToReadableStream
-  renderToPipeableStream?: typeof RenderToPipeableStream
 }
 type StreamReturnMain =
   | {
@@ -87,9 +76,6 @@ function disable() {
 }
 
 async function renderToStream(element: React.ReactNode, options: RenderToStreamOptions = {}): Promise<StreamReturn> {
-  // Let's see if a user complains
-  assertUsage(!options.renderToPipeableStream && !options.renderToReadableStream, 'using deprecated options')
-
   element = React.createElement(ReactStreamingProviderSuspenseData, null, element)
 
   const buffer: Chunk[] = []

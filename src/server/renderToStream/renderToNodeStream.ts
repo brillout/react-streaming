@@ -1,8 +1,7 @@
 export { renderToNodeStream }
 
 import React from 'react'
-import { renderToPipeableStream as renderToPipeableStream_ } from 'react-dom/server.node'
-import type { renderToPipeableStream as renderToPipeableStream__ } from 'react-dom/server'
+import { renderToPipeableStream } from 'react-dom/server.node'
 import { createPipeWrapper } from './createPipeWrapper.js'
 import { assertReactImport, debugFlow, wrapStreamEnd, handleErrors } from './common.js'
 import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream.js'
@@ -14,7 +13,6 @@ async function renderToNodeStream(
   options: {
     onBoundaryError?: (err: unknown) => void
     streamOptions?: StreamOptions
-    renderToPipeableStream?: typeof renderToPipeableStream__
   },
   doNotClosePromise: DoNotClosePromise,
   setAbortFn: SetAbortFn,
@@ -34,11 +32,7 @@ async function renderToNodeStream(
   let promiseResolved = false
   const { state, onShellError, onBoundaryError, onReactBug } = handleErrors(options, () => promiseResolved)
 
-  const renderToPipeableStream =
-    options.renderToPipeableStream ?? (renderToPipeableStream_ as typeof renderToPipeableStream__)
-  if (!options.renderToPipeableStream) {
-    assertReactImport(renderToPipeableStream, 'renderToPipeableStream')
-  }
+  assertReactImport(renderToPipeableStream, 'renderToPipeableStream')
   const { pipe: pipeOriginal, abort } = renderToPipeableStream(element, {
     ...options.streamOptions,
     onShellReady() {

@@ -1,7 +1,6 @@
 export { renderToWebStream }
 
 import React from 'react'
-import type { renderToReadableStream as renderToReadableStream__ } from 'react-dom/server'
 import { createReadableWrapper } from './createReadableWrapper.js'
 import { assertReactImport, debugFlow, wrapStreamEnd, handleErrors } from './common.js'
 import type { ClearTimeouts, SetAbortFn, StreamOptions } from '../renderToStream.js'
@@ -15,7 +14,6 @@ async function renderToWebStream(
   options: {
     onBoundaryError?: (err: unknown) => void
     streamOptions?: StreamOptions
-    renderToReadableStream?: typeof renderToReadableStream__
   },
   doNotClosePromise: DoNotClosePromise,
   setAbortFn: SetAbortFn,
@@ -29,7 +27,7 @@ async function renderToWebStream(
   // - Reproduction: https://github.com/vikejs/vike/blob/a0d6777c84aee4c2e5bd0a0a585b18f7a87c8cac/test/playground/scripts/prerender.js
   const moduleExports = await import('react-dom/server.edge')
   assert(moduleExports?.default?.renderToReadableStream, moduleExports)
-  const renderToReadableStream_ = moduleExports.default.renderToReadableStream
+  const renderToReadableStream = moduleExports.default.renderToReadableStream
 
   const controller: AbortController = new AbortController()
   setAbortFn(() => {
@@ -38,11 +36,7 @@ async function renderToWebStream(
 
   const { state, onBoundaryError, onReactBug } = handleErrors(options, () => promiseResolved)
 
-  const renderToReadableStream =
-    options.renderToReadableStream ?? (renderToReadableStream_ as typeof renderToReadableStream__)
-  if (!options.renderToReadableStream) {
-    assertReactImport(renderToReadableStream, 'renderToReadableStream')
-  }
+  assertReactImport(renderToReadableStream, 'renderToReadableStream')
   const readableOriginal = await renderToReadableStream(element, {
     onError: onBoundaryError,
     signal: controller.signal,
