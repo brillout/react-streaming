@@ -1,12 +1,17 @@
 export * from './index.js'
 
+import {
+  renderToPipeableStream,
+  getRenderToReadableStream,
+  renderToReadableStream,
+} from './renderToStream/reactBuild.node.js'
+
 // Node.js Stream
-import { renderToNodeStream } from './renderToStream/renderToNodeStream.js'
+import { nodeStreamRenderer } from './renderToStream/renderToNodeStream.js'
 import { renderToNodeStream_set } from './renderToStream.js'
-renderToNodeStream_set(renderToNodeStream)
+renderToNodeStream_set(nodeStreamRenderer(renderToPipeableStream))
 
 // Web Stream
-import { renderToWebStream } from './renderToStream/renderToWebStream.js'
+import { webStreamRenderer } from './renderToStream/renderToWebStream.js'
 import { renderToWebStream_set } from './renderToStream.js'
-import ReactDOMServerNode from 'react-dom/server.node'
-renderToWebStream_set(renderToWebStream, ReactDOMServerNode.renderToReadableStream)
+renderToWebStream_set(webStreamRenderer(getRenderToReadableStream), renderToReadableStream)

@@ -19,14 +19,14 @@ import { StreamProvider } from './useStream.js'
 import type { Pipe } from './renderToStream/createPipeWrapper.js'
 import { resolveSeoStrategy, SeoStrategy } from './renderToStream/resolveSeoStrategy.js'
 import { assert, assertUsage, getGlobalObject } from './utils.js'
-import type { renderToNodeStream as renderToNodeStream_ } from './renderToStream/renderToNodeStream.js'
-import type { renderToWebStream as renderToWebStream_ } from './renderToStream/renderToWebStream.js'
+import type { RenderToNodeStream } from './renderToStream/renderToNodeStream.js'
+import type { RenderToWebStream } from './renderToStream/renderToWebStream.js'
 import { debugFlow } from './renderToStream/common.js'
 import type { InjectToStream } from './index.node-and-web.js'
 import type { Chunk, DoNotClosePromise } from './renderToStream/orchestrateChunks.js'
 const globalObject = getGlobalObject('renderToStream.ts', {
-  renderToNodeStream: null as null | typeof renderToNodeStream_,
-  renderToWebStream: null as null | typeof renderToWebStream_,
+  renderToNodeStream: null as null | RenderToNodeStream,
+  renderToWebStream: null as null | RenderToWebStream,
   renderToReadableStreamNode: null as null | typeof RenderToReadableStream,
 })
 
@@ -219,11 +219,11 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
   return ret
 }
 
-function renderToNodeStream_set(renderToNodeStream: typeof renderToNodeStream_) {
+function renderToNodeStream_set(renderToNodeStream: RenderToNodeStream) {
   globalObject.renderToNodeStream = renderToNodeStream
 }
 function renderToWebStream_set(
-  renderToWebStream: typeof renderToWebStream_,
+  renderToWebStream: RenderToWebStream,
   renderToReadableStreamNode?: typeof RenderToReadableStream,
 ) {
   globalObject.renderToWebStream = renderToWebStream

@@ -1,4 +1,6 @@
-export { renderToWebStream }
+export { webStreamRenderer }
+export type { RenderToWebStream }
+export { loadEdgeBuild }
 
 import React from 'react'
 import type { renderToReadableStream as RenderToReadableStream } from 'react-dom/server'
@@ -9,60 +11,64 @@ import type { DoNotClosePromise } from './orchestrateChunks.js'
 import { version } from 'react-dom'
 import { assert, assertVersion } from '../utils.js'
 
-async function renderToWebStream(
-  element: React.ReactNode,
-  disable: boolean,
-  options: {
-    onBoundaryError?: (err: unknown) => void
-    streamOptions?: StreamOptions
-  },
-  doNotClosePromise: DoNotClosePromise,
-  setAbortFn: SetAbortFn,
-  clearTimeouts: ClearTimeouts,
-  renderToReadableStreamNode: null | typeof RenderToReadableStream,
-) {
-  debugFlow('creating Web Stream Pipe')
+type RenderToWebStream = ReturnType<typeof webStreamRenderer>
 
-  const renderToReadableStream =
-    // Set by server/index.node-and-web.ts so that Node.js Streams and Web Streams use the same React renderer: React doesn't support two renderers rendering the same context provider ("Detected multiple renderers concurrently rendering the same context provider")
-    renderToReadableStreamNode ??
-    // - Without the Node.js entry (e.g. Cloudflare Workers)
-    // - Or with React 19.0 and 19.1, whose 'react-dom/server.node' doesn't have renderToReadableStream()
-    (await loadEdgeBuild())
+function webStreamRenderer(getRenderToReadableStream: () => Promise<typeof RenderToReadableStream>) {
+  return async function renderToWebStream(
+    element: React.ReactNode,
+    disable: boolean,
+    options: {
+      onBoundaryError?: (err: unknown) => void
+      streamOptions?: StreamOptions
+    },
+    doNotClosePromise: DoNotClosePromise,
+    setAbortFn: SetAbortFn,
+    clearTimeouts: ClearTimeouts,
+    renderToReadableStreamNode: null | typeof RenderToReadableStream,
+  ) {
+    debugFlow('creating Web Stream Pipe')
 
-  const controller: AbortController = new AbortController()
-  setAbortFn(() => {
-    controller.abort()
-  })
+    const renderToReadableStream =
+      // Set by server/index.node-and-web.ts so that Node.js Streams and Web Streams use the same React renderer: React doesn't support two renderers rendering the same context provider ("Detected multiple renderers concurrently rendering the same context provider")
+      renderToReadableStreamNode ??
+      // - Without the Node.js entry (e.g. Cloudflare Workers)
+      // - Or with React 19.0 and 19.1, whose 'react-dom/server.node' doesn't have renderToReadableStream()
+      (await getRenderToReadableStream())
 
-  const { state, onBoundaryError, onReactBug } = handleErrors(options, () => promiseResolved)
+    const controller: AbortController = new AbortController()
+    setAbortFn(() => {
+      controller.abort()
+    })
 
-  assertReactImport(renderToReadableStream, 'renderToReadableStream')
-  const readableOriginal = await renderToReadableStream(element, {
-    onError: onBoundaryError,
-    signal: controller.signal,
-    ...options.streamOptions,
-  })
-  const { allReady } = readableOriginal
-  let promiseResolved = false
-  // Upon React internal errors (i.e. React bugs), React rejects `allReady`. React doesn't reject `allReady` upon boundary errors.
-  allReady.catch(onReactBug)
-  if (state.didError) throw state.firstErr
-  if (disable) await allReady
-  if (state.didError) throw state.firstErr
-  const { readableForUser, streamEnd, injectToStream, hasStreamEnded } = createReadableWrapper(
-    readableOriginal,
-    clearTimeouts,
-    doNotClosePromise,
-  )
-  promiseResolved = true
-  return {
-    readable: readableForUser,
-    pipe: null,
-    abort: () => controller.abort(),
-    streamEnd: wrapStreamEnd(streamEnd, state.didError),
-    injectToStream,
-    hasStreamEnded,
+    const { state, onBoundaryError, onReactBug } = handleErrors(options, () => promiseResolved)
+
+    assertReactImport(renderToReadableStream, 'renderToReadableStream')
+    const readableOriginal = await renderToReadableStream(element, {
+      onError: onBoundaryError,
+      signal: controller.signal,
+      ...options.streamOptions,
+    })
+    const { allReady } = readableOriginal
+    let promiseResolved = false
+    // Upon React internal errors (i.e. React bugs), React rejects `allReady`. React doesn't reject `allReady` upon boundary errors.
+    allReady.catch(onReactBug)
+    if (state.didError) throw state.firstErr
+    if (disable) await allReady
+    if (state.didError) throw state.firstErr
+    const { readableForUser, streamEnd, injectToStream, hasStreamEnded } = createReadableWrapper(
+      readableOriginal,
+      clearTimeouts,
+      doNotClosePromise,
+    )
+    promiseResolved = true
+    return {
+      readable: readableForUser,
+      pipe: null,
+      abort: () => controller.abort(),
+      streamEnd: wrapStreamEnd(streamEnd, state.didError),
+      injectToStream,
+      hasStreamEnded,
+    }
   }
 }
 
