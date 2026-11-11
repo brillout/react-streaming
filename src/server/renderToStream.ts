@@ -153,13 +153,13 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
     element,
   )
 
-  const disable = globalConfig.disable || (options.disable ?? resolveSeoStrategy(options).disableStream)
+  const disabled = globalConfig.disable || (options.disable ?? resolveSeoStrategy(options).disableStream)
   const webStream = options.webStream ?? !globalObject.renderToNodeStream
-  debugFlow(`disable === ${disable} && webStream === ${webStream}`)
+  debugFlow(`disabled === ${disabled} && webStream === ${webStream}`)
 
   // When streaming is disabled, React still outlines Suspense boundaries larger than `progressiveChunkSize` into out-of-order segments that require an inline `$RC` script to reveal — defeating `disable`'s purpose (bots/SEO, stream-to-string).
   // https://github.com/brillout/react-streaming/pull/59
-  if (disable) {
+  if (disabled) {
     options = {
       ...options,
       streamOptions: {
@@ -170,14 +170,14 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
   }
 
   let ret: StreamReturn
-  const retCommon: Pick<StreamReturn, 'disabled' | 'doNotClose'> = { disabled: disable, doNotClose }
+  const retCommon: Pick<StreamReturn, 'disabled' | 'doNotClose'> = { disabled, doNotClose }
   try {
     if (!webStream) {
       ret = {
         ...retCommon,
         ...(await globalObject.renderToNodeStream!(
           element,
-          disable,
+          disabled,
           options,
           doNotClosePromise,
           setAbortFn,
@@ -190,7 +190,7 @@ async function renderToStream(element: React.ReactNode, options: RenderToStreamO
         ...retCommon,
         ...(await globalObject.renderToWebStream(
           element,
-          disable,
+          disabled,
           options,
           doNotClosePromise,
           setAbortFn,
