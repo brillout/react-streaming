@@ -50,6 +50,26 @@ describe('error handling', async () => {
     })
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
+    it(`throw the same Error() inside and outside a suspense boundary - ${streamType} stream`, async () => {
+      const err = new Error('some-error')
+      const Throw = () => {
+        throw err
+      }
+      const onBoundaryError = vitest.fn()
+      const page = (
+        <>
+          <Suspense fallback={<p>Loading...</p>}>
+            <Throw />
+          </Suspense>
+          <Throw />
+        </>
+      )
+      await expect(render(page, { streamType, onBoundaryError })).rejects.toThrow('some-error')
+      await new Promise((r) => setTimeout(r, 10))
+      expect(onBoundaryError).toHaveBeenCalledTimes(1)
+    })
+  })
+  ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`no timeout after a failed render - ${streamType} stream`, async () => {
       const Page = (() => {
         throw new Error('some-error')
