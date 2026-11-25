@@ -11,6 +11,7 @@ function createReadableWrapper(
   readableFromReact: ReadableStream,
   clearTimeouts: ClearTimeouts,
   doNotClosePromise: DoNotClosePromise,
+  abortReason: unknown,
 ) {
   const streamOperations: StreamOperations = {
     operations: null,
@@ -30,8 +31,8 @@ function createReadableWrapper(
     // E.g. when the HTTP client disconnects
     cancel() {
       isCancelled = true
-      // Makes React abort rendering. Without the reason: React would pass it, whatever it is (e.g. `null`), to onBoundaryError().
-      return reader.cancel()
+      // Makes React abort rendering. Not with the server's reason (e.g. `null`): React would pass it to onBoundaryError().
+      return reader.cancel(abortReason)
     },
   })
   const { injectToStream, onReactWrite, onBeforeEnd, hasStreamEnded } = orchestrateChunks(

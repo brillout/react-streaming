@@ -30,13 +30,12 @@ async function renderToWebStream(
     // - Or with React 19.0 and 19.1, whose 'react-dom/server.node' doesn't have renderToReadableStream()
     (await loadEdgeBuild())
 
-  const controller: AbortController = new AbortController()
-  setAbortFn(() => {
-    controller.abort()
-  })
-
   let promiseResolved = false
-  const { state, onShellError, onBoundaryError, onReactBug } = handleErrors(options, () => promiseResolved)
+  const { state, abortReason, onShellError, onBoundaryError, onReactBug } = handleErrors(options, () => promiseResolved)
+
+  const controller: AbortController = new AbortController()
+  const abort = () => controller.abort(abortReason)
+  setAbortFn(abort)
 
   assertReactImport(renderToReadableStream, 'renderToReadableStream')
   const readableOriginal = await renderToReadableStream(element, {
@@ -57,12 +56,13 @@ async function renderToWebStream(
     readableOriginal,
     clearTimeouts,
     doNotClosePromise,
+    abortReason,
   )
   promiseResolved = true
   return {
     readable: readableForUser,
     pipe: null,
-    abort: () => controller.abort(),
+    abort,
     streamEnd: wrapStreamEnd(streamEnd, state.didError),
     injectToStream,
     hasStreamEnded,

@@ -134,6 +134,9 @@ describe('error handling', async () => {
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
     it(`onBoundaryError() is called before streamEnd resolves, upon client disconnect - ${streamType} stream`, async () => {
+      const Throw = () => {
+        throw new Error('some-error')
+      }
       const never = new Promise(() => {})
       const Pending = () => {
         React.use(never)
@@ -141,15 +144,50 @@ describe('error handling', async () => {
       }
       const onBoundaryError = vitest.fn()
       const { disconnect, streamEnd } = await render(
-        <Suspense fallback="...">
-          <Pending />
-        </Suspense>,
+        <>
+          <Suspense fallback="...">
+            <Throw />
+          </Suspense>
+          <Suspense fallback="...">
+            <Pending />
+          </Suspense>
+        </>,
         { streamType, onBoundaryError },
       )
-      // React aborts the pending boundary, which calls onBoundaryError()
+      // afterReactBugCatch() still holds the onBoundaryError() call of <Throw>'s error
       disconnect()
       await streamEnd
-      expect(onBoundaryError).toBeCalled()
+      expect(onBoundaryError).toHaveBeenCalledTimes(1)
+      expect(onBoundaryError.mock.calls[0]![0]).toMatchObject({ message: 'some-error' })
+    })
+  })
+  ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
+    ;(['client disconnect', 'abort()', 'signal', 'timeout'] as const).forEach((abortCause) => {
+      it(`onBoundaryError() isn't called upon ${abortCause} - ${streamType} stream`, async () => {
+        const never = new Promise(() => {})
+        const Pending = () => {
+          React.use(never)
+          return null
+        }
+        const onBoundaryError = vitest.fn()
+        const controller = new AbortController()
+        const { disconnect, abort, streamEnd } = await render(
+          <Suspense fallback="...">
+            <Pending />
+          </Suspense>,
+          {
+            streamType,
+            onBoundaryError,
+            signal: controller.signal,
+            timeout: abortCause === 'timeout' ? 0.01 : undefined,
+          },
+        )
+        if (abortCause === 'client disconnect') disconnect()
+        if (abortCause === 'abort()') abort()
+        if (abortCause === 'signal') controller.abort()
+        await streamEnd
+        expect(onBoundaryError).not.toBeCalled()
+      })
     })
   })
 })
