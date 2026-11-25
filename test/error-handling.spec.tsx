@@ -4,6 +4,9 @@ import { onConsoleError } from './onConsoleError'
 import React, { Suspense } from 'react'
 import { useAsync } from '../src/server/hooks'
 import { partRegex } from '@brillout/part-regex'
+import { renderToStream } from '../src/server/index.node-and-web'
+import { Writable } from 'stream'
+import { once } from 'events'
 
 describe('error handling', async () => {
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
@@ -186,5 +189,28 @@ describe('error handling', async () => {
         expect(onBoundaryError).not.toBeCalled()
       })
     })
+  })
+  it(`onBoundaryError() isn't called upon client disconnect before pipe() - node stream`, async () => {
+    const never = new Promise(() => {})
+    const Pending = () => {
+      React.use(never)
+      return null
+    }
+    const onBoundaryError = vitest.fn()
+    const { pipe, streamEnd } = await renderToStream(
+      <div>
+        <Suspense fallback="...">
+          <Pending />
+        </Suspense>
+      </div>,
+      { disable: false, onBoundaryError },
+    )
+    const writable = new Writable({ write: (_chunk, _encoding, callback) => callback() })
+    writable.destroy()
+    await once(writable, 'close')
+    pipe!(writable)
+    await streamEnd
+    await new Promise((r) => setTimeout(r, 10))
+    expect(onBoundaryError).not.toBeCalled()
   })
 })

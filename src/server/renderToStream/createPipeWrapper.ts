@@ -100,6 +100,8 @@ async function createPipeWrapper(
       }
       // Forward the flush() call. E.g. used by React to flush GZIP buffers, see https://github.com/brillout/vite-plugin-ssr/issues/466#issuecomment-1269601710
       ;(writableForReact as any).flush = flush
+      // E.g. the HTTP client disconnected while the shell was rendering: the 'close' listener above may never fire. Not in write(): abort() makes React flush, and React calls write() while flushing.
+      if (writableFromUser.destroyed) abort()
       pipeFromReact(writableForReact)
     }
     return { pipeForUser, streamEnd }
