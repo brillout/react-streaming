@@ -34,7 +34,7 @@ function handleErrors(
     firstErr: undefined as unknown,
   }
   let firstErrOriginal = undefined as unknown
-  // The latest onError() call of each error value
+  // The latest pending onError() call of each error value
   const onErrorCalls = new Map<unknown, { isShellError: boolean }>()
 
   return {
@@ -63,7 +63,7 @@ function handleErrors(
     const call = { isShellError: false }
     onErrorCalls.set(err, call)
     afterReactBugCatch(() => {
-      if (onErrorCalls.get(err) === call) onErrorCalls.delete(err)
+      onErrorCalls.delete(err)
       if (call.isShellError) return
       if (isObject(err) && err[isReactBug]) return
       const errBetter = getErrorWithComponentStack(err, errorInfo)
