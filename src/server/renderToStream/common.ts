@@ -34,8 +34,6 @@ function handleErrors(
     firstErr: undefined as unknown,
   }
   let firstErrOriginal = undefined as unknown
-  let didShellError = false
-  let shellErr: unknown
 
   return {
     state,
@@ -47,8 +45,6 @@ function handleErrors(
   function onShellError(err: unknown, errorInfo?: ErrorInfo) {
     debugFlow('onShellError()')
     state.didError = true
-    didShellError = true
-    shellErr = err
     const errBetter = getErrorWithComponentStack(err, errorInfo)
     if (state.firstErr === undefined) {
       state.firstErr = errBetter
@@ -60,8 +56,8 @@ function handleErrors(
   function onBoundaryError(err: unknown, errorInfo?: ErrorInfo) {
     debugFlow('onBoundaryError()')
     afterReactBugCatch(() => {
-      // React also calls onError() for the shell error, which rejects `await renderToStream()` instead
-      if (didShellError && err === shellErr) return
+      // React also calls onError() for the error that `await renderToStream()` rejects with
+      if (state.didError && Object.is(err, firstErrOriginal)) return
       if (isObject(err) && err[isReactBug]) return
       const errBetter = getErrorWithComponentStack(err, errorInfo)
       options.onBoundaryError?.(errBetter)
@@ -79,7 +75,7 @@ function handleErrors(
   }
   function logErr(err: unknown, errBetter?: unknown) {
     // Only log if it wasn't used as rejection value for `await renderToStream()`
-    if (err !== firstErrOriginal || isPromiseResolved()) {
+    if (!Object.is(err, firstErrOriginal) || isPromiseResolved()) {
       console.error(errBetter ?? err)
     }
   }
