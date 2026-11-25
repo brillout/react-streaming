@@ -35,7 +35,7 @@ function handleErrors(
   }
   let firstErrOriginal = undefined as unknown
   // The reason react-streaming aborts React with (timeout, `signal`, `abort()` and client disconnect), which isn't a boundary error
-  const abortReason = new Error('The render was aborted by react-streaming.')
+  const abortReason = new DOMException('The render was aborted by react-streaming.', 'AbortError')
   // The latest pending onError() call of each error value
   const onErrorCalls = new Map<unknown, { isShellError: boolean }>()
 

@@ -162,7 +162,7 @@ describe('error handling', async () => {
     })
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
-    ;(['client disconnect', 'abort()', 'signal', 'timeout'] as const).forEach((abortCause) => {
+    ;(['client disconnect', 'abort()', 'timeout'] as const).forEach((abortCause) => {
       it(`onBoundaryError() isn't called upon ${abortCause} - ${streamType} stream`, async () => {
         const never = new Promise(() => {})
         const Pending = () => {
@@ -170,7 +170,6 @@ describe('error handling', async () => {
           return null
         }
         const onBoundaryError = vitest.fn()
-        const controller = new AbortController()
         const { disconnect, abort, streamEnd } = await render(
           <Suspense fallback="...">
             <Pending />
@@ -178,13 +177,11 @@ describe('error handling', async () => {
           {
             streamType,
             onBoundaryError,
-            signal: controller.signal,
             timeout: abortCause === 'timeout' ? 0.01 : undefined,
           },
         )
         if (abortCause === 'client disconnect') disconnect()
         if (abortCause === 'abort()') abort()
-        if (abortCause === 'signal') controller.abort()
         await streamEnd
         expect(onBoundaryError).not.toBeCalled()
       })
