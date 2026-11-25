@@ -45,6 +45,7 @@ describe('error handling', async () => {
         expect(err.message).toBe('some-error')
       }
       expect(didError).toBe(true)
+      await new Promise((r) => setTimeout(r, 10))
       expect(onBoundaryError).not.toBeCalled()
     })
   })

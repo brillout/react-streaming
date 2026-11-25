@@ -35,16 +35,19 @@ async function renderToWebStream(
     controller.abort()
   })
 
-  const { state, onBoundaryError, onReactBug } = handleErrors(options, () => promiseResolved)
+  let promiseResolved = false
+  const { state, onShellError, onBoundaryError, onReactBug } = handleErrors(options, () => promiseResolved)
 
   assertReactImport(renderToReadableStream, 'renderToReadableStream')
   const readableOriginal = await renderToReadableStream(element, {
     onError: onBoundaryError,
     signal: controller.signal,
     ...options.streamOptions,
+  }).catch((err) => {
+    onShellError(err)
+    throw err
   })
   const { allReady } = readableOriginal
-  let promiseResolved = false
   // Upon React internal errors (i.e. React bugs), React rejects `allReady`. React doesn't reject `allReady` upon boundary errors.
   allReady.catch(onReactBug)
   if (state.didError) throw state.firstErr
