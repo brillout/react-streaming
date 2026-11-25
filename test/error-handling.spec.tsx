@@ -45,7 +45,28 @@ describe('error handling', async () => {
         expect(err.message).toBe('some-error')
       }
       expect(didError).toBe(true)
+      await new Promise((r) => setTimeout(r, 10))
       expect(onBoundaryError).not.toBeCalled()
+    })
+  })
+  ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
+    it(`throw the same Error() inside and outside a suspense boundary - ${streamType} stream`, async () => {
+      const err = new Error('some-error')
+      const Throw = () => {
+        throw err
+      }
+      const onBoundaryError = vitest.fn()
+      const page = (
+        <>
+          <Suspense fallback={<p>Loading...</p>}>
+            <Throw />
+          </Suspense>
+          <Throw />
+        </>
+      )
+      await expect(render(page, { streamType, onBoundaryError })).rejects.toThrow('some-error')
+      await new Promise((r) => setTimeout(r, 10))
+      expect(onBoundaryError).toHaveBeenCalledTimes(1)
     })
   })
   ;(['node', 'web'] as const).forEach((streamType: 'node' | 'web') => {
