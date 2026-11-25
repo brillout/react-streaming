@@ -62,7 +62,7 @@ function handleErrors(
     afterReactBugCatch(() => {
       // React also calls onError() for the shell error, which rejects `await renderToStream()` instead
       if (didShellError && err === shellErr) return
-      if ((err as Record<string, unknown>)[isReactBug]) return
+      if (isObject(err) && err[isReactBug]) return
       const errBetter = getErrorWithComponentStack(err, errorInfo)
       options.onBoundaryError?.(errBetter)
     })
@@ -74,7 +74,7 @@ function handleErrors(
       state.firstErr = err
       firstErrOriginal = err
     }
-    ;(err as Record<string, unknown>)[isReactBug] = true
+    if (isObject(err)) err[isReactBug] = true
     logErr(err)
   }
   function logErr(err: unknown, errBetter?: unknown) {
