@@ -46,8 +46,8 @@ importers:
         specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.8)
       playwright-chromium:
-        specifier: ^1.57.0
-        version: 1.57.0
+        specifier: ^1.65.1
+        version: 1.65.1
       prettier:
         specifier: ^3.2.5
         version: 3.7.4
@@ -1694,14 +1694,14 @@ packages:
     resolution: {integrity: sha512-o8mkY4E/+LNUf6LzX96ht6k6CEDi65k9G2rjMtBe9Oo+VPKSvl+0GKHuH/AlG+GA5LPG/i5hrekkxUc3s2HU+Q==}
     hasBin: true
 
-  playwright-chromium@1.57.0:
-    resolution: {integrity: sha512-GCVVTbmIDrZuBxWYoQ70rehRXMb3Q7ccENe63a+rGTWwypeVAgh/DD5o5QQ898oer5pdIv3vGINUlEkHtOZQEw==}
-    engines: {node: '>=18'}
+  playwright-chromium@1.65.1:
+    resolution: {integrity: sha512-XsGj9GBKk20UQVlwjbiSmArmTfNTrqbEw5SzTnV3J1uQCztQRsiPScSdiC2KoYuN3ItTN8/+IciM9/t/e9GctA==}
+    engines: {node: '>=20'}
     hasBin: true
 
-  playwright-core@1.57.0:
-    resolution: {integrity: sha512-agTcKlMw/mjBWOnD6kFZttAAGHgi/Nw0CZ2o6JqWSbMlI219lAFLZZCyqByTsvVAJq5XA5H8cA6PrvBRpBWEuQ==}
-    engines: {node: '>=18'}
+  playwright-core@1.65.1:
+    resolution: {integrity: sha512-hqPpz7blSMPxWVdoeE1yiBSzXsKiVOd2k+kjCvmUywD2GPO2Dd9HfcWnq9NN0GHbNZDFgZ9JfBFr+X5/BLo0qw==}
+    engines: {node: '>=20'}
     hasBin: true
 
   pngjs@6.0.0:
@@ -2246,7 +2246,7 @@ snapshots:
       esbuild: 0.23.1
       fast-glob: 3.3.3
       pixelmatch: 5.3.0
-      playwright-chromium: 1.57.0
+      playwright-chromium: 1.65.1
       pngjs: 6.0.0
       source-map-support: 0.5.21
       strip-ansi: 6.0.1
@@ -3372,11 +3372,11 @@ snapshots:
     dependencies:
       pngjs: 6.0.0
 
-  playwright-chromium@1.57.0:
+  playwright-chromium@1.65.1:
     dependencies:
-      playwright-core: 1.57.0
+      playwright-core: 1.65.1
 
-  playwright-core@1.57.0: {}
+  playwright-core@1.65.1: {}
 
   pngjs@6.0.0: {}
 
