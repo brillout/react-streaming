@@ -1,3 +1,12 @@
+## [0.4.27](https://github.com/brillout/react-streaming/compare/v0.4.26...v0.4.27) (2026-11-25)
+
+
+### Bug Fixes
+
+* stop calling `onBoundaryError()` with the error `renderToStream()` rejects with ([#69](https://github.com/brillout/react-streaming/issues/69)) ([6f4aca9](https://github.com/brillout/react-streaming/commit/6f4aca95f4a93259bde815ade41a6b9e8c709a83))
+
+
+
 ## [0.4.26](https://github.com/brillout/react-streaming/compare/v0.4.25...v0.4.26) (2026-11-11)
 
 
