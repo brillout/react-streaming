@@ -63,6 +63,7 @@ function handleErrors(
     const call = { isShellError: false }
     onErrorCalls.set(err, call)
     afterReactBugCatch(() => {
+      if (onErrorCalls.get(err) === call) onErrorCalls.delete(err)
       if (call.isShellError) return
       if (isObject(err) && err[isReactBug]) return
       const errBetter = getErrorWithComponentStack(err, errorInfo)
