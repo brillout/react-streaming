@@ -34,11 +34,15 @@ function handleErrors(
     firstErr: undefined as unknown,
   }
   let firstErrOriginal = undefined as unknown
+  // The reason react-streaming aborts React with (timeout, `signal`, `abort()` and client disconnect), which isn't a boundary error
+  // Named like the reason of `AbortController.abort()`, without `DOMException` (it isn't a global on Node.js 16)
+  const abortReason = Object.assign(new Error('The render was aborted'), { name: 'AbortError' })
   // The latest pending onError() call of each error value
   const onErrorCalls = new Map<unknown, { isShellError: boolean }>()
 
   return {
     state,
+    abortReason,
     onShellError,
     onBoundaryError,
     onReactBug,
@@ -60,6 +64,7 @@ function handleErrors(
   // We intentionally swallow boundary errors, see https://github.com/brillout/react-streaming#error-handling
   function onBoundaryError(err: unknown, errorInfo?: ErrorInfo) {
     debugFlow('onBoundaryError()')
+    if (err === abortReason) return
     const call = { isShellError: false }
     onErrorCalls.set(err, call)
     afterReactBugCatch(() => {

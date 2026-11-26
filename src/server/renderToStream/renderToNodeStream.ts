@@ -30,10 +30,10 @@ async function renderToNodeStream(
   })
 
   let promiseResolved = false
-  const { state, onShellError, onBoundaryError, onReactBug } = handleErrors(options, () => promiseResolved)
+  const { state, abortReason, onShellError, onBoundaryError, onReactBug } = handleErrors(options, () => promiseResolved)
 
   assertReactImport(renderToPipeableStream, 'renderToPipeableStream')
-  const { pipe: pipeOriginal, abort } = renderToPipeableStream(element, {
+  const { pipe: pipeOriginal, abort: abortReact } = renderToPipeableStream(element, {
     ...options.streamOptions,
     onShellReady() {
       debugFlow('[react] onShellReady()')
@@ -52,14 +52,14 @@ async function renderToNodeStream(
     },
     onError: onBoundaryError,
   })
-  setAbortFn(() => {
-    abort()
-  })
+  const abort = () => abortReact(abortReason)
+  setAbortFn(abort)
   const { pipeForUser, injectToStream, streamEnd, hasStreamEnded } = await createPipeWrapper(
     pipeOriginal,
     onReactBug,
     clearTimeouts,
     doNotClosePromise,
+    abort,
   )
   await shellReady
   if (state.didError) throw state.firstErr

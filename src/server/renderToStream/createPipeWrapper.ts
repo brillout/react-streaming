@@ -22,6 +22,7 @@ async function createPipeWrapper(
   onReactBug: (err: unknown) => void,
   clearTimeouts: ClearTimeouts,
   doNotClosePromise: DoNotClosePromise,
+  abort: () => void,
 ) {
   const { pipeForUser, streamEnd } = createPipeForUser()
   const streamOperations: StreamOperations = {
@@ -80,7 +81,10 @@ async function createPipeWrapper(
       })
       // E.g. when the HTTP client disconnects
       writableFromUser.on('close', () => {
-        if (!writableFromUser.writableFinished) writableForReact.destroy()
+        if (writableFromUser.writableFinished) return
+        // Before destroy(), which makes React abort with its own reason (`The destination stream closed early.`)
+        abort()
+        writableForReact.destroy()
       })
       const flush = () => {
         if (typeof (writableFromUser as any).flush === 'function') {
@@ -96,6 +100,8 @@ async function createPipeWrapper(
       }
       // Forward the flush() call. E.g. used by React to flush GZIP buffers, see https://github.com/brillout/vite-plugin-ssr/issues/466#issuecomment-1269601710
       ;(writableForReact as any).flush = flush
+      // E.g. the HTTP client disconnected while the shell was rendering: the 'close' listener above may never fire. Not in write(): abort() makes React flush, and React calls write() while flushing.
+      if (writableFromUser.destroyed) abort()
       pipeFromReact(writableForReact)
     }
     return { pipeForUser, streamEnd }
