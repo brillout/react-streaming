@@ -1,3 +1,12 @@
+## [0.4.28](https://github.com/brillout/react-streaming/compare/v0.4.27...v0.4.28) (2026-11-26)
+
+
+### Bug Fixes
+
+* don't call `onBoundaryError()` when react-streaming aborts the render ([#71](https://github.com/brillout/react-streaming/issues/71)) ([caa4a58](https://github.com/brillout/react-streaming/commit/caa4a58d225fb2ea689771f1e78f2e51d1cf397c))
+
+
+
 ## [0.4.27](https://github.com/brillout/react-streaming/compare/v0.4.26...v0.4.27) (2026-11-25)
 
 
